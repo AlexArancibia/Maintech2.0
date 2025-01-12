@@ -120,9 +120,9 @@ export default function CourseDetailsPage() {
 
   return (
     <>
-      <div className=" container-section bg-gradient-to-br from-slate-950 via-slate-900 to-primary">
-        <div className="content-section py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <div className=" container-section bg-[url('/gradient7.jpg')] bg-cover">
+        <div className="content-section py-10 sm:py-16" >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 sm:gap-16">
             <div className="lg:col-span-2">
               <div className="space-y-6">
                 <div>
@@ -163,6 +163,7 @@ export default function CourseDetailsPage() {
                           placeholder="Nombre"
                           value={formData.nombre}
                           onChange={(e) => setFormData({...formData, nombre: e.target.value})}
+                          className='bg-gray-50'
                         />
                       </div>
                       <div className="space-y-2">
@@ -172,6 +173,7 @@ export default function CourseDetailsPage() {
                           placeholder="Primer Apellido"
                           value={formData.primerApellido}
                           onChange={(e) => setFormData({...formData, primerApellido: e.target.value})}
+                          className='bg-gray-50'
                         />
                       </div>
                     </div>
@@ -183,7 +185,8 @@ export default function CourseDetailsPage() {
                         placeholder="Segundo Apellido"
                         value={formData.segundoApellido}
                         onChange={(e) => setFormData({...formData, segundoApellido: e.target.value})}
-                      />
+                        className='bg-gray-50'
+                        />
                     </div>
 
                     <div className="space-y-2">
@@ -194,6 +197,7 @@ export default function CourseDetailsPage() {
                         placeholder="correo@ejemplo.com"
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        className='bg-gray-50'
                       />
                     </div>
 
@@ -203,14 +207,15 @@ export default function CourseDetailsPage() {
                         <Select
                           value={formData.tipoDoc}
                           onValueChange={(value) => setFormData({...formData, tipoDoc: value})}
+                          
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Seleccione" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="dni">DNI</SelectItem>
-                            <SelectItem value="ce">Carnet de Extranjería</SelectItem>
-                            <SelectItem value="pasaporte">Pasaporte</SelectItem>
+                            <SelectItem value="dni" className='bg-gray-50'>DNI</SelectItem>
+                            <SelectItem value="ce" className='bg-gray-50'>Carnet de Extranjería</SelectItem>
+                            <SelectItem value="pasaporte" className='bg-gray-50'>Pasaporte</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -221,6 +226,7 @@ export default function CourseDetailsPage() {
                           placeholder="Número de documento"
                           value={formData.numDoc}
                           onChange={(e) => setFormData({...formData, numDoc: e.target.value})}
+                          className='bg-gray-50'
                         />
                       </div>
                     </div>
@@ -233,6 +239,7 @@ export default function CourseDetailsPage() {
                         placeholder="Teléfono móvil"
                         value={formData.telefono}
                         onChange={(e) => setFormData({...formData, telefono: e.target.value})}
+                        className='bg-gray-50'
                       />
                     </div>
 
@@ -267,15 +274,15 @@ export default function CourseDetailsPage() {
         
       </div>
 
-      <div className="container-section  py-6 sm:py-16 bg-gray-100">
+      <div className="container-section  py-6 sm:py-16 sm:pb-0 bg-gray-100 ">
           <div className='content-section flex gap-12'>
-            <div className="w-full sm:w-2/3 p-4 mx-auto">
+            <div className="w-full sm:w-2/3   mx-auto sm:pr-12">
                <CourseInfo info={course.info} />
              
                <ChapterInfo chapters={course.chapters} />
 
-              <section className="mb-12">
-                <h3 className="text-2xl font-semibold mb-4 text-gray-800">Cursos Relacionados</h3>
+              <section className=" mb-4 sm:mb-12 ">
+                <h3 className="text-2xl font-semibold mb-10 text-gray-800">Cursos Relacionados</h3>
                 {isLoading ? (
                   <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
                     {Array(6).fill(0).map((_, index) => (
@@ -283,7 +290,7 @@ export default function CourseDetailsPage() {
                     ))}
                   </div>
                 ) : basicCourses.length > 0 ? (
-                  <div className="grid lg:grid-cols-2 gap-6">
+                  <div className="grid lg:grid-cols-2 gap-6 sm:gap-6">
                     {basicCourses.map((basicCourse) => (
                       basicCourse.category?.name === course.category?.name && (
                         <Link key={basicCourse.documentId} href={`/curso/${basicCourse.titleSlug}`}>
@@ -300,19 +307,19 @@ export default function CourseDetailsPage() {
               </section>
             </div>
 
-            <div className='hidden sm:flex sm:flex-col w-1/3 ' >
+            <div className='hidden sm:flex sm:flex-col w-1/3 items-end ' >
               <TeacherCard teacher={course.teacher} />
 
-              <div className='my-4 flex flex-col gap-6'>
+              <div className=' my-4  max-w-[430px] flex w-full flex-col gap-6'>
                 {!isCoursePurchased ? (
-                  <Button onClick={handleBuy}>
+                  <Button onClick={handleBuy} className='w-full'>
                     Comprar Curso
                   </Button>
                 ) : 
                 <Link href={`/dashboard/cursos/${params.courseId}`}>
                   <Button
-                    variant="secondary"
-                    className='bg-green-400 hover:bg-emerald-400 transition-colors'
+                    variant="outline"
+                    className='   w-full transition-colors'
                   >
                     Ver Curso
                   </Button>

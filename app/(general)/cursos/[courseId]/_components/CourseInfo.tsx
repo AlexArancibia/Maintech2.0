@@ -148,7 +148,7 @@ export function CourseInfo({ info }: CourseInfoProps) {
                 key={index} 
                 value={section.title}
                 onClick={() => setActiveTab(index)}
-                className='text-xl data-[state=active]:border-b-2 border-secondary h-[50px] px-6'
+                className='text-md sm:text-xl data-[state=active]:border-b-2 border-secondary h-[50px] px-6'
               >
                 {section.title}
               </TabsTrigger>
@@ -156,7 +156,7 @@ export function CourseInfo({ info }: CourseInfoProps) {
           </TabsList>
           {contentSections.map((section, index) => (
             <TabsContent key={index} value={section.title}>
-              <div className="space-y-2">
+              <div className="space-y-2 mt-12 pl-2">
                 {section.content}
               </div>
             </TabsContent>
@@ -175,12 +175,7 @@ export function CourseInfo({ info }: CourseInfoProps) {
               >
                 <span className="flex items-center justify-between w-full">
                   {section.title}
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 shrink-0 text-gray-500 transition-transform duration-200",
-                      openSection === section.title ? "transform rotate-180" : ""
-                    )}
-                  />
+                  
                 </span>
               </AccordionTrigger>
               <AccordionContent>

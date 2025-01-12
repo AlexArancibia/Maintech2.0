@@ -18,7 +18,7 @@ export default function CourseCard({ course }: CourseCardProps) {
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative">
-      <div className="absolute inset-0 bg-gradient-to-r from-[#1E1B4B] to-[#DB2777] opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-r from-secondary to-accent opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
       <CardHeader className="p-0 relative">
         <div className="relative">
           <Image 
@@ -60,10 +60,10 @@ export default function CourseCard({ course }: CourseCardProps) {
       </CardContent>
       <CardFooter className='p-4 pt-0'>
         <Button 
-          variant="ghost"
-          className="w-full group/button relative overflow-hidden font-medium bg-gradient-to-r from-primary to-secondary "
+          variant="outline"
+          className="w-full group/button relative overflow-hidden font-medium  "
         >
-          <span className="relative z-10 flex items-center text-white justify-center gap-2 group-hover/button:text-white transition-colors duration-300">
+          <span className="relative z-10 flex items-center   justify-center gap-2 group-hover/button:text-white transition-colors duration-300">
             Ver Curso
             <ArrowRight className="w-4 h-4 group-hover/button:translate-x-1 transition-transform duration-300" />
           </span>

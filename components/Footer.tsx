@@ -9,15 +9,15 @@ export default function Footer() {
   return (
     <footer className="relative bg-gray-100">
       {/* Contact CTA Section */}
-      <div className="container-section px-4 py-16   relative z-10">
+      <div className="container-section px-4 pb-10 pt-0 sm:py-16   relative z-10">
         <div className="content-section   rounded-2xl border border-gray-400 ">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-8 py-6">
             <div className="flex items-center gap-1">
-              <div className="text-[#00D1FF] flex -space-x-3">
+              <div className="text-[#00D1FF]  space-x-3 hidden sm:flex">
                 <ChevronRight className="w-6 h-6" />
                 <ChevronRight className="w-6 h-6" />
               </div>
-              <h2 className="text-xl sm:text-3xl font-bold   text-gray-800">
+              <h2 className="text-xl sm:text-3xl font-bold text-center sm:text-left   text-gray-800">
                 Contáctate con nosotros y entérate de nuestros cursos y promociones
               </h2>
             </div>

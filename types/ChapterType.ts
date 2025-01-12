@@ -14,7 +14,7 @@ interface Question {
   answer: Answer[];
 }
 
-interface Quiz {
+export interface Quiz {
   id: number;
   question: Question[];
 }
@@ -57,6 +57,6 @@ export interface UserProgress extends Timestamp {
 export interface DetailedChapter extends Chapter {
   user_progresses: UserProgress[] | null;
   course: Course;
-  quiz: Quiz | null;
+  quiz: Quiz[] ;
 
 }

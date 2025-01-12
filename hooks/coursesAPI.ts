@@ -96,18 +96,19 @@ export async function getCoursesByStudent(studentId: string): Promise<BasicCours
 
 export function getChapterContent(chapter: Chapter): string {
   console.log("Processing chapter content:", chapter);
-  const content = chapter.content
-    .map((item) => {
-      if (item.type === 'heading') {
-        return `${'#'.repeat(item.level || 1)} ${item.children[0].text}\n\n`;
-      } else if (item.type === 'paragraph') {
-        return `${item.children[0].text}\n\n`;
-      }
-      return '';
-    })
-    .join('');
-  console.log("Processed content:", content);
-  return content;
+  // const content = chapter.content
+  //   .map((item) => {
+  //     if (item.type === 'heading') {
+  //       return `${'#'.repeat(item.level || 1)} ${item.children[0].text}\n\n`;
+  //     } else if (item.type === 'paragraph') {
+  //       return `${item.children[0].text}\n\n`;
+  //     }
+  //     return '';
+  //   })
+  //   .join('');
+  // console.log("Processed content:", content);
+  // return content;
+  return ""
 }
 
 export function getChapterAttachments(chapter: Chapter): Attachment[] | null {

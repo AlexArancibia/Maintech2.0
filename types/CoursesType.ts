@@ -46,16 +46,7 @@ export interface InfoNode {
 
  
 
-export interface InfoContent {
-  type: string;
-  level?: number;
-  children: Array<{
-    bold?: boolean;
-    text: string;
-    type: string;
-  }>;
-  format?: string;
-}
+ 
 
 export interface BasicCourse extends Timestamp {
   id: number;
@@ -70,7 +61,7 @@ export interface BasicCourse extends Timestamp {
   modality: string;
   image: Image;
   users_permissions_users: BasicUser[];
-  content: InfoContent[];
+  content: InfoNode[];
   start_date: string;
   finish_date: string;
 }
@@ -87,7 +78,8 @@ export interface Chapter extends Timestamp {
   title: string;
   content: InfoNode[];
   position: number;
-  isFree: boolean;
+  date:string,
+  hours:number,
   chapterSlug: string;
   shortdescription: string | null;
   attachment: Attachment[] | null;

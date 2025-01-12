@@ -18,6 +18,7 @@ export async function getUserProgresses(email : string): Promise<UserProgress[]>
   try {
     
     const response = await api.get<ApiResponse<UserProgress>>(`/api/user-progresses?populate=*&filters[users_permissions_user][email][$eq]=${email}`);
+    console.log("UserProgress:", response.data.data)
     return response.data.data;
   } catch (error) {
     console.error('Error fetching detailed chapters:', error);
