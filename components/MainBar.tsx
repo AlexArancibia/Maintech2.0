@@ -1,36 +1,36 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { useAuth } from '@/hooks/AuthContext'
 import Link from 'next/link'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import Image from 'next/image'
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useAuth } from '@/hooks/AuthContext'
+import { Menu, X, ChevronDown, LogOut } from 'lucide-react'
 
 const navItems = [
   { 
+    href: "/cursos", 
+    label: "Nuestros Cursos",
+     
+  },
+  { 
+    
     href: "/conocenos", 
     label: "Conócenos",
     subitems: [
-      { href: "/conocenos/quienes-somos", label: "Quienes somos" },
+      { href: "/quienes-somos", label: "Quienes somos" },
       { href: "/conocenos/docentes", label: "Docentes" },
       { href: "/conocenos/trabaja-con-nosotros", label: "Trabaja con nosotros" },
     ]
   },
-  { 
-    href: "/formacion", 
-    label: "Formación",
-    subitems: [
-      { href: "/formacion/carreras-cortas", label: "Carreras Cortas" },
-      { href: "/formacion/carreras-de-especialidad", label: "Carreras de especialidad" },
-      { href: "/formacion/formacion-continua", label: "Formación continua" },
-    ]
-  },
+ 
   { href: "/servicios", label: "Servicios" },
   { href: "/escribenos", label: "Escríbenos" },
 ]
 
 export function MainNav() {
-  const { user, logout } = useAuth()
+  const { user, logout, isLoading } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
@@ -51,7 +51,7 @@ export function MainNav() {
       <nav className="content-section flex justify-between items-center">
         <div className="flex items-center">
           <Link href="/">
-            <img
+          <img
               src="/logo 1.png"
               alt="MainTech Logo"
               className="h-8 w-auto sm:h-8 md:h-10 transition-all duration-200"
@@ -107,16 +107,30 @@ export function MainNav() {
             </div>
           ))}
           
-          {user ? (
+          {isLoading ? (
+            <Skeleton className="h-10 w-24" />
+          ) : user ? (
+            <div className='flex'>
             <Button 
-              className="bg-red-600 hover:bg-red-700 text-white text-sm"
-              onClick={handleLogout}
+              className="bg-accent   text-white text-sm"
+ 
             >
-              Cerrar Sesión
+              Portal Estudiante
             </Button>
+
+            <Button 
+            variant="ghost"
+            size="icon"
+            aria-label="Cerrar sesión"
+            className="text-gray-600 hover:bg-gray-50 hover:text-accent"
+
+            onClick={handleLogout}
+            >
+            <LogOut className="w-5 h-5" />
+            </Button></div>
           ) : (
             <Link href="/sign-on">
-              <Button className="  text-white text-sm">
+              <Button className="text-white text-sm">
                 Iniciar Sesión
               </Button>
             </Link>
@@ -165,7 +179,9 @@ export function MainNav() {
             </div>
           ))}
           
-          {user ? (
+          {isLoading ? (
+            <Skeleton className="h-10 w-full mt-4" />
+          ) : user ? (
             <Button 
               className="w-full mt-4 bg-red-600 hover:bg-red-700 text-white text-sm" 
               onClick={() => {

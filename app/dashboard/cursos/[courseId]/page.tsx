@@ -13,6 +13,8 @@ import { ChapterContentSkeleton, ChapterListSkeleton, CourseProgressSkeleton } f
 import CourseProgress from "./_components/CourseProgress";
 import ChapterList from "./_components/ChapterList";
 import ChapterContent from "./_components/ChapterContent";
+import { progress } from "framer-motion";
+import api from "@/lib/axios";
 
 type Params = { courseId: string };
 
@@ -84,15 +86,72 @@ export default function CourseComponent() {
     fetchCourse();
   }, [params.courseId, purchasedCourses, router, isPurchasedCoursesReady]);
 
+
+  useEffect(() => {
+    const createMissingUserProgresses = async () => {
+      if (!user || !chapters.length) return;
+
+      for (const chapter of chapters) {
+        if (chapter.quiz && chapter.quiz.length > 0) {
+          const existingProgress =  chapter.user_progresses.find(progress => progress.users_permissions_user.email === user.email)
+          if (!existingProgress) {
+            try {
+              const response = await api.post('/api/user-progresses', {
+                data: {
+                  isCompleted: false,
+                  chapter: chapter.id,
+                  users_permissions_user: user.id,
+                  quiz_attempt: []
+                }
+              },  );
+              console.log(`Created new user progress for chapter ${chapter.id}:`, response.data.data);
+            } catch (error) {
+              console.error(`Error creating user progress for chapter ${chapter.id}:`, error);
+            }
+          }
+        }
+      }
+    };
+
+    createMissingUserProgresses();
+  }, [user, chapters]);
   const calculateProgress = () => {
-    if (!chapters.length || !user) return 0;
-    const completedChapters = chapters.filter(chapter => 
-      chapter.user_progresses?.some(progress => 
-        progress.isCompleted && progress.users_permissions_user.id === user.id
-      )
-    ).length;
-    return (completedChapters / chapters.length) * 100;
+    console.log('Calculating course progress...');
+    
+    if (!chapters.length || !user) {
+      console.warn('No chapters or user found, progress is 0%');
+      return 0;
+    }
+
+    let completedChapters = 0;
+    let totalChaptersWithProgress = 0;
+
+    chapters.forEach(chapter => {
+      const userProgress = chapter.user_progresses?.find(
+        progress => progress.users_permissions_user.email === user.email
+      );
+
+      if (userProgress) {
+        totalChaptersWithProgress++;
+        if (userProgress.isCompleted) {
+          completedChapters++;
+        }
+      }
+    });
+
+    if (totalChaptersWithProgress === 0) {
+      console.warn('No chapters with user progress found, progress is 0%');
+      return 0;
+    }
+
+    const progress = (completedChapters / totalChaptersWithProgress) * 100;
+    console.log(`Course progress: ${progress.toFixed(2)}% (${completedChapters}/${totalChaptersWithProgress} chapters completed)`);
+    
+    return progress;
   };
+
+  
+
 
   if (error) return <div className="text-red-500 text-center py-8">Error: {error}</div>;
 

@@ -65,21 +65,26 @@ export default function ChapterList({ chapters, selectedChapter, onSelectChapter
               <div className="flex items-center space-x-3">
               <div
                   className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200",
-                    isChapterCompleted(chapter)
-                      ? "bg-accent text-white"
-                      : "bg-gray-200/80 text-secondary-foreground"
+                    "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200 bg-gray-200/80 text-secondary-foreground"
                   )}
                 >{chapter.position}
                 </div>
                 <div className="flex-grow">
                   <div className="flex items-center space-x-2">
-                    <p className="font-medium">{chapter.title}</p>
+                    <h3 className="font-medium">{chapter.title}</h3>
                     {chapter.quiz && chapter.quiz.length > 0 && (
-                      <Badge variant="default" className="text-xs bg-accent text-white font-light py-0 px-1.5">
-                        <FileQuestion className="w-3 h-3 mr-1" />
-                        Quiz
-                      </Badge>
+                      <Badge 
+                
+                      className={cn(
+                        "text-xs py-0 px-1.5",
+                        isChapterCompleted(chapter) 
+                          ? "bg-green-100 text-green-800 hover:bg-green-200"
+                          : "bg-gray-100 border border-gray-300 text-gray-800 hover:bg-accent hover:text-white "
+                      )}
+                    >
+                      <FileQuestion className="w-3 h-3 mr-1" />
+                      {isChapterCompleted(chapter) ? "Quiz Completado" : "Quiz"}
+                    </Badge>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DetailedChapter } from "@/types/ChapterType";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Video, Paperclip, Book, FileText, Calendar, Clock } from 'lucide-react';
 import { useAuth } from "@/hooks/AuthContext";
+import api from "@/lib/axios";
 
 interface ChapterContentProps {
   chapter: DetailedChapter;
@@ -15,6 +17,11 @@ interface ChapterContentProps {
 export default function ChapterContent({ chapter }: ChapterContentProps) {
   const [selectedTab, setSelectedTab] = useState(chapter.liveSessionUrl ? "live" : "content");
   const {user} = useAuth();
+
+  const [userProgress, setUserProgress] = useState(chapter.user_progresses?.find(progress => progress.users_permissions_user.email === user?.email));
+
+ 
+
   const renderContent = (content: any[]) => {
     return content.map((item, index) => {
       switch (item.type) {
@@ -143,8 +150,11 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
             <TabsContent value="quiz">
               <QuizComponent 
                 quiz={chapter.quiz} 
-                userEmail={user!.email}
-                chapterId={chapter.documentId} />
+                userProgress={chapter.user_progresses?.find(progress => progress.users_permissions_user.email === user?.email)}
+                chapterId={chapter.documentId} 
+ 
+                
+                />
             </TabsContent>
           )}
         </Tabs>

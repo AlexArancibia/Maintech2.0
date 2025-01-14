@@ -17,7 +17,7 @@ export interface ApiResponse<T> {
 
 export async function getChaptersByCourse(course: string): Promise<DetailedChapter[]> {
   try {
-    const response = await api.get<ApiResponse<DetailedChapter>>(`/api/chapters?filters[course][titleSlug][$eq]=${course}&populate[quiz][populate][question][populate]=answer&populate[attachment]=*&populate[user_progresses][populate][1]=users_permissions_user`);
+    const response = await api.get<ApiResponse<DetailedChapter>>(`/api/chapters?filters[course][titleSlug][$eq]=${course}&populate[quiz][populate][question][populate]=answer&populate[attachment]=*&populate[user_progresses][populate][1]=users_permissions_user&populate[user_progresses][populate][2]=quiz_attempt`);
     console.log(response.data.data)
     return response.data.data;
   } catch (error) {

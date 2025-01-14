@@ -1,26 +1,29 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/hooks/AuthContext'
 import { getCoursesByStudent } from '@/hooks/coursesAPI'
 import { BasicCourse } from '@/types/CoursesType'
-import React, { useEffect, useState } from 'react'
-import { Skeleton } from "@/components/ui/skeleton"
-import CourseCard from '@/components/CourseCard'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { AlertCircle, BookOpen, BadgeIcon as Certificate, Settings } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/hooks/AuthContext'
+import PurchasedCourseCard from './_components/PurchasedCourseCard'
 
-export default function StudentCoursesPage() {
-  const {user} = useAuth() 
+export default function DashboardPage() {
+  const { user } = useAuth()
   const [studentCourses, setStudentCourses] = useState<BasicCourse[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchCourses() {
+      if (!user) return
       try {
         setIsLoading(true)
-        const courses = await getCoursesByStudent(user!.email)
+        const courses = await getCoursesByStudent(user.email)
         setStudentCourses(courses)
       } catch (err) {
         setError("Error fetching courses. Please try again later.")
@@ -31,46 +34,108 @@ export default function StudentCoursesPage() {
     }
 
     fetchCourses()
-  }, [])
+  }, [user])
 
   return (
-    
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Mis Cursos</h1>
-
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, index) => (
-            <div key={index} className="space-y-4">
-              <Skeleton className="h-64 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-            </div>
-          ))}
+    <>
+    <div className="container-section p-8 sm:p-16 h-[200px] bg-[url('/gradient4.jpg')] bg-cover bg-bottom">
+        <div className="content-section">
+          <header className="mb-8">
+            <h1 className="text-4xl font-bold mb-2 text-white">Bienvenido, {user?.username}</h1>
+            <p className="text-xl text-muted-foreground text-white">{user?.email}</p>
+          </header>
         </div>
-      ) : error ? (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      ) : studentCourses === null ? (
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Información no disponible</AlertTitle>
-          <AlertDescription>No se pudo obtener la información de los cursos. Por favor, intenta de nuevo más tarde.</AlertDescription>
-        </Alert>
-      ) : studentCourses.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {studentCourses.map((course) => (
-            <Link key={course.documentId} href={`/dashboard/cursos/${course.titleSlug}`}>
-            <CourseCard key={course.id} course={course} />
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <p className="text-center text-gray-500 mt-8">No se encontraron cursos para este estudiante.</p>
-      )}
+      </div>
+    <div className="container-section p-8 sm:p-16 bg-gray-50">
+ 
+      <div className='content-section '>
+      <Tabs defaultValue="courses">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="courses">
+            <BookOpen className="mr-2 h-4 w-4" />
+            Mis Cursos
+          </TabsTrigger>
+          <TabsTrigger value="certificates">
+            <Certificate className="mr-2 h-4 w-4" />
+            Certificados
+          </TabsTrigger>
+          <TabsTrigger value="settings">
+            <Settings className="mr-2 h-4 w-4" />
+            Configuración
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="courses">
+          <Card>
+            <CardHeader>
+              <CardTitle>Mis Cursos</CardTitle>
+              <CardDescription>Aquí puedes ver todos tus cursos adquiridos.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[...Array(3)].map((_, index) => (
+                    <div key={index} className="space-y-4">
+                      <Skeleton className="h-64 w-full" />
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-4 w-1/2" />
+                    </div>
+                  ))}
+                </div>
+              ) : error ? (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              ) : studentCourses === null ? (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Información no disponible</AlertTitle>
+                  <AlertDescription>No se pudo obtener la información de los cursos. Por favor, intenta de nuevo más tarde.</AlertDescription>
+                </Alert>
+              ) : studentCourses.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {studentCourses.map((course) => (
+                    <Link key={course.documentId} href={`/dashboard/cursos/${course.titleSlug}`}>
+                      <PurchasedCourseCard key={course.id} course={course} />
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500 mt-8">No se encontraron cursos para este estudiante.</p>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="certificates">
+          <Card>
+            <CardHeader>
+              <CardTitle>Mis Certificados</CardTitle>
+              <CardDescription>Aquí puedes ver y descargar tus certificados obtenidos.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Contenido de certificados (por implementar)</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="settings">
+          <Card>
+            <CardHeader>
+              <CardTitle>Configuración de la Cuenta</CardTitle>
+              <CardDescription>Gestiona la configuración de tu cuenta.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p>Contenido de configuración (por implementar)</p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+      </div>
     </div>
+    </>
   )
 }
+

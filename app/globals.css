@@ -83,7 +83,7 @@ body {
   h1 {
     @apply text-2xl      /* Móvil por defecto */
            md:text-3xl   /* Tablets y pantallas medianas */
-           lg:text-4xl   /* Pantallas grandes */
+
            font-bold 
            tracking-tight 
            leading-[1.1];
@@ -92,7 +92,7 @@ body {
   h2 {
     @apply text-xl       /* Móvil por defecto */
            md:text-2xl   /* Tablets y pantallas medianas */
-           lg:text-3xl   /* Pantallas grandes */
+
            font-semibold 
            tracking-tight 
            leading-[1.1];
@@ -101,7 +101,7 @@ body {
   h3 {
     @apply text-lg       /* Móvil por defecto */
            md:text-xl   /* Tablets y pantallas medianas */
-           lg:text-2xl   /* Pantallas grandes */
+
            font-semibold 
            tracking-tight 
            leading-[1.1];
@@ -110,7 +110,7 @@ body {
   h4 {
     @apply text-base     /* Móvil por defecto */
            md:text-xl    /* Tablets y pantallas medianas */
-           lg:text-2xl   /* Pantallas grandes */
+
            font-semibold 
            tracking-tight 
            leading-[1.2];
@@ -119,7 +119,7 @@ body {
   h5 {
     @apply text-sm       /* Móvil por defecto */
            md:text-lg    /* Tablets y pantallas medianas */
-           lg:text-xl    /* Pantallas grandes */
+
            font-semibold 
            tracking-tight 
            leading-[1.3];
@@ -136,9 +136,9 @@ body {
   
 
   p {
-    @apply  text-xs       /* Móvil por defecto */
+    @apply  text-sm       /* Móvil por defecto */
               md:text-base  /* Tablets y pantallas medianas */
-              lg:text-lg    /* Pantallas grandes */
+              lg:text-base     /* Pantallas grandes */
               font-normal 
               tracking-tight 
               leading-[1.4];

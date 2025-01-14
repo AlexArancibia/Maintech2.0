@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { getCoursesByStudent } from "./coursesAPI";
 import { BasicCourse } from "@/types/CoursesType";
+import { User } from "@/types/StudentType";
 
 interface AuthContextType {
   user: User | null;
@@ -11,21 +12,10 @@ interface AuthContextType {
   login: (response: AuthResponse) => void;
   logout: () => void;
   authReady: boolean;
+  isLoading: boolean;
 }
 
-interface User {
-  id: number;
-  documentId: string;
-  username: string;
-  email: string;
-  provider: string;
-  confirmed: boolean;
-  blocked: boolean;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  locale: string | null;
-}
+ 
 
 export interface AuthResponse {
   jwt: string;
@@ -39,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
   purchasedCourses : [],
   logout: () => {},
   authReady: false,
+  isLoading: true,
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
@@ -46,6 +37,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [purchasedCourses, setPurchasedCourses] = useState<BasicCourse[]>([]);
   const [token, setToken] = useState<string | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const router = useRouter();
 
   const login = (response: AuthResponse) => {
@@ -81,6 +74,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setAuthReady(true);
+    setIsLoading(false);
     
   }, [])
   
@@ -101,7 +95,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, token, purchasedCourses, login, logout, authReady }}>
+    <AuthContext.Provider value={{ user, token, purchasedCourses, login, logout, authReady ,isLoading}}>
       {children}
     </AuthContext.Provider>
   );

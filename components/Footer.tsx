@@ -9,7 +9,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-gray-100">
       {/* Contact CTA Section */}
-      <div className="container-section px-4 pb-10 pt-0 sm:py-16   relative z-10">
+      <div className="container-section px-4 pb-10 pt-10 sm:py-16   relative z-10">
         <div className="content-section   rounded-2xl border border-gray-400 ">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-8 py-6">
             <div className="flex items-center gap-1">

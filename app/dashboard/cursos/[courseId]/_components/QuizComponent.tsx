@@ -7,9 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
-import { useAuth } from "@/hooks/AuthContext";
 import api from "@/lib/axios";
-import { getUserProgress } from "@/hooks/chaptersAPI";
+import { DetailedChapter, UserProgress } from "@/types/ChapterType";
 
 interface Answer {
   id: number;
@@ -34,11 +33,13 @@ interface QuizAttempt {
   approved: boolean;
 }
 
+
 interface QuizComponentProps {
   quiz: QuestionGroup[];
-  userEmail: string;
+  userProgress: UserProgress | undefined;
   chapterId:string;
   initialAttempts?: QuizAttempt[];
+  
 }
 
 const QUIZ_SETTINGS = {
@@ -46,23 +47,29 @@ const QUIZ_SETTINGS = {
   TIME_LIMIT: 30 * 60,
 };
 
-export default function QuizComponent({ quiz, userEmail,chapterId,initialAttempts = [] }: QuizComponentProps) {
+export default function QuizComponent({ quiz, userProgress,chapterId,initialAttempts = []  }: QuizComponentProps) {
   const [isStarted, setIsStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(QUIZ_SETTINGS.TIME_LIMIT);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
+ 
   const [score, setScore] = useState(0);
   const [percentage, setPercentage] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attempts, setAttempts] = useState<QuizAttempt[]>(initialAttempts);
-
+  const [isCompleted, setIsCompleted] = useState(false);
   const allQuestions = quiz.flatMap(group => group.question);
   const totalQuestions = allQuestions.length;
 
   useEffect(() => {
-    console.log("Quiz component mounted with userProgressId:", userEmail);
-    console.log("Initial attempts:", initialAttempts);
-  }, [userEmail, initialAttempts]);
+    console.log("Quiz component mounted with userProgress:", userProgress);
+    
+    setIsCompleted(userProgress!.isCompleted)
+    if (userProgress && userProgress.quiz_attempt) {
+      setAttempts(userProgress.quiz_attempt as QuizAttempt[]);
+    }
+    console.log("Initial attempts:", attempts);
+  }, [userProgress,attempts]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -78,6 +85,10 @@ export default function QuizComponent({ quiz, userEmail,chapterId,initialAttempt
   }, [isStarted, timeLeft, showResults]);
 
   const handleStart = () => {
+    if (isCompleted) {
+      console.log("Quiz already completed. Cannot start again.");
+      return;
+    }
     console.log("Starting quiz attempt:", attempts.length + 1);
     setIsStarted(true);
   };
@@ -128,12 +139,19 @@ export default function QuizComponent({ quiz, userEmail,chapterId,initialAttempt
         }
       };
 
-      console.log("Sending update to API:", payload);
  
-      const response = await getUserProgress(chapterId,userEmail)
-      console.log("API response:", response);
+      console.log("Sending update to API:", payload);
+      const response = await api.put(
+        `/api/user-progresses/${userProgress?.documentId}`,
+        payload,
+
+      );
+      console.log(`/api/user-progresses/${userProgress?.documentId}`,)
+      console.log("API response:", response.data);
+      
     
       setAttempts(updatedAttempts);
+      setIsCompleted(isPassed);
       return isPassed;
     } catch (error) {
       console.error("Error updating user progress:", error);
@@ -176,16 +194,25 @@ export default function QuizComponent({ quiz, userEmail,chapterId,initialAttempt
           <CardTitle>Quiz del Capítulo</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <p>Este quiz contiene {totalQuestions} preguntas y tienes 30 minutos para completarlo.</p>
-            <p>Necesitas al menos {QUIZ_SETTINGS.PASS_THRESHOLD}% para aprobar.</p>
-            {attempts.length > 0 && (
-              <p className="text-yellow-600">
-                Este es tu intento #{attempts.length + 1}
-              </p>
-            )}
-          </div>
-          <Button onClick={handleStart} className="mt-4">Comenzar Quiz</Button>
+          {isCompleted ? (
+            <div className="space-y-4">
+              <p className="text-green-600">¡Has completado este quiz exitosamente!</p>
+              <p>Ya no puedes volver a tomar este quiz.</p>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-4">
+                <p>Este quiz contiene {totalQuestions} preguntas y tienes 30 minutos para completarlo.</p>
+                <p>Necesitas al menos {QUIZ_SETTINGS.PASS_THRESHOLD}% para aprobar.</p>
+                {attempts.length > 0 && (
+                  <p className="text-yellow-600">
+                    Este es tu intento #{attempts.length + 1}
+                  </p>
+                )}
+              </div>
+              <Button onClick={handleStart} className="mt-4">Comenzar Quiz</Button>
+            </>
+          )}
         </CardContent>
       </Card>
     );
@@ -218,7 +245,7 @@ export default function QuizComponent({ quiz, userEmail,chapterId,initialAttempt
                 : `No has alcanzado el porcentaje mínimo requerido (${QUIZ_SETTINGS.PASS_THRESHOLD}%).`
               }
             </p>
-            {!isPassed && (
+            {!isPassed && !isCompleted && (
               <Button 
                 onClick={() => {
                   setIsStarted(false);
@@ -230,6 +257,11 @@ export default function QuizComponent({ quiz, userEmail,chapterId,initialAttempt
               >
                 Intentar Nuevamente
               </Button>
+            )}
+            {isCompleted && (
+              <p className="text-green-600 mt-4">
+                Has completado este quiz. No puedes volver a intentarlo.
+              </p>
             )}
           </div>
         </CardContent>

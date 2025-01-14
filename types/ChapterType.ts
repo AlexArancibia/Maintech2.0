@@ -55,7 +55,7 @@ export interface UserProgress extends Timestamp {
 }
 
 export interface DetailedChapter extends Chapter {
-  user_progresses: UserProgress[] | null;
+  user_progresses: UserProgress[];
   course: Course;
   quiz: Quiz[] ;
 

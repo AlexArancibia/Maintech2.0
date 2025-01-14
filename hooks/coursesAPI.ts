@@ -73,7 +73,7 @@ export async function getCourseBySlug(
 export async function getCoursesByStudent(studentId: string): Promise<BasicCourse[]> {
   try {
     console.log("Fetching courses for student ID:", studentId);
-    const endpoint = `/api/courses?filters[users_permissions_users][email][$eq]=${studentId}&populate[0]=chapters&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[category][fields][0]=name`;
+    const endpoint = `/api/courses?filters[users_permissions_users][email][$eq]=${studentId}&populate[0]=chapters&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[category][fields][0]=name&populate=teacher`;
     console.log("Generated endpoint:", endpoint);
 
     const response = await api.get<ApiResponse<BasicCourse>>(endpoint);
