@@ -19,6 +19,7 @@ const ApiContext = createContext<ApiContextType  | undefined>(undefined)
 export function ApiProvider({ children }: { children: ReactNode }) {
   const [basicCourses, setBasicCourses] = useState<BasicCourse[]>([])
   const [detailedCourses, setDetailedCourses] = useState<DetailedCourse[]>([])
+    
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

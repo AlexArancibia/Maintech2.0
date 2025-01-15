@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Heart, MessageCircle, Bookmark } from 'lucide-react'
@@ -11,39 +12,39 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import Image from "next/image"
+import { useApiData } from '@/hooks/ApiContext'
+import { BasicCourse } from '@/types/CoursesType'
+import { getImageUrl } from '@/lib/getImageUrl'
 
-const upcomingCourses = [
-  {
-    day: "1",
-    month: "Feb",
-    title: "CURSO INTERNACIONAL PREPARACIÓN EXAMEN",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop&q=80",
-    altText: "Group of people studying together at a table"
-  },
-  {
-    day: "3",
-    month: "Feb",
-    title: "GESTIÓN POR PROCESOS Y MEJORA CONTINUA",
-    image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&h=600&fit=crop&q=80",
-    altText: "Construction worker in safety gear on site"
-  },
-  {
-    day: "9",
-    month: "Ene",
-    title: "MS PROJECT APLICADO A LA CONSTRUCCIÓN",
-    image: "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=800&h=600&fit=crop&q=80",
-    altText: "Person working on a laptop with project management software"
-  },
-  {
-    day: "1",
-    month: "Oct",
-    title: "CURSO INTERNACIONAL PREPARACIÓN EXAMEN",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&h=600&fit=crop&q=80",
-    altText: "Group of people studying together at a table"
-  }
-]
+
+const convertToPeruTime = (date: Date): Date => {
+  const peruOffset = -5 * 60 // Offset en minutos para GMT-5
+  const userOffset = date.getTimezoneOffset()
+  return new Date(date.getTime() + (userOffset + peruOffset) * 60000)
+}
 
 export default function UpcomingCourses() {
+  const { basicCourses, isLoading } = useApiData()
+  const [upcomingCourses, setUpcomingCourses] = useState<BasicCourse[]>([])
+
+  useEffect(() => {
+    if (basicCourses.length > 0) {
+      const now = convertToPeruTime(new Date())
+      const upcoming = basicCourses
+        .filter(course => {
+          const courseStartDate = convertToPeruTime(new Date(course.start_date))
+          return courseStartDate > now
+        })
+        .sort((a, b) => {
+          const dateA = convertToPeruTime(new Date(a.start_date))
+          const dateB = convertToPeruTime(new Date(b.start_date))
+          return dateA.getTime() - dateB.getTime()
+        })
+        .slice(0, 4) // Get the next 4 upcoming courses
+      setUpcomingCourses(upcoming)
+    }
+  }, [basicCourses])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // Handle form submission
@@ -118,42 +119,61 @@ export default function UpcomingCourses() {
             className="w-full"
           >
             <CarouselContent>
-              {upcomingCourses.map((course, index) => (
-                <CarouselItem key={index} className="pl-4 md:pl-6 sm:basis-1/2 lg:basis-1/3">
-                  <div className="bg-white rounded-xl overflow-hidden shadow-md h-full flex flex-col">
-                    <div className="relative h-48 sm:h-56 md:h-64">
-                      <Image
-                        src={course.image}
-                        alt={course.altText}
-                        layout="fill"
-                        objectFit="cover"
-                      />
-                    </div>
-                    <div className="p-4 sm:p-6 flex flex-col flex-grow">
-                      <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-                        <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
-                          <div className="text-base sm:text-lg font-bold">{course.day}</div>
-                          <div className="text-xs sm:text-sm">{course.month}</div>
+              {isLoading ? (
+                Array(4).fill(null).map((_, index) => (
+                  <CarouselItem key={index} className="pl-4 md:pl-6 sm:basis-1/2 lg:basis-1/3">
+                    <div className="bg-white rounded-xl overflow-hidden shadow-md h-full flex flex-col">
+                      <div className="relative h-48 sm:h-56 md:h-64">
+                        <div className="w-full h-full bg-gray-200 animate-pulse"></div>
+                      </div>
+                      <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                          <div className="bg-gray-200 rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px] animate-pulse">
+                            <div className="h-6 w-8 bg-gray-300 mb-1"></div>
+                            <div className="h-4 w-12 bg-gray-300"></div>
+                          </div>
+                          <div className="h-6 w-3/4 bg-gray-200 animate-pulse"></div>
                         </div>
-                        <h3 className="font-bold text-base sm:text-lg text-gray-800 flex-grow">
-                          {course.title}
-                        </h3>
-                      </div>
-                      <div className="flex items-center gap-3 sm:gap-4 text-gray-500 mt-auto">
-                        <button className="hover:text-[#F1536D] transition-colors">
-                          <Heart size={18} />
-                        </button>
-                        <button className="hover:text-[#F1536D] transition-colors">
-                          <MessageCircle size={18} />
-                        </button>
-                        <button className="hover:text-[#F1536D] transition-colors">
-                          <Bookmark size={18} />
-                        </button>
+                        <div className="flex items-center gap-3 sm:gap-4 mt-auto">
+                          <div className="h-6 w-6 bg-gray-200 rounded-full animate-pulse"></div>
+                          <div className="h-6 w-6 bg-gray-200 rounded-full animate-pulse"></div>
+                          <div className="h-6 w-6 bg-gray-200 rounded-full animate-pulse"></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CarouselItem>
-              ))}
+                  </CarouselItem>
+                ))
+              ) : (
+                upcomingCourses.map((course, index) => (
+                  <CarouselItem key={index} className="pl-4 md:pl-4 sm:basis-1/2 lg:basis-1/3">
+                    <div className="bg-white rounded-xl overflow-hidden shadow-md h-full flex flex-col">
+                      <div className="relative h-48 sm:h-56 md:h-64">
+                        <img  src={getImageUrl(course.image.url)}
+                          alt={course.title}
+                        />
+                      </div>
+                      <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                          <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
+                            <div className="text-base sm:text-lg font-bold">{new Date(course.start_date).getDate()}</div>
+                            <div className="text-xs sm:text-sm">{new Date(course.start_date).toLocaleString('default', { month: 'short' })}</div>
+                          </div>
+                          <div className='flex flex-col'>
+                          <h3 className="font-bold text-base sm:text-lg text-gray-800 flex-grow">
+                            {course.title}
+                          </h3>
+
+                          <h3 className="font-medium text-sm sm:text-sm text-gray-600 flex-grow">
+                            {course.category.name}
+                          </h3>
+                          </div>
+                        </div>
+                         
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))
+              )}
             </CarouselContent>
             <CarouselPrevious className="hidden sm:flex -left-4 sm:-left-5 md:-left-6" />
             <CarouselNext className="hidden sm:flex -right-4 sm:-right-5 md:-right-6" />
