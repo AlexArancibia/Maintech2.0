@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from '@/hooks/AuthContext'
 import { Menu, X, ChevronDown, LogOut } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
 
+import { motion , AnimatePresence } from "motion/react"
 interface NavItem {
   href: string
   label: string

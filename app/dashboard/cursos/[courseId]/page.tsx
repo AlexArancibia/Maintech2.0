@@ -13,7 +13,6 @@ import { ChapterContentSkeleton, ChapterListSkeleton, CourseProgressSkeleton } f
 import CourseProgress from "./_components/CourseProgress";
 import ChapterList from "./_components/ChapterList";
 import ChapterContent from "./_components/ChapterContent";
-import { progress } from "framer-motion";
 import api from "@/lib/axios";
 import { useApiData } from "@/hooks/ApiContext";
 
