@@ -1,3 +1,4 @@
+import { DetailedChapter } from "./ChapterType";
 import { BasicUser, User } from "./StudentType";
 import { Teacher } from "./TeacherType";
 import { Timestamp } from "./timestamp";
@@ -88,7 +89,7 @@ export interface Chapter extends Timestamp {
 }
 
 export interface DetailedCourse extends BasicCourse {
-  chapters: Chapter[];
+  chapters: DetailedChapter[];
 }
 
 export interface CourseResponse {

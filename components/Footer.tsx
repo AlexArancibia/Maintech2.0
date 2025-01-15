@@ -38,16 +38,11 @@ export default function Footer() {
           style={{ mixBlendMode: 'multiply' }}
         />
         <div 
-          className="absolute inset-0 bg-[url('/footer-bg.png')] bg-cover bg-center opacity-10"
+          className="absolute inset-0  bg-cover bg-center opacity-10"
         />
         
-        <div className="container-section relative"
-        style={{
-          backgroundImage: 'url("/footer.png")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}>
+        <div className="container-section relative bg-[url('/footer.png')] bg-cover bg-center"
+         >
           <div className="content-section py-16">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
               {/* Logo and Contact Info */}

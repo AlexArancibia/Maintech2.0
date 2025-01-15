@@ -116,6 +116,31 @@ export function getChapterAttachments(chapter: Chapter): Attachment[] | null {
   return chapter.attachment;
 }
 
+
+export async function getPurchasedCourses(studentId: string | undefined): Promise<DetailedCourse[]> {
+
+  if (studentId === undefined) {
+    console.log("Student ID is undefined, returning empty array");
+    return [];
+  }
+  
+  try {
+    
+    console.log("Fetching detailed courses...");
+    const response = await api.get<ApiResponse<DetailedCourse>>(
+      `/api/courses?filters[users_permissions_users][email][$eq]=${studentId}&populate[chapters][populate][0]=user_progress&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=*&populate[chapters][populate][user_progresses][populate][0]=quiz_attempt&populate[chapters][populate][user_progresses][populate][1]=users_permissions_user&populate=category&populate[chapters][populate][quiz][populate][question][populate]=*`
+    );
+    console.log("Student: ",studentId)
+    console.log("Purchased Courses Response received:", response);
+    console.log("Purchased Courses:", response.data.data);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching detailed courses:', error);
+    throw new Error('Failed to fetch detailed courses');
+  }
+}
+
+
 export default {
   getBasicCourses,
   getDetailedCourses,

@@ -15,17 +15,18 @@ import ChapterList from "./_components/ChapterList";
 import ChapterContent from "./_components/ChapterContent";
 import { progress } from "framer-motion";
 import api from "@/lib/axios";
+import { useApiData } from "@/hooks/ApiContext";
 
 type Params = { courseId: string };
-
 export default function CourseComponent() {
-  const { user, purchasedCourses } = useAuth();
+  const { user } = useAuth();
+  const { purchasedCourses ,isLoading} = useApiData()
   const params = useParams<Params>();
   const router = useRouter();
-  const [course, setCourse] = useState<BasicCourse | null>(null);
+  const [course, setCourse] = useState<DetailedCourse | null>(null);
   const [chapters, setChapters] = useState<DetailedChapter[]>([]);
   const [selectedChapter, setSelectedChapter] = useState<DetailedChapter | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+ 
   const [error, setError] = useState<string | null>(null);
   const [isPurchasedCoursesReady, setIsPurchasedCoursesReady] = useState(false);
 
@@ -39,53 +40,31 @@ export default function CourseComponent() {
     async function fetchCourse() {
       console.log("Iniciando fetchCourse");
       console.log("Estado actual de purchasedCourses:", purchasedCourses);
-      console.log("isPurchasedCoursesReady:", isPurchasedCoursesReady);
-
-      if (!params.courseId) {
-        console.log("courseId inválido");
-        setError("Invalid courseId");
-        setIsLoading(false);
-        router.push('/dashboard');
-        return;
-      }
-
       if (!isPurchasedCoursesReady) {
-        console.log("purchasedCourses aún no está listo");
-        return;
+        return
       }
-
+      
       try {
-        const hasPurchased = purchasedCourses.some(course => course.titleSlug === params.courseId);
-        console.log("¿El usuario ha comprado el curso?", hasPurchased);
-
-        if (!hasPurchased) {
-          console.log("No has comprado el curso, redirigiendo a dashboard");
-          router.push("/dashboard");
-          return;
+        const fetchedCourse = purchasedCourses.find(course => course.titleSlug === params.courseId);
+        if (fetchedCourse) {
+          setCourse(fetchedCourse);
+          const fetchedChapters = fetchedCourse.chapters || [];
+          setChapters(fetchedChapters);
+          setSelectedChapter(fetchedChapters.length > 0 ? fetchedChapters[0] : null);
+        } else {
+          setError("Course not found");
         }
-
-        console.log("El usuario ha comprado el curso, continuando con la carga");
-        const fetchedChapters = await getChaptersByCourse(params.courseId);
-        console.log("Capítulos obtenidos:", fetchedChapters);
-
-        const fetchedCourse = await getCourseBySlug(params.courseId);
-        console.log("Curso obtenido:", fetchedCourse);
-
-        setCourse(fetchedCourse);
-        setChapters(fetchedChapters);
-        setSelectedChapter(fetchedChapters[0]);
       } catch (err) {
         console.error("Error al obtener detalles del curso:", err);
         setError("Failed to fetch course details");
       } finally {
-        setIsLoading(false);
         console.log("Finalizando fetchCourse");
       }
+
     }
 
     fetchCourse();
   }, [params.courseId, purchasedCourses, router, isPurchasedCoursesReady]);
-
 
   useEffect(() => {
     const createMissingUserProgresses = async () => {
@@ -116,42 +95,14 @@ export default function CourseComponent() {
     createMissingUserProgresses();
   }, [user, chapters]);
   const calculateProgress = () => {
-    console.log('Calculating course progress...');
-    
-    if (!chapters.length || !user) {
-      console.warn('No chapters or user found, progress is 0%');
-      return 0;
-    }
-
-    let completedChapters = 0;
-    let totalChaptersWithProgress = 0;
-
-    chapters.forEach(chapter => {
-      const userProgress = chapter.user_progresses?.find(
-        progress => progress.users_permissions_user.email === user.email
-      );
-
-      if (userProgress) {
-        totalChaptersWithProgress++;
-        if (userProgress.isCompleted) {
-          completedChapters++;
-        }
-      }
-    });
-
-    if (totalChaptersWithProgress === 0) {
-      console.warn('No chapters with user progress found, progress is 0%');
-      return 0;
-    }
-
-    const progress = (completedChapters / totalChaptersWithProgress) * 100;
-    console.log(`Course progress: ${progress.toFixed(2)}% (${completedChapters}/${totalChaptersWithProgress} chapters completed)`);
-    
-    return progress;
+    if (!chapters.length || !user) return 0;
+    const completedChapters = chapters.filter(chapter => 
+      chapter.user_progresses?.some(progress => 
+        progress.isCompleted && progress.users_permissions_user.id === user.id
+      )
+    ).length;
+    return (completedChapters / chapters.length) * 100;
   };
-
-  
-
 
   if (error) return <div className="text-red-500 text-center py-8">Error: {error}</div>;
 

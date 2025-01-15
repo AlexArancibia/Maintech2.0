@@ -162,9 +162,11 @@ export function MainNav() {
               <Skeleton className="h-10 w-24" />
             ) : user ? (
               <div className='flex space-x-2'>
+                <Link href="/dashboard">
                 <Button className="bg-accent text-white text-sm">
                   Portal Estudiante
                 </Button>
+                </Link>
                 <Button 
                   variant="ghost"
                   size="icon"
@@ -208,9 +210,12 @@ export function MainNav() {
                 </div>
               ) : user ? (
                 <div className='flex flex-col p-4 space-y-2'>
+                  
+                  <Link href="/dashboard">
                   <Button className="bg-accent text-white text-sm w-full">
                     Portal Estudiante
                   </Button>
+                  </Link>
                   <Button 
                     variant="outline"
                     className="text-accent w-full"

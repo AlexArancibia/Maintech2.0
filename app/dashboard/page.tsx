@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/AuthContext'
 import { getCoursesByStudent } from '@/hooks/coursesAPI'
-import { BasicCourse } from '@/types/CoursesType'
+import { BasicCourse, DetailedCourse } from '@/types/CoursesType'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -11,31 +11,16 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { AlertCircle, BookOpen, BadgeIcon as Certificate, Settings } from 'lucide-react'
 import Link from 'next/link'
 import PurchasedCourseCard from './_components/PurchasedCourseCard'
+import { useApiData } from '@/hooks/ApiContext'
 
 export default function DashboardPage() {
   const { user } = useAuth()
-  const [studentCourses, setStudentCourses] = useState<BasicCourse[] | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+ 
+  const {purchasedCourses , isLoading} = useApiData()
+ 
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    async function fetchCourses() {
-      if (!user) return
-      try {
-        setIsLoading(true)
-        const courses = await getCoursesByStudent(user.email)
-        setStudentCourses(courses)
-      } catch (err) {
-        setError("Error fetching courses. Please try again later.")
-        console.error("Error fetching courses:", err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchCourses()
-  }, [user])
-
+ 
   return (
     <>
     <div className="container-section p-8 sm:p-16 h-[200px] bg-[url('/gradient4.jpg')] bg-cover bg-bottom">
@@ -88,15 +73,15 @@ export default function DashboardPage() {
                   <AlertTitle>Error</AlertTitle>
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
-              ) : studentCourses === null ? (
+              ) : purchasedCourses.length === 0 ? (
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>Información no disponible</AlertTitle>
                   <AlertDescription>No se pudo obtener la información de los cursos. Por favor, intenta de nuevo más tarde.</AlertDescription>
                 </Alert>
-              ) : studentCourses.length > 0 ? (
+              ) : purchasedCourses.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {studentCourses.map((course) => (
+                  {purchasedCourses.map((course) => (
                     <Link key={course.documentId} href={`/dashboard/cursos/${course.titleSlug}`}>
                       <PurchasedCourseCard key={course.id} course={course} />
                     </Link>

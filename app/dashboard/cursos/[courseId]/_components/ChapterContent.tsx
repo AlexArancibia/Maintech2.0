@@ -150,7 +150,7 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
             <TabsContent value="quiz">
               <QuizComponent 
                 quiz={chapter.quiz} 
-                userProgress={chapter.user_progresses?.find(progress => progress.users_permissions_user.email === user?.email)}
+                userProgress={chapter.user_progresses?.find(progress => progress.users_permissions_user?.email === user?.email)}
                 chapterId={chapter.documentId} 
  
                 

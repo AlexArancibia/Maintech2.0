@@ -9,6 +9,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import api from "@/lib/axios";
 import { DetailedChapter, UserProgress } from "@/types/ChapterType";
+import { useApiData } from "@/hooks/ApiContext";
+import { getPurchasedCourses } from "@/hooks/coursesAPI";
 
 interface Answer {
   id: number;
@@ -52,7 +54,7 @@ export default function QuizComponent({ quiz, userProgress,chapterId,initialAtte
   const [timeLeft, setTimeLeft] = useState(QUIZ_SETTINGS.TIME_LIMIT);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
   const [showResults, setShowResults] = useState(false);
- 
+  const {refreshPurchasedCourses } = useApiData()
   const [score, setScore] = useState(0);
   const [percentage, setPercentage] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -172,6 +174,7 @@ export default function QuizComponent({ quiz, userProgress,chapterId,initialAtte
 
       const isPassed = await updateUserProgress(scoreData);
       console.log(`Quiz submission complete. Passed: ${isPassed}`);
+      refreshPurchasedCourses()
       
       setShowResults(true);
     } catch (error) {
