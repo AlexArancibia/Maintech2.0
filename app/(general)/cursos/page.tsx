@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { useRouter, useSearchParams } from 'next/navigation';
+ 
 import Link from 'next/link'
 import { useApiData } from '@/hooks/ApiContext'
 import { getImageUrl } from '@/lib/getImageUrl'
@@ -68,22 +68,10 @@ function SkeletonCard() {
 }
 
 export default function HomePage() {
-  const searchParams = useSearchParams();
-  const searchTermFromUrl = searchParams.get('search') || '';
-  const categoryFromUrl = searchParams.get('category') || 'Todos';
-  const router = useRouter();
- 
   const { basicCourses, categories, isLoading, error } = useApiData()
 
-  const [searchTerm, setSearchTerm] = useState(searchTermFromUrl)
-  const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl)
-
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (searchTerm) params.set('search', searchTerm);
-    if (selectedCategory !== 'Todos') params.set('category', selectedCategory);
-    router.push(`/?${params.toString()}`);
-  };
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('Todos')
 
   const filteredCourses = basicCourses.filter(course =>
     (selectedCategory === 'Todos' || (course.category && course.category.name === selectedCategory)) &&
@@ -110,7 +98,7 @@ export default function HomePage() {
       onChange={(e) => setSearchTerm(e.target.value)}
       className="max-w-[300px] mr-2 px-4 py-2 rounded-lg  text-black    placeholder-gray-400 focus:outline-none focus:ring-2  "
     />
-    <Button className="  text-white px-6 py-2 rounded-lg shadow-md transition-shadow duration-300" onClick={handleSearch}>
+    <Button className="  text-white px-6 py-2 rounded-lg shadow-md transition-shadow duration-300">
       Buscar
     </Button>
   </div>
