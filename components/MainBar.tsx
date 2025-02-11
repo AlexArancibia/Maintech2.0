@@ -133,7 +133,7 @@ export function MainNav() {
   const memoizedNavItems = useMemo(() => navItems, [])
 
   return (
-    <header className="bg-neutral-50 py-4 shadow-sm sticky top-0 z-50">
+    <header className="bg-neutral-50   py-4 shadow-sm   top-0 z-50">
       <nav className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           <Link href="/">

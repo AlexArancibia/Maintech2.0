@@ -118,7 +118,7 @@ export default function UpcomingCourses() {
             }}
             className="w-full"
           >
-            <CarouselContent>
+            <CarouselContent className='shadow-none'>
               {isLoading ? (
                 Array(4).fill(null).map((_, index) => (
                   <CarouselItem key={index} className="pl-4 md:pl-6 sm:basis-1/2 lg:basis-1/3">
@@ -145,16 +145,16 @@ export default function UpcomingCourses() {
                 ))
               ) : (
                 upcomingCourses.map((course, index) => (
-                  <CarouselItem key={index} className="pl-4 md:pl-4 sm:basis-1/2 lg:basis-1/3">
-                    <div className="bg-white rounded-xl overflow-hidden shadow-md h-full flex flex-col">
+                  <CarouselItem key={index} className="pl-4 md:pl-4 sm:basis-1/2 lg:basis-1/3 ">
+                    <div className="bg-white rounded-xl   shadow-md h-full flex flex-col">
                       <div className="relative h-48 sm:h-56 md:h-64">
                         <img  src={getImageUrl(course.image.url)}
                           alt={course.title}
                         />
                       </div>
                       <div className="p-4 sm:p-6 flex flex-col flex-grow">
-                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
-                          <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
+                        <div className="flex items-start sm:items-center gap-3 sm:gap-4 mt-4">
+                          <div className="bg-[#F1536D]  text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
                             <div className="text-base sm:text-lg font-bold">{new Date(course.start_date).getDate()}</div>
                             <div className="text-xs sm:text-sm">{new Date(course.start_date).toLocaleString('default', { month: 'short' })}</div>
                           </div>

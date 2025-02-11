@@ -16,11 +16,11 @@ export function ChapterInfo({ chapters }: ChapterInfoProps) {
           <AccordionItem 
             key={chapter.id} 
             value={chapter.chapterSlug}
-            className="border rounded-lg overflow-hidden shadow-sm"
+            className="border rounded-lg overflow-hidden shadow-none"
           >
             <AccordionTrigger className="flex justify-between items-center w-full px-3 py-4 text-left font-medium text-gray-900 hover:bg-gray-50 transition-colors duration-200">
               <span className="flex items-center space-x-3">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-tr from-primary to-secondary text-primary-foreground text-sm font-semibold">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-secondary text-primary-foreground text-sm font-semibold">
                   {index + 1}
                 </span>
                 <span className="text-base sm:text-lg">{chapter.title}</span>

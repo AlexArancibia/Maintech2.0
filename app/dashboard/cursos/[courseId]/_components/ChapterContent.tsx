@@ -9,17 +9,22 @@ import Link from "next/link";
 import { Video, Paperclip, Book, FileText, Calendar, Clock } from 'lucide-react';
 import { useAuth } from "@/hooks/AuthContext";
 import api from "@/lib/axios";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { validateUrl } from "@/lib/utils";
 
 interface ChapterContentProps {
   chapter: DetailedChapter;
 }
 
 export default function ChapterContent({ chapter }: ChapterContentProps) {
+
+   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(chapter.liveSessionUrl ? "live" : "content");
   const {user} = useAuth();
 
   const [userProgress, setUserProgress] = useState(chapter.user_progresses?.find(progress => progress.users_permissions_user.email === user?.email));
 
+  
  
 
   const renderContent = (content: any[]) => {
@@ -69,6 +74,48 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
     }
   };
 
+  const handleClick = (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    const now = new Date();
+    const sessionTime = new Date(chapter.date);
+    sessionTime.setMinutes(sessionTime.getMinutes() - 10);
+    
+    console.log("Hora actual:", now);
+    console.log("Hora habilitada para la clase:", sessionTime);
+    console.log("URL de la clase:", chapter.liveSessionUrl);
+
+ 
+
+     if (now < sessionTime) {
+      console.log("Clase aún no disponible");
+      setIsDialogOpen(true);
+    } else {
+      console.log("Abriendo clase en vivo");
+      if (chapter.quiz.length == 0) {
+        updateProgress()
+      }
+      
+    }
+  };
+
+  async function updateProgress() {
+
+    
+
+    try {
+      const response = await api.put(`/api/user-progresses/${chapter.user_progresses?.find(progress => progress.users_permissions_user?.email === user?.email)?.documentId}`, {
+        data: {
+          isCompleted: true,
+        }
+      },  );
+      console.log(`Updated progress ${chapter.id}:`, response.data.data);
+    } catch (error) {
+      console.error(`Error updating user progress for chapter ${chapter.id}:`, chapter.user_progresses?.find(progress => progress.users_permissions_user?.email === user?.email));
+    }
+    
+  }
+
+
   return (
     <Card className="overflow-hidden border shadow-none">
       <CardHeader className="border-b border-gray-200 text-black">
@@ -77,7 +124,7 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
       </CardHeader>
       <CardContent className="p-6">
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-10 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+          <TabsList className="grid w-full grid-cols-3 mb-10 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
             {chapter.liveSessionUrl && (
               <TabsTrigger value="live" className="data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700">
                 <Video className="w-4 h-4 mr-2" />
@@ -88,6 +135,13 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
               <TabsTrigger value="quiz" className="data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700">
                 <FileText className="w-4 h-4 mr-2" />
                 <span>Quiz</span>
+              </TabsTrigger>
+            )}
+
+            {chapter.attachment && chapter.attachment.length > 0 && (
+              <TabsTrigger value="attachment" className="data-[state=active]:bg-white data-[state=active]:text-gray-900 dark:data-[state=active]:bg-gray-700">
+                <Paperclip className="w-4 h-4 mr-2" />
+                <span>Archivos Adicionales</span>
               </TabsTrigger>
             )}
           </TabsList>
@@ -118,24 +172,47 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
                     </div>
                   </div>
                 </div>
-                <Button asChild variant="default" className="w-full mt-6 bg-primary">
-                  <Link href={chapter.liveSessionUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
-                    <Video className="w-5 h-5 mr-2" />
-                    Unirse a la Clase en Vivo
-                  </Link>
-                </Button>
+         
+                <div>
+      <Button
+        variant="default"
+        className="w-full mt-6 bg-primary"
+        onClick={handleClick}
+      >
+        <div className="flex items-center justify-center">
+          <Video className="w-5 h-5 mr-2" />
+          Unirse a la Clase en Vivo
+        </div>
+      </Button>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Clase no disponible aún</DialogTitle>
+          </DialogHeader>
+          <p>La clase en vivo se habilitará 10 minutos antes de la hora programada.</p>
+        </DialogContent>
+      </Dialog>
+    </div>
               </div>
 
               <div className="prose prose-gray dark:prose-invert max-w-none">
                 {renderContent(chapter.content)}
               </div>
+              
+            </TabsContent>
+
+            
+          )}
+          {chapter.attachment && chapter.attachment.length > 0 && (
+          <TabsContent value="attachment">
               {chapter.attachment && chapter.attachment.length > 0 && (
                 <div className="mt-8">
                   <h3 className="text-xl font-semibold text-gray-700 mb-4">Archivos adjuntos</h3>
                   <div className="grid gap-4 md:grid-cols-2">
                     {chapter.attachment.map((file, index) => (
                       <Button key={index} asChild variant="outline" className="w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800">
-                        <Link href={file.url} target="_blank" rel="noopener noreferrer" className="flex items-center p-4">
+                        <Link href={validateUrl(file.url)} target="_blank" rel="noopener noreferrer" className="flex items-center p-4">
                           <Paperclip className="w-5 h-5 mr-3 text-cyan-500" />
                           <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{file.name}</span>
                         </Link>
@@ -144,8 +221,9 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
                   </div>
                 </div>
               )}
-            </TabsContent>
-          )}
+            </TabsContent>)}
+
+
           {chapter.quiz && chapter.quiz.length > 0 && (
             <TabsContent value="quiz">
               <QuizComponent 

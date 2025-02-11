@@ -9,7 +9,7 @@ function EscribenosBanner() {
       <div className="content-section flex flex-col gap-8 md:gap-10   justify-center min-h-[350px] md:min-h-[350px] text-white">
         <div className="font-orbitron text-4xl md:text-6xl lg:text-7xl ">
  
-          <span className="font-bold">Escribenos</span>
+          <span className="font-bold">Escríbenos</span>
         </div>
  
       </div>

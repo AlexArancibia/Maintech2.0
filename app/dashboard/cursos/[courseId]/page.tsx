@@ -79,7 +79,6 @@ export default function CourseComponent() {
                   isCompleted: false,
                   chapter: chapter.id,
                   users_permissions_user: user.id,
-                  quiz_attempt: []
                 }
               },  );
               console.log(`Created new user progress for chapter ${chapter.id}:`, response.data.data);
@@ -109,7 +108,7 @@ export default function CourseComponent() {
  
     return (
       <div className="flex flex-col min-h-screen">
-        <div className="container-section p-8 sm:p-16 h-[200px] bg-[url('/curso.png')]">
+        <div className="container-section p-8 sm:p-16 h-[200px] bg-gradient-to-br ">
           <div className="content-section">
             <header className="mb-8">
               <h1 className="text-4xl font-bold mb-2 text-white">Cargando curso...</h1>
@@ -136,11 +135,20 @@ export default function CourseComponent() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="container-section p-8 sm:p-16 h-[200px] bg-[url('/curso.png')]">
+      <div className="container-section p-8 sm:p-16 h-[420px] bg-[url('/fondocurso.png')]  bg-center">
         <div className="content-section">
-          <header className="mb-8">
-            <h1 className="text-4xl font-bold mb-2 text-white">{course?.title }</h1>
+          <header className="mb-8 flex flex-col gap-4">
+            <h1 className="text-4xl font-bold  text-white">{course?.title }</h1>
             <p className="text-xl text-muted-foreground text-white">{course?.category.name || ""}</p>
+            <div className="w-[500px]">
+            {user && <CourseProgress 
+            progress={calculateProgress()}
+            user={user}
+            course={course!}
+             />}
+
+            
+            </div>
           </header>
         </div>
       </div>
@@ -148,12 +156,13 @@ export default function CourseComponent() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row gap-8">
             <div className="md:w-1/3 md:sticky md:top-0 md:self-start">
-              {user && <CourseProgress progress={calculateProgress()} />}
+              
               <ChapterList
                 chapters={chapters} 
                 selectedChapter={selectedChapter} 
                 onSelectChapter={setSelectedChapter}
                 currentUser={user}
+                
               />
             </div>
             <div className="md:w-2/3">

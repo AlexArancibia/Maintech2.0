@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['images.unsplash.com', 'source.unsplash.com','maintech.emetstudio.com'],
+    domains: ['images.unsplash.com', 'source.unsplash.com','maintechcms.emetstudio.com'],
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if

@@ -8,7 +8,6 @@ export interface Teacher extends Timestamp {
   biography: string;
   country: string;
   linkedin: string | null;
-  email: string;
  
   photo: {
     id: number;

@@ -8,6 +8,7 @@ export interface User {
   provider: string;
   confirmed: boolean;
   blocked: boolean;
+  isTeacher : boolean;
   createdAt: string;
   updatedAt: string;
 }

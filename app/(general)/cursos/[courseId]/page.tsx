@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select"
 import { getCourseBySlug } from '@/hooks/coursesAPI'
 import { BasicCourse, DetailedCourse } from '@/types/CoursesType'
-import { Clock, Book, Award, ShoppingCart, Calendar } from 'lucide-react'
+import { Clock, Book, Award, ShoppingCart, Calendar, MessageCircle, Phone } from 'lucide-react'
 import Link from 'next/link'
 import CourseCard from '@/components/CourseCard'
 import TeacherCard from '@/components/TeacherCard'
@@ -31,6 +31,8 @@ import { useAuth } from '@/hooks/AuthContext'
 import { CourseDetails } from './_components/CourseDetails'
 import { CourseInfo } from './_components/CourseInfo'
 import { ChapterInfo } from './_components/ChapterInfo'
+import Features from './_components/CourseFeatures'
+import { socialLinks } from '@/lib/social'
  
 type Params = {
   courseId: string
@@ -49,10 +51,12 @@ export default function CourseDetailsPage() {
   const router = useRouter()
   const params = useParams<Params>()
   const { basicCourses, categories } = useApiData()
+  const [whatsappUrl,setWhatsappUrl] = useState<string>("")
   const [isCoursePurchased, setIsCoursePurchased] = useState<boolean>(false)
   const [course, setCourse] = useState<DetailedCourse | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
   const [formData, setFormData] = useState({
     nombre: '',
     primerApellido: '',
@@ -93,6 +97,9 @@ export default function CourseDetailsPage() {
             const purchaseFound = purchasedCourses.find((item) => item.titleSlug === params.courseId)
             setIsCoursePurchased(!!purchaseFound)
           }
+
+          const message = encodeURIComponent(`Hola, me gustaría obtener más información sobre el curso: ${fetchedCourse?.title}.`);
+          setWhatsappUrl(`https://wa.me/${socialLinks.whatsapp}?text=${message}`)
         } else {
           setError('Course not found or insufficient details')
         }
@@ -103,6 +110,8 @@ export default function CourseDetailsPage() {
       }
     }
     fetchData()
+
+    
   }, [params.courseId, user, purchasedCourses])
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -120,7 +129,7 @@ export default function CourseDetailsPage() {
 
   return (
     <>
-      <div className=" container-section bg-[url('/gradient7.jpg')] bg-cover">
+      <div className=" container-section  bg-gradient-to-br from-black via-indigo-950 to-sky-950 bg-cover">
         <div className="content-section py-10 sm:py-16" >
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 sm:gap-16">
             <div className="lg:col-span-2">
@@ -134,11 +143,11 @@ export default function CourseDetailsPage() {
 
  
 
-                <div className="aspect-video w-full rounded-lg overflow-hidden bg-slate-800">
+                <div className="w-full rounded-lg overflow-hidden bg-slate-800">
                   <img 
                     src={getImageUrl(course.image.url)} 
                     alt={course.title} 
-                    className="w-full h-full object-cover"
+                    className="w-full h-[500px] object-cover"
                   />
                 </div>
 
@@ -147,7 +156,8 @@ export default function CourseDetailsPage() {
             </div>
 
             <div className="lg:col-span-1">
-              <Card className="bg-white sticky top-4">
+              <div className='sticky top-4'>
+              <Card className="bg-white ">
                 <CardHeader>
                   <CardTitle className="text-xl text-center text-slate-800">
                     Solicitar información
@@ -157,7 +167,7 @@ export default function CourseDetailsPage() {
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="nombre">Nombre</Label>
+ 
                         <Input
                           id="nombre"
                           placeholder="Nombre"
@@ -166,8 +176,7 @@ export default function CourseDetailsPage() {
                           className='bg-gray-50'
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="primerApellido">Primer Apellido</Label>
+                      <div className="space-y-2"> 
                         <Input
                           id="primerApellido"
                           placeholder="Primer Apellido"
@@ -179,7 +188,7 @@ export default function CourseDetailsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="segundoApellido">Segundo Apellido</Label>
+             
                       <Input
                         id="segundoApellido"
                         placeholder="Segundo Apellido"
@@ -190,11 +199,11 @@ export default function CourseDetailsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email">Correo Electrónico</Label>
+            
                       <Input
                         id="email"
                         type="email"
-                        placeholder="correo@ejemplo.com"
+                        placeholder="Correo Electrónico"
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                         className='bg-gray-50'
@@ -203,14 +212,15 @@ export default function CourseDetailsPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="tipoDoc">Tipo de Documento</Label>
+                 
                         <Select
                           value={formData.tipoDoc}
+                          
                           onValueChange={(value) => setFormData({...formData, tipoDoc: value})}
                           
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Seleccione" />
+                            <SelectValue placeholder="Documento" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="dni" className='bg-gray-50'>DNI</SelectItem>
@@ -220,7 +230,7 @@ export default function CourseDetailsPage() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="numDoc">Nro. de documento</Label>
+                  
                         <Input
                           id="numDoc"
                           placeholder="Número de documento"
@@ -232,7 +242,7 @@ export default function CourseDetailsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="telefono">Teléfono móvil</Label>
+           
                       <Input
                         id="telefono"
                         type="tel"
@@ -244,7 +254,7 @@ export default function CourseDetailsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="departamento">Departamento de residencia</Label>
+                
                       <Select
                         value={formData.departamento}
                         onValueChange={(value) => setFormData({...formData, departamento: value})}
@@ -267,54 +277,18 @@ export default function CourseDetailsPage() {
                   </form>
                 </CardContent>
               </Card>
-            </div>
-          </div>
-        </div>
 
-        
-      </div>
-
-      <div className="container-section  py-6 sm:py-16 sm:pb-0 bg-gray-100 ">
-          <div className='content-section flex gap-12'>
-            <div className="w-full sm:w-2/3   mx-auto sm:pr-12">
-               <CourseInfo info={course.info} />
-             
-               <ChapterInfo chapters={course.chapters} />
-
-              <section className=" mb-4 sm:mb-12 ">
-                <h3 className="text-2xl font-semibold mb-10 text-gray-800">Cursos Relacionados</h3>
-                {isLoading ? (
-                  <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
-                    {Array(6).fill(0).map((_, index) => (
-                      <SkeletonCard key={index} />
-                    ))}
-                  </div>
-                ) : basicCourses.length > 0 ? (
-                  <div className="grid lg:grid-cols-2 gap-6 sm:gap-6">
-                    {basicCourses.map((basicCourse) => (
-                      basicCourse.category?.name === course.category?.name && (
-                        <Link key={basicCourse.documentId} href={`/curso/${basicCourse.titleSlug}`}>
-                          <CourseCard course={basicCourse} />
-                        </Link>
-                      )
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center text-gray-500">
-                    No se encontraron cursos para la categoría seleccionada.
-                  </p>
-                )}
-              </section>
-            </div>
-
-            <div className='hidden sm:flex sm:flex-col w-1/3 items-end ' >
-              <TeacherCard teacher={course.teacher} />
-
-              <div className=' my-4  max-w-[430px] flex w-full flex-col gap-6'>
+              <div className=' my-4  flex w-full flex-col gap-2'>
+                
                 {!isCoursePurchased ? (
-                  <Button onClick={handleBuy} className='w-full'>
-                    Comprar Curso
+                  <Link  href={whatsappUrl} >
+                  <Button  onClick={handleBuy} className='w-full flex  text-green-50 gap-4 border-none shadow-md   bg-gradient-to-r from-green-500 to-green-700 hover:bg-green-700 hover:text-white' variant="outline">
+      
+                    <Phone size={2} className='' />
+                    Consultar por Whatsapp
                   </Button>
+
+                  </Link>
                 ) : 
                 <Link href={`/dashboard/cursos/${params.courseId}`}>
                   <Button
@@ -325,7 +299,55 @@ export default function CourseDetailsPage() {
                   </Button>
                 </Link>}
               </div>
+              </div>
             </div>
+          </div>
+        </div>
+
+        
+      </div>
+
+      <div className="container-section  py-6 sm:py-8 sm:pb-0 bg-gray-100 ">
+        <div className='content-section'>
+        <Features />
+        </div>
+          <div className='content-section flex gap-4'>
+            <div className="w-full p-6 border  transition-all shadow-none hover:shadow-none     bg-white/80 rounded-xl">
+
+            
+               <CourseInfo info={course.info} />
+             
+               <ChapterInfo chapters={course.chapters} />
+
+              <section className=" mb-4 sm:mb-4 ">
+                <h3 className="text-2xl font-semibold mb-10 text-gray-800">Cursos Relacionados</h3>
+                {isLoading ? (
+                  <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
+                    {Array(6).fill(0).map((_, index) => (
+                      <SkeletonCard key={index} />
+                    ))}
+                  </div>
+                ) : basicCourses.length > 0 ? (
+                  <div className="grid lg:grid-cols-3 gap-6 sm:gap-6">
+                    {basicCourses.map((basicCourse) => (
+                      basicCourse.category?.name === course.category?.name && (
+                        <Link key={basicCourse.documentId} href={`/cursos/${basicCourse.titleSlug}`}>
+                          <CourseCard course={basicCourse} />
+                        </Link>
+                      )
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-500">
+                    No se encontraron cursos relacionados.
+                  </p>
+                )}
+              </section>
+ 
+
+              
+            </div>
+ 
           </div>
         </div>
        

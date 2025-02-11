@@ -40,12 +40,7 @@ export default function TeacherCard({ teacher }: TeacherCardProps) {
         </p>
         
         <div className="flex flex-col space-y-3">
-          <Button variant="outline" className="w-full" asChild>
-            <a href={`mailto:${teacher.email}`} className="flex items-center justify-center">
-              <Mail className="w-4 h-4 mr-2" />
-              Contactar por email
-            </a>
-          </Button>
+
           
           {teacher.linkedin && (
             <Button variant="outline" className="w-full" asChild>
