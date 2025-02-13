@@ -18,7 +18,7 @@ function HomeBanner() {
         <span className="text-base sm:text-lg md:text-xl font-light max-w-lg lg:max-w-lg xl:max-w-xl    ">
           Contamos con más de 6 años de experiencia en el mercado.
           <br />
-          Maintech es una escuela digital especializada con más de 49 programas
+          Maintech es una escuela digital con diversos programas
           especializados.
         </span>
         <Button className="w-fit text-base sm:text-lg md:text-xl rounded-full px-6 py-2 sm:py-3 bg-gradient-to-r from-secondary to-primary hover:from-primary hover:to-secondary transition-all duration-300">

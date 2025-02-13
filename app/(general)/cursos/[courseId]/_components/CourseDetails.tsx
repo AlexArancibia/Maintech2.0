@@ -1,4 +1,4 @@
-import { Calendar, Clock, DollarSign, BookOpen } from 'lucide-react'
+import { Calendar, Clock, DollarSign, BookOpen, Banknote } from 'lucide-react'
 
 interface CourseDetailsProps {
   course: {
@@ -45,7 +45,7 @@ export function CourseDetails({ course }: CourseDetailsProps) {
         </div>
       </div>
       <div className="flex items-center gap-2 text-slate-300">
-        <DollarSign className="w-5 h-5 text-cyan-500" />
+        <Banknote className="w-5 h-5 text-cyan-500" />
         <div>
           <p className="text-sm text-slate-400">Precio</p>
           <p className="font-medium">S/ {course.price.toFixed(2)}</p>

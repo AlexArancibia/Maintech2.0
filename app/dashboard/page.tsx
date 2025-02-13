@@ -6,7 +6,7 @@ import type { DetailedCourse,   } from "@/types/CoursesType"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AlertCircle, Users, Clock, Calendar, DollarSign, BookOpen } from "lucide-react"
+import { AlertCircle, Users, Clock, Calendar, DollarSign, BookOpen, Banknote } from "lucide-react"
 import Link from "next/link"
 import PurchasedCourseCard from "./_components/PurchasedCourseCard"
 import { useApiData } from "@/hooks/ApiContext"
@@ -67,7 +67,7 @@ export default function DashboardPage() {
                   </AlertDescription>
                 </Alert>
               ) : purchasedCourses.length > 0 ? (
-                <div className="grid grid-cols-1 gap-6">
+                <div className={`grid ${user?.isTeacher ? "grid-cols-1" : "grid-cols-3"} gap-6`}>
                   {purchasedCourses.map((course) =>
                     user?.isTeacher ? (
                       <TeacherCourseCard key={course.id} course={course as DetailedCourse} currentUserId={user.id} />
@@ -130,7 +130,7 @@ function TeacherCourseCard({ course, currentUserId }: TeacherCourseCardProps) {
                     <span>Fin: {new Date(course.finish_date).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <DollarSign className="h-4 w-4" />
+                    <Banknote className="h-4 w-4" />
                     <span>Precio: ${course.price}</span>
                   </div>
                   <div className="flex items-center space-x-2">

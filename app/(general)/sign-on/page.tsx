@@ -15,7 +15,7 @@ const AuthForms: React.FC = () => {
         className="mt-4 bg-transparent text-gray-300 hover:text-white transition-colors duration-300"
         onClick={() => setIsLogin(!isLogin)}
       >
-        {isLogin ? '¿No tienes una cuenta? Regístrate' : '¿Ya tienes una cuenta? Inicia sesión'}
+        {/* {isLogin ? '¿No tienes una cuenta? Regístrate' : '¿Ya tienes una cuenta? Inicia sesión'} */}
       </Button>
     </div>
   )

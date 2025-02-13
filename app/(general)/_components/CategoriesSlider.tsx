@@ -17,19 +17,19 @@ const courses = [
   {
     title: "MANTENIMIENTO PREDICTIVO",
     image: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=600&fit=crop",
-    link: "/cursos/mantenimiento-predictivo",
+    link: "/cursos",
     description: "Introducción al Mantenimiento Predictivo, Análisis de Vibraciones, Lubricación y más"
   },
   {
     title: "GESTIÓN DE PROYECTOS",
     image: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=800&h=600&fit=crop",
-    link: "/cursos/gestion-proyectos",
+    link: "/cursos",
     description: "Planificación y Programación, Metodologías Ágiles, PMO para Mantenimiento"
   },
   {
     title: "INDUSTRIA 4.0",
     image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=600&fit=crop",
-    link: "/cursos/industria-4",
+    link: "/cursos",
     description: "Big Data, Machine Learning, IoT en Gestión de Activos"
   },
   {
@@ -41,37 +41,37 @@ const courses = [
   {
     title: "INGENIERÍA DE CONFIABILIDAD",
     image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&h=600&fit=crop",
-    link: "/cursos/ingenieria-confiabilidad",
+    link: "/cursos",
     description: "FMEA/FMECA, Diseño para Confiabilidad, Simulación de Procesos"
   },
   {
     title: "CALIDAD Y MEJORA",
     image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&h=600&fit=crop",
-    link: "/cursos/calidad-mejora",
+    link: "/cursos",
     description: "Lean Maintenance, 5S, Six Sigma en Mantenimiento"
   },
   {
     title: "SEGURIDAD INDUSTRIAL",
     image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop",
-    link: "/cursos/seguridad-industrial",
+    link: "/cursos",
     description: "Prevención de Riesgos, Seguridad en Equipos Críticos"
   },
   {
     title: "CERTIFICACIONES",
     image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&h=600&fit=crop",
-    link: "/cursos/certificaciones",
+    link: "/cursos",
     description: "CMRP, MLA I/II, MMP, Normas ISO"
   },
   {
     title: "MINERÍA Y MANUFACTURA",
     image: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=800&h=600&fit=crop",
-    link: "/cursos/mineria-manufactura",
+    link: "/cursos",
     description: "Mantenimiento en Minería, Equipos Pesados, Manufactura"
   },
   {
     title: "TRANSFORMACIÓN DIGITAL",
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=600&fit=crop",
-    link: "/cursos/transformacion-digital",
+    link: "/cursos",
     description: "IA, Machine Learning, Automatización de Procesos"
   }
 ]
@@ -79,8 +79,12 @@ const courses = [
 export default function CoursesSlider() {
   const [currentSlide, setCurrentSlide] = useState(0)
   return (
-    <div className="container-section py-16 bg-gray-100">
+    <div className="container-section py-16 pt-8 bg-gray-100">
       <div className="content-section">
+      <h2 className="mb-12 z-10 text-center text-3xl font-bold text-gray-800">
+          Nuestras Especialidades
+          <span className="mt-2 block h-1 w-20 bg-pink-500 mx-auto"></span>
+        </h2>
         <Carousel
           opts={{
             align: "start",
@@ -128,7 +132,7 @@ export default function CoursesSlider() {
                           href={course.link}
                           className="flex items-center justify-end gap-2 text-white/90 hover:text-white text-sm transition-colors"
                         >
-                          Ver programa
+                          Explora nuestros cursos
                           <ArrowRight size={16} className="transform -rotate-45" />
                         </Link>
                       </div>

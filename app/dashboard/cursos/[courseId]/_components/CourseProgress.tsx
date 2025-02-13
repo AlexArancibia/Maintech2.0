@@ -42,84 +42,42 @@ export default function CourseProgress({ progress, user, course }: CourseProgres
         format: "a4",
       })
 
-      // Add background color
-      doc.setFillColor(248, 250, 252)
-      doc.rect(0, 0, 297, 210, "F")
+      // Load and add certificate template
+      const img = new Image()
+      img.crossOrigin = "anonymous"
 
-      // Add decorative shapes
-      // Red shape
-      doc.setFillColor(231, 111, 81)
-      doc.circle(30, 30, 60, "F")
+      await new Promise((resolve, reject) => {
+        img.onload = resolve
+        img.onerror = reject
+        img.src =
+          "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/certificado.jpg-JOmZX0BKrM5FO78ZzGMAei7wngkaAp.jpeg"
+      })
 
-      // Purple shape
-      doc.setFillColor(99, 44, 22)
-      doc.circle(60, 60, 40, "F")
+      doc.addImage(img, "JPEG", 0, 0, 297, 210)
 
-      // Add small decorative dots
-      doc.setFillColor(252, 213, 197)
-      for (let i = 0; i < 10; i++) {
-        for (let j = 0; j < 3; j++) {
-          doc.circle(20 + i * 8, 180 + j * 8, 1, "F")
-        }
-      }
-
-      // Add certificate content
-      doc.setTextColor(76, 61, 101)
-
-      // Title
-      doc.setFontSize(28)
-      doc.text("Certificado de reconocimiento", 150, 50, { align: "center" })
-
-      // "Otorgado a" text
-      doc.setFontSize(16)
-      doc.text("Otorgado a", 150, 70, { align: "center" })
-
-      // Student name
+      // Add student name
       doc.setFontSize(32)
-      const safeUsername = getSafeText(user.username)
+      doc.setTextColor(51, 51, 51)
+      const safeUsername = getSafeText(course.title)
       doc.text(safeUsername, 150, 90, { align: "center" })
 
-      // Course completion text
-      doc.setFontSize(16)
-      doc.text("Por completar exitosamente el curso:", 150, 110, { align: "center" })
-
-      // Course name
+      // Add course name
       doc.setFontSize(20)
-      const safeCourseTitle = getSafeText(course.title)
+      const safeCourseTitle = getSafeText(user.username)
       doc.text(safeCourseTitle, 150, 125, { align: "center" })
 
-      // Add signature line
-      doc.setDrawColor(76, 61, 101)
-      doc.line(100, 160, 200, 160)
-
-      // Add signature text
-      doc.setFontSize(12)
-      if (course.teacher?.name) {
-        const teacherName = getSafeText(course.teacher.name)
-        doc.text(teacherName, 150, 170, { align: "center" })
-
-        // Only add titulo if it exists
-        if (course.teacher.titulo) {
-          const teacherTitle = getSafeText(course.teacher.titulo)
-          doc.text(teacherTitle, 150, 175, { align: "center" })
-        }
-      } else {
-        // Fallback text if no teacher info is available
-        doc.text("Instructor del curso", 150, 170, { align: "center" })
-      }
-
       // Add date
+      doc.setFontSize(12)
       try {
         const currentDate = new Date().toLocaleDateString("es-ES", {
           year: "numeric",
           month: "long",
           day: "numeric",
         })
-        doc.text(`Fecha: ${currentDate}`, 270, 190, { align: "right" })
+        doc.text(`${course.finish_date}`, 270, 190, { align: "right" })
       } catch (dateError) {
-        // Fallback to basic date format if locale fails
         const simpleDate = new Date().toLocaleDateString()
-        doc.text(`Fecha: ${simpleDate}`, 270, 190, { align: "right" })
+        doc.text(`${simpleDate}`, 270, 190, { align: "right" })
       }
 
       // Save the PDF with safe filename

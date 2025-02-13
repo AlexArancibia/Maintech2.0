@@ -112,7 +112,7 @@ export default function HomePage() {
 
 
         <section className="content-section mb-12">
-          <h3 className="text-2xl font-semibold mb-4 text-gray-800">Categorías</h3>
+          <h3 className="text-2xl font-semibold mb-4 text-gray-800">Especialidades</h3>
           <div className="flex gap-6 overflow-x-auto whitespace-nowrap py-2 px-4 bg-gray-50 rounded-lg shadow-sm">
             {isLoading ? (
               Array(5).fill(0).map((_, index) => (
