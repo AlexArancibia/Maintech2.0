@@ -11,6 +11,20 @@ import { Navbar } from "@/components/NavBar";
 export const metadata: Metadata = {
   title: "Maintech",
   description: "El futuro del mantenimiento tecnologico",
+  icons: {
+    icon: [
+      {
+        url: "/iconotipo.png",
+        sizes: "32x32 192x192",
+        type: "image/png",
+      },
+    ],
+    apple: {
+      url: "/iconotipo.png",
+      sizes: "180x180",
+      type: "image/png",
+    },
+  },
 };
 
 export default function RootLayout({

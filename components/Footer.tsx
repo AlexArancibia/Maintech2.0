@@ -83,16 +83,15 @@ export default function Footer() {
               <div className="sm:col-span-1 lg:col-span-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                   <div className="space-y-3">
-                    <FooterLink href="/conocenos">Conócenos</FooterLink>
-                    <FooterLink href="/formacion">Formación</FooterLink>
-                    <FooterLink href="/cursos-cortos">Cursos cortos</FooterLink>
-                    <FooterLink href="/eventos">Eventos</FooterLink>
-                    <FooterLink href="/escribenos">Escribenos</FooterLink>
+                    <FooterLink href="/quienes-somos">Conócenos</FooterLink>
+                    <FooterLink href="/cursos">Nuestros Cursos</FooterLink>
+                    <FooterLink href="   /quienes-somos#trabaja-con-nosotros">Trabaja con Nosotros</FooterLink>
+
+                     <FooterLink href="/escribenos">Escribenos</FooterLink>
                   </div>
                   <div className="space-y-3">
-                    <FooterLink href="/registros-academicos">Registros académicos</FooterLink>
                     <FooterLink href="/politica-privacidad">Política de privacidad</FooterLink>
-                    <FooterLink href="/politica-calidad">Política de calidad</FooterLink>
+                    <FooterLink href="/politica-de-calidad">Política de calidad</FooterLink>
                     <FooterLink href="/libro-reclamaciones">Libro de reclamaciones</FooterLink>
                   </div>
                 </div>

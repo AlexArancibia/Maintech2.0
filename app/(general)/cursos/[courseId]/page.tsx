@@ -107,10 +107,13 @@ export default function CourseDetailsPage() {
   }, [params.courseId, user, purchasedCourses])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    setFormData({...formData, asunto: `Información Curso ${course?.title}`})
+    
+    console.log("CURSOOOO",course)
+    console.log("XDD")
     e.preventDefault()
     setEnviando(true)
     setResultadoEnvio(null)
+    setFormData({...formData, asunto: `Información Curso ${course!.title}`})
 
     try {
       const response = await fetch("/api/emails", {
