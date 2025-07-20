@@ -89,7 +89,7 @@ export function ContactForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               type="text"
-              name="name"
+              name="nombre"
               placeholder="Apellidos y Nombres*"
               required
               value={formData.nombre}
@@ -109,7 +109,7 @@ export function ContactForm() {
             
             <Input
               type="tel"
-              name="phone"
+              name="telefono"
               placeholder="Teléfono celular*"
               required
               value={formData.telefono}
@@ -118,7 +118,7 @@ export function ContactForm() {
             />
             
             <Textarea
-              name="message"
+              name="mensaje"
               placeholder="Ingresa tu mensaje*"
               required
               value={formData.mensaje}

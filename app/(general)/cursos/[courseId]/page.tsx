@@ -109,7 +109,7 @@ export default function CourseDetailsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     
     console.log("CURSOOOO",course)
-    console.log("XDD")
+ 
     e.preventDefault()
     setEnviando(true)
     setResultadoEnvio(null)
