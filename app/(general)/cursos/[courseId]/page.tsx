@@ -54,9 +54,9 @@ export default function CourseDetailsPage() {
     tipoDoc: "",
     numDoc: "",
     telefono: "",
-    departamento: "",
+    pais: "",
     empresa: "",
-    asunto: `Información Curso ${course?.title}`,
+    asunto: `Información Curso`, // Inicialmente sin título
   })
 
   const [enviando, setEnviando] = useState(false)
@@ -108,6 +108,16 @@ export default function CourseDetailsPage() {
     fetchData()
   }, [params.courseId, user, purchasedCourses])
 
+  // Sincroniza el asunto cuando course cambie
+  useEffect(() => {
+    if (course && course.title) {
+      setFormData((prev) => ({
+        ...prev,
+        asunto: `Información Curso ${course.title}`,
+      }))
+    }
+  }, [course])
+
   const handleSubmit = async (e: React.FormEvent) => {
     
     console.log("CURSOOOO",course)
@@ -115,7 +125,10 @@ export default function CourseDetailsPage() {
     e.preventDefault()
     setEnviando(true)
     setResultadoEnvio(null)
-    setFormData({...formData, asunto: `Información Curso ${course!.title}`})
+
+    // Asegura que el asunto esté actualizado justo antes de enviar
+    const asuntoFinal = course && course.title ? `Información Curso ${course.title}` : "Información Curso"
+    const formDataToSend = { ...formData, asunto: asuntoFinal }
 
     try {
       const response = await fetch("/api/emails", {
@@ -123,7 +136,7 @@ export default function CourseDetailsPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formDataToSend),
       })
 
       if (!response.ok) {
@@ -144,7 +157,7 @@ export default function CourseDetailsPage() {
         tipoDoc: "",
         numDoc: "",
         telefono: "",
-        departamento: "",
+        pais: "",
         empresa: "",
         asunto: `Información Curso ${course?.title}`,
       })
@@ -289,20 +302,13 @@ export default function CourseDetailsPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Select
-                          value={formData.departamento}
-                          onValueChange={(value) => setFormData({ ...formData, departamento: value })}
-                        >
-                          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
-                            <SelectValue placeholder="Seleccione departamento" className="text-white/80" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
-                            <SelectItem value="lima" className="text-white hover:bg-white/10">Lima</SelectItem>
-                            <SelectItem value="arequipa" className="text-white hover:bg-white/10">Arequipa</SelectItem>
-                            <SelectItem value="cusco" className="text-white hover:bg-white/10">Cusco</SelectItem>
-                            <SelectItem value="trujillo" className="text-white hover:bg-white/10">Trujillo</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Input
+                          id="pais"
+                          placeholder="País"
+                          value={formData.pais}
+                          onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                        />
                       </div>
 
                       <div className="space-y-2">
@@ -428,20 +434,13 @@ export default function CourseDetailsPage() {
                               </div>
 
                               <div className="space-y-2">
-                                <Select
-                                  value={formData.departamento}
-                                  onValueChange={(value) => setFormData({ ...formData, departamento: value })}
-                                >
-                                  <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
-                                    <SelectValue placeholder="Seleccione departamento" className="text-white/80" />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
-                                    <SelectItem value="lima" className="text-white hover:bg-white/10">Lima</SelectItem>
-                                    <SelectItem value="arequipa" className="text-white hover:bg-white/10">Arequipa</SelectItem>
-                                    <SelectItem value="cusco" className="text-white hover:bg-white/10">Cusco</SelectItem>
-                                    <SelectItem value="trujillo" className="text-white hover:bg-white/10">Trujillo</SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                <Input
+                                  id="pais-mobile"
+                                  placeholder="País"
+                                  value={formData.pais}
+                                  onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
                               </div>
 
                               <div className="space-y-2">

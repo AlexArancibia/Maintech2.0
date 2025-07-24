@@ -49,9 +49,9 @@ export default function CourseCard({ course }: CourseCardProps) {
             alt={course.title} 
             width={400} 
             height={225} 
-            className="w-full h-56 object-cover"
+            className="w-full h-fit object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
         
           {course.price === 0 ? (
             <div className="absolute bottom-2 right-2 px-3 py-1.5 rounded-full text-white font-bold text-xs"
