@@ -4,10 +4,101 @@ import { InfoNode, LinkNode, ListItemNode, TextNode } from '@/types/CoursesType'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ChevronDown } from 'lucide-react';
+import { Teacher } from '@/types/TeacherType';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Linkedin } from 'lucide-react';
+import { getImageUrl } from "@/lib/getImageUrl";
 
 interface CourseInfoProps {
   info: InfoNode[];
+  teacher?: Teacher;
 }
+
+// Componente de diálogo para mostrar información completa del profesor
+const TeacherDialog = ({ teacher }: { teacher: Teacher }) => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="sm" className="ml-2">
+          Ver más
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Información del Profesor</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="flex flex-col items-center text-center">
+            <Avatar className="w-24 h-24 mb-4">
+              <AvatarImage src={getImageUrl(teacher.photo.url)} alt={teacher.name} />
+              <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <h3 className="text-xl font-semibold">{teacher.name}</h3>
+            <p className="text-sm text-gray-600">{teacher.titulo}</p>
+            <div className="flex items-center mt-2">
+              <MapPin className="w-4 h-4 text-gray-400 mr-1" />
+              <Badge variant="outline" className="text-xs">
+                {teacher.country}
+              </Badge>
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="font-medium mb-2">Biografía</h4>
+            <p className="text-sm text-gray-600 leading-relaxed">{teacher.biography}</p>
+          </div>
+          
+          {teacher.linkedin && (
+            <div className="pt-2">
+              <Button variant="outline" className="w-full" asChild>
+                <a
+                  href={teacher.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center"
+                >
+                  <Linkedin className="w-4 h-4 mr-2" />
+                  Ver perfil de LinkedIn
+                </a>
+              </Button>
+            </div>
+          )}
+          
+          <p className="text-xs text-gray-400 text-center mt-4">
+            Miembro desde {new Date(teacher.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Componente para mostrar información sutil del profesor
+const TeacherInfoSubtle = ({ teacher }: { teacher: Teacher }) => {
+  return (
+    <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <p className="text-sm text-primary mb-3 font-semibold">Instructor del curso:</p>
+      <div className="flex items-center space-x-3">
+        <Avatar className="w-12 h-12">
+          <AvatarImage src={getImageUrl(teacher.photo.url)} alt={teacher.name} />
+          <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-medium text-gray-900">{teacher.name}</h4>
+              <p className="text-sm text-gray-600">{teacher.titulo}</p>
+            </div>
+            <TeacherDialog teacher={teacher} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface ContentSection {
   title: string;
@@ -116,7 +207,7 @@ const renderContent = (nodes: InfoNode[]): ContentSection[] => {
   return sections;
 };
 
-export const CourseInfo = ({ info }: CourseInfoProps) => {
+export const CourseInfo = ({ info, teacher }: CourseInfoProps) => {
   const [activeTab, setActiveTab] = useState(0);
   const [openSection, setOpenSection] = useState<string | null>(null);
 
@@ -142,7 +233,11 @@ export const CourseInfo = ({ info }: CourseInfoProps) => {
           </TabsList>
           {contentSections.map((section, index) => (
             <TabsContent key={index} value={section.title}>
-              <div className="space-y-2 mt-12 pl-2">{section.content}</div>
+              <div className="space-y-2 mt-12 pl-2">
+                {section.content}
+                {/* Mostrar información del profesor solo en el primer tab */}
+                {index === 0 && teacher && <TeacherInfoSubtle teacher={teacher} />}
+              </div>
             </TabsContent>
           ))}
         </Tabs>
@@ -158,7 +253,11 @@ export const CourseInfo = ({ info }: CourseInfoProps) => {
                 <span className="flex items-center justify-between w-full">{section.title}</span>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="pt-2 pb-4">{section.content}</div>
+                <div className="pt-2 pb-4">
+                  {section.content}
+                  {/* Mostrar información del profesor solo en el primer accordion item */}
+                  {index === 0 && teacher && <TeacherInfoSubtle teacher={teacher} />}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}

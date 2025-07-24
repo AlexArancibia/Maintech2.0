@@ -4,28 +4,35 @@ interface CourseDetailsProps {
   course: {
     start_date: string;
     finish_date: string;
-
     chapters: any[];
     price: number;
   }
 }
 
 export function CourseDetails({ course }: CourseDetailsProps) {
-  // Calculate the duration in days
+  // Calculate the duration in days (including the end day)
   const startDate = new Date(course.start_date);
   const endDate = new Date(course.finish_date);
-  const durationInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+  const durationInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)) + 1;
+
+  // Format dates without year
+  const formatDateWithoutYear = (date: Date) => {
+    return date.toLocaleDateString('es-ES', { 
+      day: 'numeric', 
+      month: 'long' 
+    });
+  };
 
   return (
-    <div className="flex flex-wrap gap-8 pt-6 border-t border-slate-700">
-      <div className="flex items-start gap-4">
+    <div className="grid grid-cols-2 justify-items-start  md:grid-cols-4 gap-8 mt-6 pt-6 border-t border-slate-700 md:justify-items-center">
+      <div className="flex items-center gap-4">
         <Calendar className="w-5 h-5 text-cyan-500 mt-1" />
         <div>
           <p className="text-sm text-slate-400">Fechas</p>
           <div className="text-slate-300">
             <p className="font-medium">
-              {startDate.toLocaleDateString()} - 
-              {endDate.toLocaleDateString()}
+              {formatDateWithoutYear(startDate)} - 
+              {formatDateWithoutYear(endDate)}
             </p>
           </div>
         </div>
@@ -48,7 +55,9 @@ export function CourseDetails({ course }: CourseDetailsProps) {
         <Banknote className="w-5 h-5 text-cyan-500" />
         <div>
           <p className="text-sm text-slate-400">Precio</p>
-          <p className="font-medium">S/ {course.price.toFixed(2)}</p>
+          <p className="font-medium">
+            {course.price === 0 ? 'Curso gratuito' : `S/ ${course.price.toFixed(2)}`}
+          </p>
         </div>
       </div>
     </div>

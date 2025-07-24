@@ -9,9 +9,28 @@ import type { BasicCourse } from "@/types/CoursesType"
 import { getImageUrl } from "@/lib/getImageUrl"
 
 const convertToPeruTime = (date: Date): Date => {
-  const peruOffset = -5 * 60 // Offset en minutos para GMT-5
-  const userOffset = date.getTimezoneOffset()
-  return new Date(date.getTime() + (userOffset + peruOffset) * 60000)
+  // Añadir 5 horas para GMT-5
+  return new Date(date.getTime() + (5 * 60 * 60 * 1000))
+}
+
+const calculateCourseDuration = (startDate: string, endDate: string): string => {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+  
+  // Convertir a fecha local sin hora para comparar solo fechas
+  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+  const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate())
+  
+  const diffTime = endDay.getTime() - startDay.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays === 0) {
+    return "1 día"
+  } else if (diffDays === 1) {
+    return "2 días"
+  } else {
+    return `${diffDays + 1} días`
+  }
 }
 
 export default function UpcomingCourses() {
@@ -39,7 +58,7 @@ export default function UpcomingCourses() {
           const dateB = convertToPeruTime(new Date(b.start_date))
           return dateA.getTime() - dateB.getTime()
         })
-        .slice(0, 4) // Get the next 4 upcoming courses
+        .slice(0, 10) // Get the next 4 upcoming courses
       setUpcomingCourses(upcoming)
     }
   }, [basicCourses])
@@ -208,20 +227,35 @@ export default function UpcomingCourses() {
                         </div>
                         <div className="p-4 sm:p-6 flex flex-col flex-grow">
                           <div className="flex items-start sm:items-center gap-3 sm:gap-4 mt-4">
-                            <div className="bg-[#F1536D]  text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
+                            <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
                               <div className="text-base sm:text-lg font-bold">
-                                {new Date(course.start_date).getDate()}
+                                {convertToPeruTime(new Date(course.start_date)).getDate()}
                               </div>
                               <div className="text-xs sm:text-sm">
-                                {new Date(course.start_date).toLocaleString("default", { month: "short" })}
+                                {convertToPeruTime(new Date(course.start_date)).toLocaleString("default", { month: "short" })}
                               </div>
                             </div>
-                            <div className="flex flex-col">
-                              <h3 className="font-bold text-base sm:text-lg text-gray-800 flex-grow">{course.title}</h3>
-
-                              <h3 className="font-medium text-sm sm:text-sm text-gray-600 flex-grow">
-                                {course.category.name}
+                            <div className="flex flex-col flex-grow">
+                              <h3 className="font-bold text-base sm:text-lg text-gray-800">{course.title}</h3>
+                              <h3 className="font-medium text-sm text-gray-600">
+                                {course.category ? course.category.name : " "}
                               </h3>
+                              
+                              {/* Precio y duración */}
+                              <div className="flex flex-col gap-1 mt-2">
+                                {course.price === 0 ? (
+                                  <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold w-fit">
+                                    🎉 CURSO GRATUITO
+                                  </div>
+                                ) : (
+                                  <div className="text-sm font-semibold text-blue-600">
+                                    S/ {course.price.toFixed(2)}
+                                  </div>
+                                )}
+                                <div className="text-xs text-gray-500">
+                                  📅 Duración: {calculateCourseDuration(course.start_date, course.finish_date)}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>

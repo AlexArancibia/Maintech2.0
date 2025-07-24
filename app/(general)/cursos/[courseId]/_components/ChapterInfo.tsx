@@ -10,7 +10,7 @@ interface ChapterInfoProps {
 
 export function ChapterInfo({ chapters }: ChapterInfoProps) {
   return (
-    <div className=" mb-16 mt-12 ">
+    <div className=" mb-16 mt-6 ">
       <Accordion type="single" collapsible className="w-full space-y-4">
         {chapters.map((chapter, index) => (
           <AccordionItem 

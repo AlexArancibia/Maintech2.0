@@ -146,7 +146,7 @@ export default function HomePage() {
         </section>
 
         <section className="content-section  ">
-          <h3 className="text-2xl font-semibold mb-4 text-gray-800">Cursos Destacados</h3>
+          <h3 className="text-2xl font-semibold mb-4 text-gray-800">Nuestro Cursos</h3>
           {isLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array(6).fill(0).map((_, index) => (

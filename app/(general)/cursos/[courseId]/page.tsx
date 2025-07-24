@@ -21,6 +21,8 @@ import { CourseInfo } from "./_components/CourseInfo"
 import { ChapterInfo } from "./_components/ChapterInfo"
 import Features from "./_components/CourseFeatures"
 import { socialLinks } from "@/lib/social"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import TeacherCard from "@/components/TeacherCard"
 
 type Params = {
   courseId: string
@@ -180,7 +182,7 @@ export default function CourseDetailsPage() {
                   <img
                     src={getImageUrl(course.image.url) || "/placeholder.svg"}
                     alt={course.title}
-                    className="w-full h-[500px] object-cover"
+                    className="w-full h-fit object-cover"
                   />
                 </div>
 
@@ -190,38 +192,45 @@ export default function CourseDetailsPage() {
 
             <div className="lg:col-span-1">
               <div className="sticky top-4">
-                <Card className="bg-white ">
+                {/* Versión desktop - Card fijo */}
+                <Card className="hidden lg:block bg-black/10 backdrop-blur-md border border-white/10 shadow-lg">
                   <CardHeader>
-                    <CardTitle className="text-xl text-center text-slate-800">Solicitar información</CardTitle>
+                    <CardTitle className="text-xl text-center text-white">Solicitar información</CardTitle>
+                    <p className="text-center text-white/70 text-sm mt-2">
+                      Completa el formulario y nos pondremos en contacto contigo
+                    </p>
                   </CardHeader>
                   <CardContent>
                     {resultadoEnvio && (
                       <div
-                        className={`p-4 rounded-lg mb-4 ${resultadoEnvio.exito ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                        className={`p-4 rounded-lg mb-4 backdrop-blur-sm ${
+                          resultadoEnvio.exito 
+                            ? "bg-green-500/20 text-green-200 border border-green-500/30" 
+                            : "bg-red-500/20 text-red-200 border border-red-500/30"
+                        }`}
                       >
                         {resultadoEnvio.mensaje}
                       </div>
                     )}
                     <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Input
-                            id="nombre"
-                            placeholder="Nombre"
-                            value={formData.nombre}
-                            onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                            className="bg-gray-50"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Input
-                            id="apellido"
-                            placeholder="Apellido"
-                            value={formData.apellido}
-                            onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
-                            className="bg-gray-50"
-                          />
-                        </div>
+                      <div className="space-y-2">
+                        <Input
+                          id="nombre"
+                          placeholder="Nombre"
+                          value={formData.nombre}
+                          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Input
+                          id="apellido"
+                          placeholder="Apellido"
+                          value={formData.apellido}
+                          onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                        />
                       </div>
 
                       <div className="space-y-2">
@@ -231,7 +240,7 @@ export default function CourseDetailsPage() {
                           placeholder="Correo Electrónico"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="bg-gray-50"
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                         />
                       </div>
 
@@ -241,17 +250,17 @@ export default function CourseDetailsPage() {
                             value={formData.tipoDoc}
                             onValueChange={(value) => setFormData({ ...formData, tipoDoc: value })}
                           >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Documento" />
+                            <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
+                              <SelectValue placeholder="Documento" className="text-white/80" />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="dni" className="bg-gray-50">
+                            <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
+                              <SelectItem value="dni" className="text-white hover:bg-white/10">
                                 DNI
                               </SelectItem>
-                              <SelectItem value="ce" className="bg-gray-50">
+                              <SelectItem value="ce" className="text-white hover:bg-white/10">
                                 Carnet de Extranjería
                               </SelectItem>
-                              <SelectItem value="pasaporte" className="bg-gray-50">
+                              <SelectItem value="pasaporte" className="text-white hover:bg-white/10">
                                 Pasaporte
                               </SelectItem>
                             </SelectContent>
@@ -263,7 +272,7 @@ export default function CourseDetailsPage() {
                             placeholder="Número de documento"
                             value={formData.numDoc}
                             onChange={(e) => setFormData({ ...formData, numDoc: e.target.value })}
-                            className="bg-gray-50"
+                            className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                           />
                         </div>
                       </div>
@@ -275,7 +284,7 @@ export default function CourseDetailsPage() {
                           placeholder="Teléfono móvil"
                           value={formData.telefono}
                           onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                          className="bg-gray-50"
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                         />
                       </div>
 
@@ -284,14 +293,14 @@ export default function CourseDetailsPage() {
                           value={formData.departamento}
                           onValueChange={(value) => setFormData({ ...formData, departamento: value })}
                         >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Seleccione departamento" />
+                          <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
+                            <SelectValue placeholder="Seleccione departamento" className="text-white/80" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="lima">Lima</SelectItem>
-                            <SelectItem value="arequipa">Arequipa</SelectItem>
-                            <SelectItem value="cusco">Cusco</SelectItem>
-                            <SelectItem value="trujillo">Trujillo</SelectItem>
+                          <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
+                            <SelectItem value="lima" className="text-white hover:bg-white/10">Lima</SelectItem>
+                            <SelectItem value="arequipa" className="text-white hover:bg-white/10">Arequipa</SelectItem>
+                            <SelectItem value="cusco" className="text-white hover:bg-white/10">Cusco</SelectItem>
+                            <SelectItem value="trujillo" className="text-white hover:bg-white/10">Trujillo</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -302,14 +311,14 @@ export default function CourseDetailsPage() {
                           placeholder="Empresa"
                           value={formData.empresa}
                           onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-                          className="bg-gray-50"
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                           required={false}
                         />
                       </div>
 
                       <Button
                         type="submit"
-                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-white"
+                        className="w-full bg-gradient-to-r from-cyan-500/80 to-blue-500/80 hover:from-cyan-500 hover:to-blue-500 text-white backdrop-blur-sm border border-cyan-400/30 shadow-lg"
                         disabled={enviando}
                       >
                         {enviando ? "Enviando..." : "Enviar"}
@@ -317,6 +326,149 @@ export default function CourseDetailsPage() {
                     </form>
                   </CardContent>
                 </Card>
+
+                {/* Versión móvil - Acordeón */}
+                <div className="lg:hidden">
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="contact-form" className="border-white/20">
+                      <AccordionTrigger className="text-white hover:text-white/80 hover:no-underline">
+                        <div className="text-left">
+                          <div className="text-lg font-semibold">Solicitar información</div>
+                          <div className="text-sm text-white/70 font-normal">Completa el formulario y nos pondremos en contacto contigo</div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Card className="bg-black/10 backdrop-blur-md border border-white/10 shadow-lg mt-2">
+                          <CardContent className="pt-6">
+                            {resultadoEnvio && (
+                              <div
+                                className={`p-4 rounded-lg mb-4 backdrop-blur-sm ${
+                                  resultadoEnvio.exito 
+                                    ? "bg-green-500/20 text-green-200 border border-green-500/30" 
+                                    : "bg-red-500/20 text-red-200 border border-red-500/30"
+                                }`}
+                              >
+                                {resultadoEnvio.mensaje}
+                              </div>
+                            )}
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                              <div className="space-y-2">
+                                <Input
+                                  id="nombre-mobile"
+                                  placeholder="Nombre"
+                                  value={formData.nombre}
+                                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="apellido-mobile"
+                                  placeholder="Apellido"
+                                  value={formData.apellido}
+                                  onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="email-mobile"
+                                  type="email"
+                                  placeholder="Correo Electrónico"
+                                  value={formData.email}
+                                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-1 gap-4">
+                                <div className="space-y-2">
+                                  <Select
+                                    value={formData.tipoDoc}
+                                    onValueChange={(value) => setFormData({ ...formData, tipoDoc: value })}
+                                  >
+                                    <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
+                                      <SelectValue placeholder="Documento" className="text-white/80" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
+                                      <SelectItem value="dni" className="text-white hover:bg-white/10">
+                                        DNI
+                                      </SelectItem>
+                                      <SelectItem value="ce" className="text-white hover:bg-white/10">
+                                        Carnet de Extranjería
+                                      </SelectItem>
+                                      <SelectItem value="pasaporte" className="text-white hover:bg-white/10">
+                                        Pasaporte
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-2">
+                                  <Input
+                                    id="numDoc-mobile"
+                                    placeholder="Número de documento"
+                                    value={formData.numDoc}
+                                    onChange={(e) => setFormData({ ...formData, numDoc: e.target.value })}
+                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="telefono-mobile"
+                                  type="tel"
+                                  placeholder="Teléfono móvil"
+                                  value={formData.telefono}
+                                  onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Select
+                                  value={formData.departamento}
+                                  onValueChange={(value) => setFormData({ ...formData, departamento: value })}
+                                >
+                                  <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
+                                    <SelectValue placeholder="Seleccione departamento" className="text-white/80" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
+                                    <SelectItem value="lima" className="text-white hover:bg-white/10">Lima</SelectItem>
+                                    <SelectItem value="arequipa" className="text-white hover:bg-white/10">Arequipa</SelectItem>
+                                    <SelectItem value="cusco" className="text-white hover:bg-white/10">Cusco</SelectItem>
+                                    <SelectItem value="trujillo" className="text-white hover:bg-white/10">Trujillo</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="empresa-mobile"
+                                  placeholder="Empresa"
+                                  value={formData.empresa}
+                                  onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  required={false}
+                                />
+                              </div>
+
+                              <Button
+                                type="submit"
+                                className="w-full bg-gradient-to-r from-cyan-500/80 to-blue-500/80 hover:from-cyan-500 hover:to-blue-500 text-white backdrop-blur-sm border border-cyan-400/30 shadow-lg"
+                                disabled={enviando}
+                              >
+                                {enviando ? "Enviando..." : "Enviar"}
+                              </Button>
+                            </form>
+                          </CardContent>
+                        </Card>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
 
                 <div className=" my-4  flex w-full flex-col gap-2">
                   {!isCoursePurchased ? (
@@ -350,12 +502,11 @@ export default function CourseDetailsPage() {
         </div>
         <div className="content-section flex gap-4">
           <div className="w-full p-6 border  transition-all shadow-none hover:shadow-none     bg-white/80 rounded-xl">
-            <CourseInfo info={course.info} />
+            <CourseInfo info={course.info} teacher={course.teacher} />
 
             <ChapterInfo chapters={course.chapters} />
 
             <section className=" mb-4 sm:mb-4 ">
-              <h3 className="text-2xl font-semibold mb-10 text-gray-800">Cursos Relacionados</h3>
               {isLoading ? (
                 <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
                   {Array(6)
@@ -364,20 +515,24 @@ export default function CourseDetailsPage() {
                       <SkeletonCard key={index} />
                     ))}
                 </div>
-              ) : basicCourses.length > 0 ? (
-                <div className="grid lg:grid-cols-3 gap-6 sm:gap-6">
-                  {basicCourses.map(
-                    (basicCourse) =>
-                      basicCourse.category?.name === course.category?.name && (
+              ) : (() => {
+                const relatedCourses = basicCourses
+                  .filter(basicCourse => basicCourse.titleSlug !== params.courseId)
+                  .filter(basicCourse => basicCourse.category?.name === course.category?.name);
+                if (relatedCourses.length === 0) return null;
+                return (
+                  <>
+                    <h3 className="text-2xl font-semibold mb-10 text-gray-800">Cursos Relacionados</h3>
+                    <div className="grid lg:grid-cols-3 gap-6 sm:gap-6">
+                      {relatedCourses.map(basicCourse => (
                         <Link key={basicCourse.documentId} href={`/cursos/${basicCourse.titleSlug}`}>
                           <CourseCard course={basicCourse} />
                         </Link>
-                      ),
-                  )}
-                </div>
-              ) : (
-                <p className="text-center text-gray-500">No se encontraron cursos relacionados.</p>
-              )}
+                      ))}
+                    </div>
+                  </>
+                );
+              })()}
             </section>
           </div>
         </div>
