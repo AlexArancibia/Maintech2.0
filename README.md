@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Maintech 2.0
 
-## Getting Started
+Plataforma de cursos online con integración de pagos.
 
-First, run the development server:
+## Configuración de Mercado Pago
 
+### 1. Instalar dependencias
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configurar variables de entorno
+Agrega estas variables a tu archivo `.env.local` existente:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+# Mercado Pago Configuration
+MERCADOPAGO_ACCESS_TOKEN=TEST-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+MERCADOPAGO_WEBHOOK_SECRET=tu_clave_secreta_de_webhook
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# App Configuration (si no la tienes)
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-## Learn More
+**Nota:** Ya tienes configuradas las variables de Strapi (`NEXT_PUBLIC_STRAPI_ENDPOINT`, etc.)
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Configurar Webhooks en Mercado Pago
+1. Ve a tu cuenta de Mercado Pago Developer
+2. Configura el webhook URL: `https://tu-dominio-ngrok.ngrok.io/api/payment/webhook`
+3. Selecciona los eventos: `payment.created`, `payment.updated`
+4. Copia la clave secreta y agrégala a `MERCADOPAGO_WEBHOOK_SECRET`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Ejecutar el proyecto
+```bash
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Funcionalidades
 
-## Deploy on Vercel
+### Sistema de Pagos
+- ✅ Integración completa con Mercado Pago
+- ✅ Modo test para desarrollo
+- ✅ Webhooks para confirmación automática
+- ✅ Manejo de pagos exitosos, fallidos y pendientes
+- ✅ Enlace automático de cursos después del pago
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Flujo de Pago
+1. Usuario selecciona curso y método de pago
+2. Se crea preferencia de pago en Mercado Pago
+3. Se abre nueva pestaña para completar el pago
+4. Webhook recibe confirmación y enlaza el curso
+5. Usuario es redirigido al dashboard con confirmación
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Estructura de Archivos
+
+```
+lib/
+├── mercadopago.ts          # Funciones de integración con Mercado Pago
+└── axios.ts               # Configuración de cliente HTTP
+
+app/api/payment/
+├── create-preference/     # Crear preferencias de pago
+├── webhook/              # Manejar webhooks de Mercado Pago
+├── success/              # Pagos exitosos
+├── failure/              # Pagos fallidos
+└── pending/              # Pagos pendientes
+
+app/(general)/checkout/
+└── [courseId]/           # Página de checkout
+```
+
+## Modo Test vs Producción
+
+### Modo Test (Desarrollo)
+- Usa credenciales de sandbox
+- Simula pagos automáticamente
+- No requiere tarjeta real
+
+### Modo Producción
+- Usa credenciales reales
+- Abre pestaña de Mercado Pago
+- Procesa pagos reales
+- Webhooks para confirmación
+
+## Comandos Útiles
+
+```bash
+# Instalar dependencias
+npm install
+
+# Ejecutar en desarrollo
+npm run dev
+
+# Construir para producción
+npm run build
+
+# Ejecutar en producción
+npm start
+```

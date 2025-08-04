@@ -11,7 +11,7 @@ import { useApiData } from "@/hooks/ApiContext"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getCourseBySlug } from "@/hooks/coursesAPI"
 import type { DetailedCourse } from "@/types/CoursesType"
-import { Phone } from "lucide-react"
+import { Phone, CheckCircle, DollarSign, User, ShoppingCart, MessageCircle, Linkedin } from "lucide-react"
 import Link from "next/link"
 import CourseCard from "@/components/CourseCard"
 import api from "@/lib/axios"
@@ -92,9 +92,10 @@ export default function CourseDetailsPage() {
             setIsCoursePurchased(!!purchaseFound)
           }
 
-          const message = encodeURIComponent(
-            `Hola, me gustaría obtener más información sobre el curso: ${fetchedCourse?.title}.`,
-          )
+          // Mensaje diferente según si el curso es gratuito o no
+          const message = fetchedCourse.price === 0 
+            ? encodeURIComponent(`Hola, me gustaría inscribirme en el curso gratuito: ${fetchedCourse?.title}.`)
+            : encodeURIComponent(`Hola, me gustaría obtener más información sobre el curso: ${fetchedCourse?.title}.`)
           setWhatsappUrl(`https://wa.me/${socialLinks.whatsapp}?text=${message}`)
         } else {
           setError("Course not found or insufficient details")
@@ -180,6 +181,8 @@ export default function CourseDetailsPage() {
     return <div className="text-center text-red-500 mt-8">{error || "Failed to load course"}</div>
   }
 
+  const isFreeCourse = course.price === 0
+
   return (
     <>
       <div className=" container-section  bg-gradient-to-br from-black via-sky-950 to-slate-950 bg-cover">
@@ -195,7 +198,7 @@ export default function CourseDetailsPage() {
                   <img
                     src={getImageUrl(course.image.url) || "/placeholder.svg"}
                     alt={course.title}
-                    className="w-full h-fit object-cover"
+                    className="w-full object-contain"
                   />
                 </div>
 
@@ -205,142 +208,307 @@ export default function CourseDetailsPage() {
 
             <div className="lg:col-span-1">
               <div className="sticky top-4">
-                {/* Versión desktop - Card fijo */}
-                <Card className="hidden lg:block bg-black/10 backdrop-blur-md border border-white/10 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="text-xl text-center text-white">Solicitar información</CardTitle>
-                    <p className="text-center text-white/70 text-sm mt-2">
-                      Completa el formulario y nos pondremos en contacto contigo
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    {resultadoEnvio && (
-                      <div
-                        className={`p-4 rounded-lg mb-4 backdrop-blur-sm ${
-                          resultadoEnvio.exito 
-                            ? "bg-green-500/20 text-green-200 border border-green-500/30" 
-                            : "bg-red-500/20 text-red-200 border border-red-500/30"
-                        }`}
-                      >
-                        {resultadoEnvio.mensaje}
-                      </div>
-                    )}
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                      <div className="space-y-2">
-                        <Input
-                          id="nombre"
-                          placeholder="Nombre"
-                          value={formData.nombre}
-                          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          id="apellido"
-                          placeholder="Apellido"
-                          value={formData.apellido}
-                          onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="Correo Electrónico"
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Select
-                            value={formData.tipoDoc}
-                            onValueChange={(value) => setFormData({ ...formData, tipoDoc: value })}
-                          >
-                            <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
-                              <SelectValue placeholder="Documento" className="text-white/80" />
-                            </SelectTrigger>
-                            <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
-                              <SelectItem value="dni" className="text-white hover:bg-white/10">
-                                DNI
-                              </SelectItem>
-                              <SelectItem value="ce" className="text-white hover:bg-white/10">
-                                Carnet de Extranjería
-                              </SelectItem>
-                              <SelectItem value="pasaporte" className="text-white hover:bg-white/10">
-                                Pasaporte
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
+                {/* Versión desktop - Acordeón */}
+                <div className="hidden lg:block">
+                  <Accordion type="single" collapsible defaultValue="course-purchase" className="w-full">
+                    {/* Primer card - Inscribirse */}
+                    <AccordionItem value="course-purchase" className="border-white/20">
+                      <AccordionTrigger className="text-white hover:text-white/80 hover:no-underline">
+                        <div className="text-left">
+                          <div className="text-lg font-semibold">{isFreeCourse ? "Inscribirse" : "Comprar Curso"}</div>
+                          <div className="text-sm text-white/70 font-normal">Información y {isFreeCourse ? "inscripción" : "pago"}</div>
                         </div>
-                        <div className="space-y-2">
-                          <Input
-                            id="numDoc"
-                            placeholder="Número de documento"
-                            value={formData.numDoc}
-                            onChange={(e) => setFormData({ ...formData, numDoc: e.target.value })}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
-                          />
-                        </div>
-                      </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Card className="bg-black/10 backdrop-blur-md border border-white/10 shadow-lg mt-2">
+                          <CardContent className="pt-6">
+                            <div className="space-y-4">
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-white mb-2">
+                                  {isFreeCourse ? "Gratis" : `$${course.price}`}
+                                </div>
+                                <p className="text-sm text-white/70">
+                                  {isFreeCourse ? "Sin costo de inscripción. Acceso inmediato con inicio flexible. Modalidad " : "Precio del curso completo. Acceso inmediato con inicio flexible. Modalidad "}{course.modality} con {course.chapters.length} capítulos.
+                                </p>
+                              </div>
+                              
+                              <div className="pt-4">
+                                {!isCoursePurchased ? (
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <Link href={`/checkout/${params.courseId}`}>
+                                      <Button className="w-full h-12 bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-500 hover:to-blue-700 text-white backdrop-blur-sm border border-blue-400/30 shadow-lg text-sm font-semibold">
+                                        Inscribirse
+                                      </Button>
+                                    </Link>
+                                    <Link href={whatsappUrl}>
+                                      <Button className="w-full h-12 bg-green-600 hover:bg-green-700 text-white backdrop-blur-sm border border-green-500 shadow-lg text-sm font-semibold">
+                                        <Phone className="w-4 h-4 mr-2" />
+                                        Consultar
+                                      </Button>
+                                    </Link>
+                                  </div>
+                                ) : (
+                                  <Link href={`/dashboard/cursos/${params.courseId}`}>
+                                    <Button variant="outline" className="bg-primary text-white border-none shadow-md w-full transition-colors">
+                                      Ver Curso
+                                    </Button>
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </AccordionContent>
+                    </AccordionItem>
 
-                      <div className="space-y-2">
-                        <Input
-                          id="telefono"
-                          type="tel"
-                          placeholder="Teléfono móvil"
-                          value={formData.telefono}
-                          onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          id="pais"
-                          placeholder="País"
-                          value={formData.pais}
-                          onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          id="empresa"
-                          placeholder="Empresa"
-                          value={formData.empresa}
-                          onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
-                          required={false}
-                        />
-                      </div>
-
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-cyan-500/80 to-blue-500/80 hover:from-cyan-500 hover:to-blue-500 text-white backdrop-blur-sm border border-cyan-400/30 shadow-lg"
-                        disabled={enviando}
-                      >
-                        {enviando ? "Enviando..." : "Enviar"}
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
-
-                {/* Versión móvil - Acordeón */}
-                <div className="lg:hidden">
-                  <Accordion type="single" collapsible className="w-full">
+                    {/* Segundo card - Solicitar información */}
                     <AccordionItem value="contact-form" className="border-white/20">
                       <AccordionTrigger className="text-white hover:text-white/80 hover:no-underline">
                         <div className="text-left">
                           <div className="text-lg font-semibold">Solicitar información</div>
-                          <div className="text-sm text-white/70 font-normal">Completa el formulario y nos pondremos en contacto contigo</div>
+                          <div className="text-sm text-white/70 font-normal">Formulario de contacto</div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Card className="bg-black/10 backdrop-blur-md border border-white/10 shadow-lg mt-2">
+                          <CardContent className="pt-6">
+                            {resultadoEnvio && (
+                              <div
+                                className={`p-4 rounded-lg mb-4 backdrop-blur-sm ${
+                                  resultadoEnvio.exito 
+                                    ? "bg-green-500/20 text-green-200 border border-green-500/30" 
+                                    : "bg-red-500/20 text-red-200 border border-red-500/30"
+                                }`}
+                              >
+                                {resultadoEnvio.mensaje}
+                              </div>
+                            )}
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                              <div className="space-y-2">
+                                <Input
+                                  id="nombre"
+                                  placeholder="Nombre"
+                                  value={formData.nombre}
+                                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="apellido"
+                                  placeholder="Apellido"
+                                  value={formData.apellido}
+                                  onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="email"
+                                  type="email"
+                                  placeholder="Correo Electrónico"
+                                  value={formData.email}
+                                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <Select
+                                    value={formData.tipoDoc}
+                                    onValueChange={(value) => setFormData({ ...formData, tipoDoc: value })}
+                                  >
+                                    <SelectTrigger className="bg-slate-900 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
+                                      <SelectValue placeholder="Documento" className="text-white/80" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
+                                      <SelectItem value="dni" className="text-white hover:bg-slate-900">
+                                        DNI
+                                      </SelectItem>
+                                      <SelectItem value="ce" className="text-white hover:bg-slate-900">
+                                        Carnet de Extranjería
+                                      </SelectItem>
+                                      <SelectItem value="pasaporte" className="text-white hover:bg-slate-900">
+                                        Pasaporte
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="space-y-2">
+                                  <Input
+                                    id="numDoc"
+                                    placeholder="Número de documento"
+                                    value={formData.numDoc}
+                                    onChange={(e) => setFormData({ ...formData, numDoc: e.target.value })}
+                                    className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="telefono"
+                                  type="tel"
+                                  placeholder="Teléfono móvil"
+                                  value={formData.telefono}
+                                  onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="pais"
+                                  placeholder="País"
+                                  value={formData.pais}
+                                  onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <Input
+                                  id="empresa"
+                                  placeholder="Empresa"
+                                  value={formData.empresa}
+                                  onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  required={false}
+                                />
+                              </div>
+
+                              <div className="space-y-3">
+                                <Button
+                                  type="submit"
+                                  className="w-full bg-gradient-to-r from-cyan-500/80 to-blue-500/80 hover:from-cyan-500 hover:to-blue-500 text-white backdrop-blur-sm border border-cyan-400/30 shadow-lg"
+                                  disabled={enviando}
+                                >
+                                  {enviando ? "Enviando..." : "Enviar"}
+                                </Button>
+                              </div>
+                            </form>
+                          </CardContent>
+                        </Card>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Tercer card - Información del profesor */}
+                    <AccordionItem value="teacher-info" className="border-white/20">
+                      <AccordionTrigger className="text-white hover:text-white/80 hover:no-underline">
+                        <div className="text-left">
+                          <div className="text-lg font-semibold">Información del Profesor</div>
+                          <div className="text-sm text-white/70 font-normal">Conoce al instructor</div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Card className="bg-black/10 backdrop-blur-md border border-white/10 shadow-lg mt-2">
+                          <CardContent className="pt-6">
+                            {course.teacher && (
+                              <div className="mb-6">
+                                <div className="flex items-center space-x-4 mb-4">
+                                  <div className="w-16 h-16 rounded-full overflow-hidden">
+                                    <img
+                                      src={getImageUrl(course.teacher.photo.url)}
+                                      alt={course.teacher.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-white">{course.teacher.name}</h3>
+                                    <p className="text-sm text-white/70">{course.teacher.titulo}</p>
+                                  </div>
+                                </div>
+                                <p className="text-sm text-white/80 mb-4 line-clamp-3">
+                                  {course.teacher.biography}
+                                </p>
+                                
+                                {/* LinkedIn del profesor */}
+                                {course.teacher.linkedin && (
+                                  <div className="mb-4">
+                                    <Button className="w-full bg-gradient-to-r from-blue-600/80 to-blue-800/80 hover:from-blue-600 hover:to-blue-800 text-white backdrop-blur-sm border border-blue-500/30 shadow-lg" asChild>
+                                      <a
+                                        href={course.teacher.linkedin}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center"
+                                      >
+                                        <Linkedin className="w-4 h-4 mr-2" />
+                                        Ver perfil de LinkedIn
+                                      </a>
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+                {/* Versión móvil - Acordeón */}
+                <div className="lg:hidden">
+                  <Accordion type="single" collapsible defaultValue="course-purchase" className="w-full">
+                    {/* Primer card - Inscribirse */}
+                    <AccordionItem value="course-purchase" className="border-white/20">
+                      <AccordionTrigger className="text-white hover:text-white/80 hover:no-underline">
+                        <div className="text-left">
+                          <div className="text-lg font-semibold">{isFreeCourse ? "Inscribirse" : "Comprar Curso"}</div>
+                          <div className="text-sm text-white/70 font-normal">Información y {isFreeCourse ? "inscripción" : "pago"}</div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Card className="bg-black/10 backdrop-blur-md border border-white/10 shadow-lg mt-2">
+                          <CardContent className="pt-6">
+                            <div className="space-y-4">
+                              <div className="text-center">
+                                <div className="text-2xl font-bold text-white mb-2">
+                                  {isFreeCourse ? "Gratis" : `$${course.price}`}
+                                </div>
+                                <p className="text-sm text-white/70">
+                                  {isFreeCourse ? "Sin costo de inscripción. Acceso inmediato con inicio flexible. Modalidad " : "Precio del curso completo. Acceso inmediato con inicio flexible. Modalidad "}{course.modality} con {course.chapters.length} capítulos.
+                                </p>
+                              </div>
+                              
+                              <div className="pt-4">
+                                {!isCoursePurchased ? (
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <Link href={`/checkout/${params.courseId}`}>
+                                      <Button className="w-full h-12 bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-500 hover:to-blue-700 text-white backdrop-blur-sm border border-blue-400/30 shadow-lg text-sm font-semibold">
+                                        Inscribirse
+                                      </Button>
+                                    </Link>
+                                    <Link href={whatsappUrl}>
+                                      <Button className="w-full h-12 bg-green-600 hover:bg-green-700 text-white backdrop-blur-sm border border-green-500 shadow-lg text-sm font-semibold">
+                                        <Phone className="w-4 h-4 mr-2" />
+                                        Consultar
+                                      </Button>
+                                    </Link>
+                                  </div>
+                                ) : (
+                                  <Link href={`/dashboard/cursos/${params.courseId}`}>
+                                    <Button variant="outline" className="bg-primary text-white border-none shadow-md w-full transition-colors">
+                                      Ver Curso
+                                    </Button>
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </AccordionContent>
+                    </AccordionItem>
+
+                    {/* Segundo card - Solicitar información */}
+                    <AccordionItem value="contact-form" className="border-white/20">
+                      <AccordionTrigger className="text-white hover:text-white/80 hover:no-underline">
+                        <div className="text-left">
+                          <div className="text-lg font-semibold">Solicitar información</div>
+                          <div className="text-sm text-white/70 font-normal">Formulario de contacto</div>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
@@ -364,7 +532,7 @@ export default function CourseDetailsPage() {
                                   placeholder="Nombre"
                                   value={formData.nombre}
                                   onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                                 />
                               </div>
 
@@ -374,7 +542,7 @@ export default function CourseDetailsPage() {
                                   placeholder="Apellido"
                                   value={formData.apellido}
                                   onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                                 />
                               </div>
 
@@ -385,7 +553,7 @@ export default function CourseDetailsPage() {
                                   placeholder="Correo Electrónico"
                                   value={formData.email}
                                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                                 />
                               </div>
 
@@ -395,17 +563,17 @@ export default function CourseDetailsPage() {
                                     value={formData.tipoDoc}
                                     onValueChange={(value) => setFormData({ ...formData, tipoDoc: value })}
                                   >
-                                    <SelectTrigger className="bg-white/10 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
+                                    <SelectTrigger className="bg-slate-900 border-white/20 text-white backdrop-blur-sm focus:bg-white/15 focus:border-white/40">
                                       <SelectValue placeholder="Documento" className="text-white/80" />
                                     </SelectTrigger>
                                     <SelectContent className="bg-slate-800/95 backdrop-blur-md border-white/20">
-                                      <SelectItem value="dni" className="text-white hover:bg-white/10">
+                                      <SelectItem value="dni" className="text-white hover:bg-slate-900">
                                         DNI
                                       </SelectItem>
-                                      <SelectItem value="ce" className="text-white hover:bg-white/10">
+                                      <SelectItem value="ce" className="text-white hover:bg-slate-900">
                                         Carnet de Extranjería
                                       </SelectItem>
-                                      <SelectItem value="pasaporte" className="text-white hover:bg-white/10">
+                                      <SelectItem value="pasaporte" className="text-white hover:bg-slate-900">
                                         Pasaporte
                                       </SelectItem>
                                     </SelectContent>
@@ -417,7 +585,7 @@ export default function CourseDetailsPage() {
                                     placeholder="Número de documento"
                                     value={formData.numDoc}
                                     onChange={(e) => setFormData({ ...formData, numDoc: e.target.value })}
-                                    className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                    className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                                   />
                                 </div>
                               </div>
@@ -429,7 +597,7 @@ export default function CourseDetailsPage() {
                                   placeholder="Teléfono móvil"
                                   value={formData.telefono}
                                   onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                                 />
                               </div>
 
@@ -439,7 +607,7 @@ export default function CourseDetailsPage() {
                                   placeholder="País"
                                   value={formData.pais}
                                   onChange={(e) => setFormData({ ...formData, pais: e.target.value })}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                                 />
                               </div>
 
@@ -449,45 +617,79 @@ export default function CourseDetailsPage() {
                                   placeholder="Empresa"
                                   value={formData.empresa}
                                   onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
+                                  className="bg-slate-900 border-white/20 text-white placeholder:text-white/80 backdrop-blur-sm focus:bg-white/15 focus:border-white/40"
                                   required={false}
                                 />
                               </div>
 
-                              <Button
-                                type="submit"
-                                className="w-full bg-gradient-to-r from-cyan-500/80 to-blue-500/80 hover:from-cyan-500 hover:to-blue-500 text-white backdrop-blur-sm border border-cyan-400/30 shadow-lg"
-                                disabled={enviando}
-                              >
-                                {enviando ? "Enviando..." : "Enviar"}
-                              </Button>
+                              <div className="space-y-3">
+                                <Button
+                                  type="submit"
+                                  className="w-full bg-gradient-to-r from-cyan-500/80 to-blue-500/80 hover:from-cyan-500 hover:to-blue-500 text-white backdrop-blur-sm border border-cyan-400/30 shadow-lg"
+                                  disabled={enviando}
+                                >
+                                  {enviando ? "Enviando..." : "Enviar"}
+                                </Button>
+                              </div>
                             </form>
                           </CardContent>
                         </Card>
                       </AccordionContent>
                     </AccordionItem>
-                  </Accordion>
-                </div>
 
-                <div className=" my-4  flex w-full flex-col gap-2">
-                  {!isCoursePurchased ? (
-                    <Link href={whatsappUrl}>
-                      <Button
-                        onClick={handleBuy}
-                        className="w-full flex  text-green-50 gap-4 border-none shadow-md   bg-gradient-to-r from-green-500 to-green-700 hover:bg-green-700 hover:text-white"
-                        variant="outline"
-                      >
-                        <Phone size={2} className="" />
-                        Consultar por Whatsapp
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Link href={`/dashboard/cursos/${params.courseId}`}>
-                      <Button variant="outline" className="bg-primary text-white border-none shadow-md   w-full transition-colors">
-                        Ver Curso
-                      </Button>
-                    </Link>
-                  )}
+                    {/* Tercer card - Información del profesor */}
+                    <AccordionItem value="teacher-info" className="border-white/20">
+                      <AccordionTrigger className="text-white hover:text-white/80 hover:no-underline">
+                        <div className="text-left">
+                          <div className="text-lg font-semibold">Información del Profesor</div>
+                          <div className="text-sm text-white/70 font-normal">Conoce al instructor</div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Card className="bg-black/10 backdrop-blur-md border border-white/10 shadow-lg mt-2">
+                          <CardContent className="pt-6">
+                            {course.teacher && (
+                              <div className="mb-6">
+                                <div className="flex items-center space-x-4 mb-4">
+                                  <div className="w-16 h-16 rounded-full overflow-hidden">
+                                    <img
+                                      src={getImageUrl(course.teacher.photo.url)}
+                                      alt={course.teacher.name}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-lg font-semibold text-white">{course.teacher.name}</h3>
+                                    <p className="text-sm text-white/70">{course.teacher.titulo}</p>
+                                  </div>
+                                </div>
+                                <p className="text-sm text-white/80 mb-4 line-clamp-3">
+                                  {course.teacher.biography}
+                                </p>
+                                
+                                {/* LinkedIn del profesor */}
+                                {course.teacher.linkedin && (
+                                  <div className="mb-4">
+                                    <Button className="w-full bg-gradient-to-r from-blue-600/80 to-blue-800/80 hover:from-blue-600 hover:to-blue-800 text-white backdrop-blur-sm border border-blue-500/30 shadow-lg" asChild>
+                                      <a
+                                        href={course.teacher.linkedin}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center"
+                                      >
+                                        <Linkedin className="w-4 h-4 mr-2" />
+                                        Ver perfil de LinkedIn
+                                      </a>
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
                 </div>
               </div>
             </div>

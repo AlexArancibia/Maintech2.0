@@ -4,6 +4,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import { getCoursesByStudent } from "./coursesAPI";
 import { BasicCourse } from "@/types/CoursesType";
 import { User } from "@/types/StudentType";
+import api from "@/lib/axios";
 
 interface AuthContextType {
   user: User | null;
@@ -11,15 +12,26 @@ interface AuthContextType {
   purchasedCourses: BasicCourse[];
   login: (response: AuthResponse) => void;
   logout: () => void;
+  createUser: (userData: CreateUserData) => Promise<AuthResponse>;
+  updateUser: (userId: number, userData: UpdateUserData) => Promise<User>;
   authReady: boolean;
   isLoading: boolean;
 }
 
- 
-
 export interface AuthResponse {
   jwt: string;
   user: User;
+}
+
+export interface CreateUserData {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface UpdateUserData {
+  username?: string;
+  email?: string;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -28,6 +40,8 @@ const AuthContext = createContext<AuthContextType>({
   login: () => {},
   purchasedCourses : [],
   logout: () => {},
+  createUser: async () => ({ jwt: '', user: {} as User }),
+  updateUser: async () => ({} as User),
   authReady: false,
   isLoading: true,
 });
@@ -62,6 +76,39 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     router.push("/");
   };
 
+  const createUser = async (userData: CreateUserData): Promise<AuthResponse> => {
+    try {
+      const response = await api.post<AuthResponse>('/api/auth/local/register', userData);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.data?.error?.message) {
+        throw new Error(error.response.data.error.message);
+      } else {
+        throw new Error("Error al crear el usuario. Por favor inténtalo de nuevo.");
+      }
+    }
+  };
+
+  const updateUser = async (userId: number, userData: UpdateUserData): Promise<User> => {
+    try {
+      const response = await api.put(`/api/users/${userId}`, userData);
+      const updatedUser = response.data;
+      
+      // Actualizar el usuario en el contexto si es el usuario actual
+      if (user && user.id === userId) {
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+      
+      return updatedUser;
+    } catch (error: any) {
+      if (error.response?.data?.error?.message) {
+        throw new Error(error.response.data.error.message);
+      } else {
+        throw new Error("Error al actualizar el usuario. Por favor inténtalo de nuevo.");
+      }
+    }
+  };
 
   useEffect(() => {
 
@@ -95,7 +142,17 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, token, purchasedCourses, login, logout, authReady ,isLoading}}>
+    <AuthContext.Provider value={{ 
+      user, 
+      token, 
+      purchasedCourses, 
+      login, 
+      logout, 
+      createUser,
+      updateUser,
+      authReady, 
+      isLoading
+    }}>
       {children}
     </AuthContext.Provider>
   );

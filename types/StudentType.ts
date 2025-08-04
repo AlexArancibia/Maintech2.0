@@ -6,6 +6,8 @@ export interface User {
   username: string;
   email: string;
   provider: string;
+  resetPasswordToken: string;
+  confirmationToken: string;
   confirmed: boolean;
   blocked: boolean;
   isTeacher : boolean;

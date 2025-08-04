@@ -7,6 +7,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useApiData } from "@/hooks/ApiContext"
 import type { BasicCourse } from "@/types/CoursesType"
 import { getImageUrl } from "@/lib/getImageUrl"
+import Link from "next/link"
 
 const convertToPeruTime = (date: Date): Date => {
   // Añadir 5 horas para GMT-5
@@ -221,45 +222,47 @@ export default function UpcomingCourses() {
                     ))
                 : upcomingCourses.map((course, index) => (
                     <CarouselItem key={index} className="pl-4 md:pl-4 sm:basis-1/2 lg:basis-1/3 ">
-                      <div className="bg-white rounded-xl   shadow-md h-full flex flex-col">
-                        <div className="relative h-48 sm:h-56 md:h-64">
-                          <img src={getImageUrl(course.image.url) || "/placeholder.svg"} alt={course.title} />
-                        </div>
-                        <div className="p-4 sm:p-6 flex flex-col flex-grow">
-                          <div className="flex items-start sm:items-center gap-3 sm:gap-4 mt-4">
-                            <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
-                              <div className="text-base sm:text-lg font-bold">
-                                {convertToPeruTime(new Date(course.start_date)).getDate()}
+                      <Link href={`/cursos/${course.titleSlug}`} className="block h-full">
+                        <div className="bg-white rounded-xl shadow-md h-full flex flex-col hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+                          <div className="relative h-48 sm:h-56 md:h-64">
+                            <img src={getImageUrl(course.image.url) || "/placeholder.svg"} alt={course.title} />
+                          </div>
+                          <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                            <div className="flex items-start sm:items-center gap-3 sm:gap-4 mt-4">
+                              <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
+                                <div className="text-base sm:text-lg font-bold">
+                                  {convertToPeruTime(new Date(course.start_date)).getDate()}
+                                </div>
+                                <div className="text-xs sm:text-sm">
+                                  {convertToPeruTime(new Date(course.start_date)).toLocaleString("default", { month: "short" })}
+                                </div>
                               </div>
-                              <div className="text-xs sm:text-sm">
-                                {convertToPeruTime(new Date(course.start_date)).toLocaleString("default", { month: "short" })}
-                              </div>
-                            </div>
-                            <div className="flex flex-col flex-grow">
-                              <h3 className="font-bold text-base sm:text-lg text-gray-800">{course.title}</h3>
-                              <h3 className="font-medium text-sm text-gray-600">
-                                {course.category ? course.category.name : " "}
-                              </h3>
-                              
-                              {/* Precio y duración */}
-                              <div className="flex flex-col gap-1 mt-2">
-                                {course.price === 0 ? (
-                                  <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold w-fit">
-                                    🎉 CURSO GRATUITO
+                              <div className="flex flex-col flex-grow">
+                                <h3 className="font-bold text-base sm:text-lg text-gray-800">{course.title}</h3>
+                                <h3 className="font-medium text-sm text-gray-600">
+                                  {course.category ? course.category.name : " "}
+                                </h3>
+                                
+                                {/* Precio y duración */}
+                                <div className="flex flex-col gap-1 mt-2">
+                                  {course.price === 0 ? (
+                                    <div className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold w-fit">
+                                      🎉 CURSO GRATUITO
+                                    </div>
+                                  ) : (
+                                    <div className="text-sm font-semibold text-blue-600">
+                                      S/ {course.price.toFixed(2)}
+                                    </div>
+                                  )}
+                                  <div className="text-xs text-gray-500">
+                                    📅 Duración: {calculateCourseDuration(course.start_date, course.finish_date)}
                                   </div>
-                                ) : (
-                                  <div className="text-sm font-semibold text-blue-600">
-                                    S/ {course.price.toFixed(2)}
-                                  </div>
-                                )}
-                                <div className="text-xs text-gray-500">
-                                  📅 Duración: {calculateCourseDuration(course.start_date, course.finish_date)}
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     </CarouselItem>
                   ))}
             </CarouselContent>
