@@ -74,7 +74,7 @@ export default function CourseCard({ course }: CourseCardProps) {
         </CardTitle>
         <CardDescription className="mb-4 line-clamp-2 flex items-center gap-2">
             <span className='font-bold'>Instructor: </span>
-          {course.teacher.name}
+          {course.teacher?.name || ''}
         </CardDescription>
         <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
           <div className="flex items-center">
