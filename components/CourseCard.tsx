@@ -6,38 +6,14 @@ import { CalendarDays, Clock, Users, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { BasicCourse } from '@/types/CoursesType'
 import { getImageUrl } from '@/lib/getImageUrl'
+import { convertToPeruTime, calculateDuration, formatCourseStartDate } from '@/lib/dateUtils'
 
 interface CourseCardProps {
   course: BasicCourse;
 }
 
-const convertToPeruTime = (date: Date): Date => {
-  // Añadir 5 horas para GMT-5
-  return new Date(date.getTime() + (5 * 60 * 60 * 1000))
-}
-
-const calculateCourseDuration = (startDate: string, endDate: string): string => {
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-  
-  // Convertir a fecha local sin hora para comparar solo fechas
-  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate())
-  const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate())
-  
-  const diffTime = endDay.getTime() - startDay.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  
-  if (diffDays === 0) {
-    return "1 día"
-  } else if (diffDays === 1) {
-    return "2 días"
-  } else {
-    return `${diffDays + 1} días`
-  }
-}
-
 export default function CourseCard({ course }: CourseCardProps) {
-  const startDate = convertToPeruTime(new Date(course.start_date));
+  const startDate = convertToPeruTime(course.start_date);
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative">
@@ -79,11 +55,11 @@ export default function CourseCard({ course }: CourseCardProps) {
         <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
           <div className="flex items-center">
             <CalendarDays className="w-4 h-4 mr-2 text-accent" />
-            <span>{startDate.toLocaleDateString()}</span>
+            <span>{formatCourseStartDate(course.start_date)}</span>
           </div>
           <div className="flex items-center">
             <Clock className="w-4 h-4 mr-2 text-accent" />
-            <span>{calculateCourseDuration(course.start_date, course.finish_date)}</span>
+            <span>{calculateDuration(course.start_date, course.finish_date)}</span>
           </div>
         </div>
       </CardContent>

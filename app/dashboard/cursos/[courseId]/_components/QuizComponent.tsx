@@ -66,7 +66,7 @@ export default function QuizComponent({ quiz, userProgress,chapterId,initialAtte
   useEffect(() => {
     console.log("Quiz component mounted with userProgress:", userProgress);
     
-    setIsCompleted(userProgress!.isCompleted)
+    setIsCompleted(userProgress?.isCompleted || false)
     if (userProgress && userProgress.quiz_attempt) {
       setAttempts(userProgress.quiz_attempt as QuizAttempt[]);
     }
@@ -141,17 +141,20 @@ export default function QuizComponent({ quiz, userProgress,chapterId,initialAtte
         }
       };
 
- 
+      // Check if userProgress exists
+      if (!userProgress?.documentId) {
+        console.error("No user progress found for this chapter. Cannot update quiz progress.");
+        throw new Error("No user progress found for this chapter");
+      }
+
       console.log("Sending update to API:", payload);
       const response = await api.put(
-        `/api/user-progresses/${userProgress?.documentId}`,
+        `/api/user-progresses/${userProgress.documentId}`,
         payload,
-
       );
-      console.log(`/api/user-progresses/${userProgress?.documentId}`,)
+      console.log(`/api/user-progresses/${userProgress.documentId}`)
       console.log("API response:", response.data);
       
-    
       setAttempts(updatedAttempts);
       setIsCompleted(isPassed);
       return isPassed;
@@ -163,6 +166,13 @@ export default function QuizComponent({ quiz, userProgress,chapterId,initialAtte
 
   const handleSubmit = async () => {
     if (isSubmitting) return;
+    
+    // Check if userProgress is available
+    if (!userProgress?.documentId) {
+      console.error("No user progress available. Cannot submit quiz.");
+      alert("Error: No se pudo cargar el progreso del usuario. Por favor, recarga la página e intenta nuevamente.");
+      return;
+    }
     
     try {
       setIsSubmitting(true);
@@ -179,6 +189,7 @@ export default function QuizComponent({ quiz, userProgress,chapterId,initialAtte
       setShowResults(true);
     } catch (error) {
       console.error("Error during quiz submission:", error);
+      alert("Error al enviar el quiz. Por favor, intenta nuevamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -197,7 +208,12 @@ export default function QuizComponent({ quiz, userProgress,chapterId,initialAtte
           <CardTitle>Quiz del Capítulo</CardTitle>
         </CardHeader>
         <CardContent>
-          {isCompleted ? (
+          {!userProgress ? (
+            <div className="space-y-4">
+              <p className="text-yellow-600">Cargando progreso del usuario...</p>
+              <p>Por favor espera un momento mientras se prepara el quiz.</p>
+            </div>
+          ) : isCompleted ? (
             <div className="space-y-4">
               <p className="text-green-600">¡Has completado este quiz exitosamente!</p>
               <p>Ya no puedes volver a tomar este quiz.</p>

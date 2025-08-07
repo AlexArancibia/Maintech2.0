@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { DetailedChapter } from "@/types/ChapterType";
 import { LinkNode, ListItemNode, TextNode } from "@/types/CoursesType";
 import { User } from "@/types/StudentType";
-import { FileQuestion } from "lucide-react";
+import { FileQuestion, CheckCircle } from "lucide-react";
 import { useEffect, useMemo } from "react";
  
 
@@ -43,7 +43,7 @@ export default function ChapterList({ chapters, selectedChapter, onSelectChapter
   const isChapterCompleted = (chapter: DetailedChapter) => {
     if (!currentUser) return false;
     return chapter.user_progresses?.some(progress => 
-      progress.isCompleted && progress.users_permissions_user.id === currentUser.id
+      progress.isCompleted && progress.users_permissions_user?.id === currentUser.id
     ) ?? false;
   };
 
@@ -72,19 +72,17 @@ export default function ChapterList({ chapters, selectedChapter, onSelectChapter
                 <div className="flex-grow">
                   <div className="flex items-center space-x-2">
                     <h3 className="font-medium">{chapter.title}</h3>
-                    {chapter.quiz && chapter.quiz.length > 0 && (
-                      <Badge 
-                
-                      className={cn(
-                        "text-xs py-0 px-1.5",
-                        isChapterCompleted(chapter) 
-                          ? "bg-green-100 text-green-800 hover:bg-green-200"
-                          : "bg-gray-100 border border-gray-300 text-gray-800 hover:bg-accent hover:text-white "
-                      )}
-                    >
-                      <FileQuestion className="w-3 h-3 mr-1" />
-                      {isChapterCompleted(chapter) ? "Quiz Completado" : "Quiz"}
-                    </Badge>
+                    {chapter.quiz && chapter.quiz.length > 0 && !isChapterCompleted(chapter) && (
+                      <Badge className="bg-gray-100 border border-gray-300 text-gray-800 hover:bg-accent hover:text-white text-xs py-0 px-1.5">
+                        <FileQuestion className="w-3 h-3 mr-1" />
+                        Quiz
+                      </Badge>
+                    )}
+                    {isChapterCompleted(chapter) && (
+                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200 text-xs py-0 px-1.5">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Completado
+                      </Badge>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">

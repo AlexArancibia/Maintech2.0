@@ -9,18 +9,19 @@ interface CourseDetailsProps {
   }
 }
 
+import { formatCourseStartDate, formatCourseEndDate } from '@/lib/dateUtils'
+
 export function CourseDetails({ course }: CourseDetailsProps) {
-  // Calculate the duration in days (including the end day)
-  // Suma 5 horas a las fechas por GMT-5
-  const startDate = new Date(new Date(course.start_date).getTime() + 5 * 60 * 60 * 1000);
-  const endDate = new Date(new Date(course.finish_date).getTime() + 5 * 60 * 60 * 1000);
+  // Calcular duración
+  const startDate = new Date(course.start_date);
+  const endDate = new Date(course.finish_date);
   const durationInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)) + 1;
 
   // Format dates without year
   const formatDateWithoutYear = (date: Date) => {
     return date.toLocaleDateString('es-ES', { 
       day: 'numeric', 
-      month: 'long' 
+      month: 'long'
     });
   };
 
@@ -32,8 +33,8 @@ export function CourseDetails({ course }: CourseDetailsProps) {
           <p className="text-sm text-slate-400">Fechas</p>
           <div className="text-slate-300">
             <p className="font-medium">
-              {formatDateWithoutYear(startDate)} - 
-              {formatDateWithoutYear(endDate)}
+              {formatCourseStartDate(course.start_date)} - 
+              {formatCourseEndDate(course.finish_date)}
             </p>
           </div>
         </div>

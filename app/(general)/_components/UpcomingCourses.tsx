@@ -8,31 +8,7 @@ import { useApiData } from "@/hooks/ApiContext"
 import type { BasicCourse } from "@/types/CoursesType"
 import { getImageUrl } from "@/lib/getImageUrl"
 import Link from "next/link"
-
-const convertToPeruTime = (date: Date): Date => {
-  // Añadir 5 horas para GMT-5
-  return new Date(date.getTime() + (5 * 60 * 60 * 1000))
-}
-
-const calculateCourseDuration = (startDate: string, endDate: string): string => {
-  const start = new Date(startDate)
-  const end = new Date(endDate)
-  
-  // Convertir a fecha local sin hora para comparar solo fechas
-  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate())
-  const endDay = new Date(end.getFullYear(), end.getMonth(), end.getDate())
-  
-  const diffTime = endDay.getTime() - startDay.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  
-  if (diffDays === 0) {
-    return "1 día"
-  } else if (diffDays === 1) {
-    return "2 días"
-  } else {
-    return `${diffDays + 1} días`
-  }
-}
+import { convertToPeruTime, calculateDuration, isOlderThanOneDay } from "@/lib/dateUtils"
 
 export default function UpcomingCourses() {
   const { basicCourses, isLoading } = useApiData()
@@ -48,18 +24,17 @@ export default function UpcomingCourses() {
 
   useEffect(() => {
     if (basicCourses.length > 0) {
-      const now = convertToPeruTime(new Date())
       const upcoming = basicCourses
         .filter((course) => {
-          const courseStartDate = convertToPeruTime(new Date(course.start_date))
-          return courseStartDate > now
+          // Solo mostrar cursos que no sean más antiguos que un día antes
+          return !isOlderThanOneDay(course.start_date)
         })
         .sort((a, b) => {
           const dateA = convertToPeruTime(new Date(a.start_date))
           const dateB = convertToPeruTime(new Date(b.start_date))
           return dateA.getTime() - dateB.getTime()
         })
-        .slice(0, 10) // Get the next 4 upcoming courses
+        .slice(0, 10) // Get the next 10 upcoming courses
       setUpcomingCourses(upcoming)
     }
   }, [basicCourses])
@@ -255,7 +230,7 @@ export default function UpcomingCourses() {
                                     </div>
                                   )}
                                   <div className="text-xs text-gray-500">
-                                    📅 Duración: {calculateCourseDuration(course.start_date, course.finish_date)}
+                                    📅 Duración: {calculateDuration(course.start_date, course.finish_date)}
                                   </div>
                                 </div>
                               </div>

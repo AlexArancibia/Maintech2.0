@@ -73,10 +73,11 @@ export default function CourseProgress({ progress, user, course }: CourseProgres
           year: "numeric",
           month: "long",
           day: "numeric",
+          timeZone: "America/Lima"
         })
-        doc.text(`${course.finish_date}`, 270, 190, { align: "right" })
+        doc.text(`${currentDate}`, 270, 190, { align: "right" })
       } catch (dateError) {
-        const simpleDate = new Date().toLocaleDateString()
+        const simpleDate = new Date().toLocaleDateString('es-ES', { timeZone: 'America/Lima' })
         doc.text(`${simpleDate}`, 270, 190, { align: "right" })
       }
 

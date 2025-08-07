@@ -58,7 +58,7 @@ export default function TeacherCard({ teacher }: TeacherCardProps) {
         </div>
         
         <p className="text-xs text-gray-400 dark:text-gray-500 text-center mt-6">
-          Miembro desde {new Date(teacher.createdAt).toLocaleDateString()}
+          Miembro desde {new Date(teacher.createdAt).toLocaleDateString('es-ES', { timeZone: 'America/Lima' })}
         </p>
       </CardContent>
     </Card>

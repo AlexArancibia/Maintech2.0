@@ -68,7 +68,7 @@ const TeacherDialog = ({ teacher }: { teacher: Teacher }) => {
           )}
           
           <p className="text-xs text-gray-400 text-center mt-4">
-            Miembro desde {new Date(teacher.createdAt).toLocaleDateString()}
+            Miembro desde {new Date(teacher.createdAt).toLocaleDateString('es-ES', { timeZone: 'America/Lima' })}
           </p>
         </div>
       </DialogContent>

@@ -28,6 +28,7 @@ export default function CourseComponent() {
  
   const [error, setError] = useState<string | null>(null);
   const [isPurchasedCoursesReady, setIsPurchasedCoursesReady] = useState(false);
+  const [hasCreatedProgresses, setHasCreatedProgresses] = useState(false);
 
   useEffect(() => {
     if (purchasedCourses.length > 0) {
@@ -50,6 +51,7 @@ export default function CourseComponent() {
           const fetchedChapters = fetchedCourse.chapters || [];
           setChapters(fetchedChapters);
           setSelectedChapter(fetchedChapters.length > 0 ? fetchedChapters[0] : null);
+          setHasCreatedProgresses(false); // Reset for new course
         } else {
           setError("Course not found");
         }
@@ -65,38 +67,61 @@ export default function CourseComponent() {
     fetchCourse();
   }, [params.courseId, purchasedCourses, router, isPurchasedCoursesReady]);
 
+  // Create user progress for all chapters when entering the course
   useEffect(() => {
     const createMissingUserProgresses = async () => {
-      if (!user || !chapters.length) return;
+      if (!user || !chapters.length || hasCreatedProgresses) return;
+
+      console.log(`Checking for missing user progress in course with ${chapters.length} chapters`);
 
       for (const chapter of chapters) {
-        if (chapter.quiz && chapter.quiz.length > 0) {
-          const existingProgress =  chapter.user_progresses.find(progress => progress.users_permissions_user.email === user.email)
-          if (!existingProgress) {
-            try {
-              const response = await api.post('/api/user-progresses', {
-                data: {
-                  isCompleted: false,
-                  chapter: chapter.id,
-                  users_permissions_user: user.id,
-                }
-              },  );
-              console.log(`Created new user progress for chapter ${chapter.id}:`, response.data.data);
-            } catch (error) {
-              console.error(`Error creating user progress for chapter ${chapter.id}:`, error);
+        const existingProgress = chapter.user_progresses?.find(progress => 
+          progress.users_permissions_user?.email === user.email
+        );
+
+        if (!existingProgress) {
+          console.log(`Creating user progress for chapter ${chapter.id}`);
+          
+          try {
+            const response = await api.post('/api/user-progresses', {
+              data: {
+                isCompleted: false,
+                chapter: chapter.id,
+                users_permissions_user: user.id,
+              }
+            });
+            
+            console.log(`Created user progress for chapter ${chapter.id}:`, response.data.data);
+            
+            // Update the chapter's user_progresses array
+            if (chapter.user_progresses) {
+              chapter.user_progresses.push(response.data.data);
+            } else {
+              chapter.user_progresses = [response.data.data];
+            }
+          } catch (error: any) {
+            console.error(`Error creating user progress for chapter ${chapter.id}:`, error);
+            
+            // If conflict, the progress already exists, skip
+            if (error.response?.status === 409) {
+              console.log(`Progress already exists for chapter ${chapter.id}, skipping`);
             }
           }
+        } else {
+          console.log(`User progress already exists for chapter ${chapter.id}`);
         }
       }
+
+      setHasCreatedProgresses(true);
     };
 
     createMissingUserProgresses();
-  }, [user, chapters]);
+  }, [user, chapters, hasCreatedProgresses]);
   const calculateProgress = () => {
     if (!chapters.length || !user) return 0;
     const completedChapters = chapters.filter(chapter => 
       chapter.user_progresses?.some(progress => 
-        progress.isCompleted && progress.users_permissions_user.id === user.id
+        progress.isCompleted && progress.users_permissions_user?.id === user.id
       )
     ).length;
     return (completedChapters / chapters.length) * 100;

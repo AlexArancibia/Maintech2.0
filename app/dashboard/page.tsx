@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Progress } from "@/components/ui/progress"
 import { BasicUser } from "@/types/StudentType"
 import { useSearchParams } from "next/navigation"
+import { formatCourseStartDate, formatCourseEndDate } from "@/lib/dateUtils"
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -222,15 +223,15 @@ function TeacherCourseCard({ course, currentUserId }: TeacherCourseCardProps) {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4" />
-                    <span>Inicio: {new Date(course.start_date).toLocaleDateString()}</span>
+                    <span>Inicio: {formatCourseStartDate(course.start_date)}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4" />
-                    <span>Fin: {new Date(course.finish_date).toLocaleDateString()}</span>
+                    <span>Fin: {formatCourseEndDate(course.finish_date)}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Banknote className="h-4 w-4" />
-                    <span>Precio: ${course.price}</span>
+                    <span>Precio: {course.price === 0 ? "GRATUITO" : `S/ ${course.price.toFixed(2)}`}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <BookOpen className="h-4 w-4" />
@@ -289,7 +290,7 @@ function calculateCourseProgress(course: DetailedCourse, students: BasicUser[]):
       sum +
       chapter.user_progresses.filter(
         (progress) =>
-          students.some((student) => student.id === progress.users_permissions_user.id) && progress.isCompleted,
+          students.some((student) => student.id === progress.users_permissions_user?.id) && progress.isCompleted,
       ).length /
         students.length
     )
@@ -304,7 +305,7 @@ function calculateStudentProgress(course: DetailedCourse, student: BasicUser): n
 
 function isChapterCompleted(chapter: DetailedCourse["chapters"][0], student: BasicUser): boolean {
   return chapter.user_progresses.some(
-    (progress) => progress.users_permissions_user.id === student.id && progress.isCompleted,
+    (progress) => progress.users_permissions_user?.id === student.id && progress.isCompleted,
   )
 }
 
