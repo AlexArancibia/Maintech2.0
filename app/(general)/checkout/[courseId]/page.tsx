@@ -143,6 +143,25 @@ export default function CheckoutPage() {
       return
     }
 
+    // Si el curso es gratuito, no debe ir a pasarela de pago
+    if (!course.price || course.price <= 0) {
+      // Matriculación directa
+      setIsProcessing(true)
+      try {
+        const linkSuccess = await linkCourseToUser(user.id, course.documentId)
+        if (!linkSuccess) {
+          throw new Error("Error al vincular el curso con tu cuenta")
+        }
+        await refreshPurchasedCourses()
+        router.push('/dashboard')
+        return
+      } catch (err: any) {
+        setError(err.message || 'No se pudo completar la matrícula gratuita')
+      } finally {
+        setIsProcessing(false)
+      }
+    }
+
     // Validar datos del usuario
     if (!user.email || !user.id) {
       console.error("❌ Datos del usuario incompletos:", {
@@ -158,8 +177,8 @@ export default function CheckoutPage() {
     try {
       const formData = new FormData()
       
-      // Asegurar que el precio sea un número válido
-      const finalPrice = course.price && course.price > 0 ? course.price : 99;
+      // Usar el precio real del curso (debe ser > 0 para pago)
+      const finalPrice = course.price
       
       const data = {
         coursePrice: finalPrice,
@@ -242,6 +261,33 @@ export default function CheckoutPage() {
     console.log("🚀 Iniciando proceso de checkout...")
     console.log("📋 Método de pago seleccionado:", selectedPaymentMethod)
     
+    const isFreeCourse = !course?.price || course.price <= 0
+
+    // Matrícula directa para cursos gratuitos
+    if (isFreeCourse) {
+      try {
+        if (!course || !user) {
+          throw new Error('Curso o usuario no encontrado')
+        }
+        setIsProcessing(true)
+        setCurrentStep('processing')
+        const linkSuccess = await linkCourseToUser(user.id, course.documentId)
+        if (!linkSuccess) {
+          throw new Error('Error al vincular el curso con tu cuenta')
+        }
+        await refreshPurchasedCourses()
+        router.push('/dashboard')
+        return
+      } catch (err: any) {
+        setError(err.message || 'No se pudo completar la matrícula gratuita')
+        setCurrentStep('payment')
+        setTimeout(() => setError(null), 5000)
+        return
+      } finally {
+        setIsProcessing(false)
+      }
+    }
+
     if (!selectedPaymentMethod) {
       console.log("❌ No se seleccionó método de pago")
       setError("Por favor selecciona un método de pago")
@@ -537,6 +583,7 @@ export default function CheckoutPage() {
                     )}
 
                     {/* Métodos de Pago */}
+                    {(!(course?.price === 0 || !course?.price)) && (
                     <div className="space-y-4">
                       <h3 className="text-lg font-semibold text-foreground">Método de Pago</h3>
                       
@@ -652,23 +699,26 @@ export default function CheckoutPage() {
                         )}
                       </div>
                     </div>
+                    )}
 
                     <Button
                       type="submit"
                       className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg"
-                      disabled={isProcessing || !selectedPaymentMethod}
+                      disabled={isProcessing || (!(!course?.price || course.price <= 0) && !selectedPaymentMethod)}
                     >
                       {isProcessing ? (
                         <div className="flex items-center gap-2">
                           <div className="w-4 h-4 border-2 border-secondary-foreground/30 border-t-secondary-foreground rounded-full animate-spin"></div>
-                          Procesando pago...
+                          {(!course?.price || course.price <= 0) ? 'Matriculando...' : 'Procesando pago...'}
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
                           <DollarSign className="w-4 h-4" />
-                          {selectedPaymentMethod === 'mercadopago' ? 'Pagar con Mercado Pago' : 
-                           selectedPaymentMethod === 'deposito' ? 'Confirmar Depósito' : 
-                           'Seleccionar método de pago'}
+                          {(!course?.price || course.price <= 0)
+                            ? 'Matricular gratis'
+                            : selectedPaymentMethod === 'mercadopago' ? 'Pagar con Mercado Pago' 
+                            : selectedPaymentMethod === 'deposito' ? 'Confirmar Depósito' 
+                            : 'Seleccionar método de pago'}
                         </div>
                       )}
                     </Button>
@@ -714,17 +764,23 @@ export default function CheckoutPage() {
                 <div className="border-t border-border pt-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-muted-foreground">Precio del curso:</span>
-                    <span className="text-2xl font-bold text-foreground">S/ {course.price || "99.00"}</span>
+                    {(!course.price || course.price <= 0) ? (
+                      <span className="text-2xl font-bold text-green-600">Gratis</span>
+                    ) : (
+                      <span className="text-2xl font-bold text-foreground">S/ {course.price.toFixed(2)}</span>
+                    )}
                   </div>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-muted-foreground">IGV (18%):</span>
-                    <span className="text-foreground">S/ {((course.price || 99) * 0.18).toFixed(2)}</span>
-                  </div>
+                  {course.price && course.price > 0 && (
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-muted-foreground">IGV (18%):</span>
+                      <span className="text-foreground">{`S/ ${(course.price * 0.18).toFixed(2)}`}</span>
+                    </div>
+                  )}
                   <div className="border-t border-border pt-2">
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-semibold text-foreground">Total:</span>
                       <span className="text-2xl font-bold text-primary">
-                        S/ {((course.price || 99) * 1.18).toFixed(2)}
+                        {(!course.price || course.price <= 0) ? 'S/ 0.00' : `S/ ${(course.price * 1.18).toFixed(2)}`}
                       </span>
                     </div>
                   </div>
