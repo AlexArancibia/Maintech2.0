@@ -46,7 +46,7 @@ export default function DashboardPage() {
       setPaymentStatus({
         type: 'success',
         message: '¡Pago exitoso! El curso ha sido agregado a tu cuenta.',
-        courseId
+        courseId: courseId || undefined
       })
       // Refrescar cursos después de un pago exitoso
       setTimeout(() => {
@@ -56,25 +56,25 @@ export default function DashboardPage() {
       setPaymentStatus({
         type: 'error',
         message: 'El pago no pudo ser procesado. Por favor, intenta de nuevo.',
-        courseId
+        courseId: courseId || undefined
       })
     } else if (error === 'payment_rejected') {
       setPaymentStatus({
         type: 'error',
         message: 'El pago fue rechazado. Por favor, verifica tu información de pago.',
-        courseId
+        courseId: courseId || undefined
       })
     } else if (status === 'payment_pending') {
       setPaymentStatus({
         type: 'pending',
         message: 'Tu pago está siendo procesado. Te notificaremos cuando esté listo.',
-        courseId
+        courseId: courseId || undefined
       })
     } else if (error && message) {
       setPaymentStatus({
         type: 'error',
         message: decodeURIComponent(message),
-        courseId
+        courseId: courseId || undefined
       })
     }
 
