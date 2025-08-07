@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,8 @@ import { useApiData } from "@/hooks/ApiContext"
 
 type PaymentStatus = 'loading' | 'approved' | 'pending' | 'rejected' | 'error'
 
-export default function PaymentSuccessPage() {
+// Component that uses useSearchParams
+function PaymentSuccessContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { refreshPurchasedCourses } = useApiData()
@@ -230,5 +231,33 @@ export default function PaymentSuccessPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+// Loading fallback component
+function PaymentSuccessLoading() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+          <CardTitle>Cargando...</CardTitle>
+        </CardHeader>
+        <CardContent className="text-center">
+          <p className="text-muted-foreground">
+            Preparando la página de confirmación de pago.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+// Main page component with Suspense boundary
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<PaymentSuccessLoading />}>
+      <PaymentSuccessContent />
+    </Suspense>
   )
 }
