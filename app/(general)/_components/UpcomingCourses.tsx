@@ -8,7 +8,7 @@ import { useApiData } from "@/hooks/ApiContext"
 import type { BasicCourse } from "@/types/CoursesType"
 import { getImageUrl } from "@/lib/getImageUrl"
 import Link from "next/link"
-import { convertToPeruTime, calculateDuration, isOlderThanOneDay } from "@/lib/dateUtils"
+import { convertToPeruTime, calculateDuration, isOlderThanOneDay, formatCourseDateSafe } from "@/lib/dateUtils"
 
 export default function UpcomingCourses() {
   const { basicCourses, isLoading } = useApiData()
@@ -206,10 +206,10 @@ export default function UpcomingCourses() {
                             <div className="flex items-start sm:items-center gap-3 sm:gap-4 mt-4">
                               <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
                                 <div className="text-base sm:text-lg font-bold">
-                                  {convertToPeruTime(new Date(course.start_date)).getDate()}
+                                  {formatCourseDateSafe(course.start_date, { day: "numeric" })}
                                 </div>
                                 <div className="text-xs sm:text-sm">
-                                  {convertToPeruTime(new Date(course.start_date)).toLocaleString("default", { month: "short" })}
+                                  {formatCourseDateSafe(course.start_date, { month: "short" })}
                                 </div>
                               </div>
                               <div className="flex flex-col flex-grow">

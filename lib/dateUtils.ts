@@ -8,16 +8,17 @@
  * @returns Fecha en zona horaria de Perú
  */
 export const convertToPeruTime = (date: Date | string): Date => {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
-  // Si la fecha es solo fecha (sin hora), tratarla como fecha local
+  // Si la fecha es solo fecha (sin hora), tratarla como fecha local para evitar problemas de timezone
   if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
     // Para fechas como "2025-08-22", crear la fecha directamente en zona horaria local
     const [year, month, day] = date.split('-').map(Number);
     return new Date(year, month - 1, day); // month - 1 porque los meses van de 0-11
   }
   
-  // Crear una nueva fecha en la zona horaria de Perú
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  
+  // Para fechas con hora, convertir correctamente a zona horaria de Perú
+  // Obtener la fecha en timezone de Lima
   const peruTime = new Date(dateObj.toLocaleString("en-US", {
     timeZone: "America/Lima"
   }));
@@ -152,7 +153,8 @@ export const formatCourseStartDate = (date: Date | string): string => {
   return peruDate.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: 'America/Lima'
   });
 };
 
@@ -166,6 +168,25 @@ export const formatCourseEndDate = (date: Date | string): string => {
   return peruDate.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: 'America/Lima'
   });
+};
+
+/**
+ * Función específica para formatear fechas de cursos sin problemas de zona horaria
+ * @param date - Fecha a formatear
+ * @param options - Opciones de formato
+ * @returns Fecha formateada
+ */
+export const formatCourseDateSafe = (date: Date | string, options: Intl.DateTimeFormatOptions): string => {
+  const peruDate = convertToPeruTime(date);
+  
+  // Asegurar que siempre usemos la zona horaria de Lima
+  const formatOptions = {
+    ...options,
+    timeZone: 'America/Lima'
+  };
+  
+  return peruDate.toLocaleDateString('es-ES', formatOptions);
 }; 
