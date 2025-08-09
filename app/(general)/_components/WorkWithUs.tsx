@@ -5,17 +5,17 @@ import React from 'react'
 const roles = [
   {
     title: "DOCENTE",
-    message: "¡Hola! Me interesa ser docente en IDEAS CAMPUS",
+    message: "¡Hola! Me interesa ser docente en MAINTECH",
     image: "/role1.png",
   },
   {
     title: "COORDINADOR",
-    message: "¡Hola! Me interesa el puesto de coordinador en IDEAS CAMPUS",
+    message: "¡Hola! Me interesa el puesto de coordinador en MAINTECH",
     image: "/role2.png",
   },
   {
     title: "ASESOR",
-    message: "¡Hola! Me interesa ser asesor en IDEAS CAMPUS",
+    message: "¡Hola! Me interesa ser asesor en MAINTECH",
     image: "/role3.png",
   },
 ]
