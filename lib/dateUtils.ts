@@ -7,7 +7,9 @@
  * @param date - Fecha a convertir
  * @returns Fecha en zona horaria de Perú
  */
-export const convertToPeruTime = (date: Date | string): Date => {
+export const convertToPeruTime = (date: Date | string | null): Date | null => {
+  if (!date) return null;
+  
   // Si la fecha es solo fecha (sin hora), tratarla como fecha local para evitar problemas de timezone
   if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
     // Para fechas como "2025-08-22", crear la fecha directamente en zona horaria local
@@ -92,9 +94,13 @@ export const formatTime = (date: Date | string): string => {
  * @param date - Fecha a verificar
  * @returns true si la fecha es anterior a un día antes de hoy
  */
-export const isOlderThanOneDay = (date: Date | string): boolean => {
+export const isOlderThanOneDay = (date: Date | string | null): boolean => {
+  if (!date) return false;
+  
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const peruDate = convertToPeruTime(dateObj);
+  if (!peruDate) return false;
+  
   const currentPeruDate = getCurrentPeruTime();
   
   // Restar un día a la fecha actual
@@ -109,9 +115,13 @@ export const isOlderThanOneDay = (date: Date | string): boolean => {
  * @param date - Fecha a verificar
  * @returns true si la fecha es futura
  */
-export const isFutureDate = (date: Date | string): boolean => {
+export const isFutureDate = (date: Date | string | null): boolean => {
+  if (!date) return false;
+  
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const peruDate = convertToPeruTime(dateObj);
+  if (!peruDate) return false;
+  
   const currentPeruDate = getCurrentPeruTime();
   
   return peruDate > currentPeruDate;
@@ -123,7 +133,9 @@ export const isFutureDate = (date: Date | string): boolean => {
  * @param endDate - Fecha de fin
  * @returns Duración formateada
  */
-export const calculateDuration = (startDate: string | Date, endDate: string | Date): string => {
+export const calculateDuration = (startDate: string | Date | null, endDate: string | Date | null): string => {
+  if (!startDate || !endDate) return "Fecha no disponible";
+  
   const start = typeof startDate === 'string' ? new Date(startDate) : startDate;
   const end = typeof endDate === 'string' ? new Date(endDate) : endDate;
   
@@ -148,8 +160,12 @@ export const calculateDuration = (startDate: string | Date, endDate: string | Da
  * @param date - Fecha a formatear
  * @returns Fecha formateada en español
  */
-export const formatCourseStartDate = (date: Date | string): string => {
+export const formatCourseStartDate = (date: Date | string | null): string => {
+  if (!date) return "Fecha no disponible";
+  
   const peruDate = convertToPeruTime(date);
+  if (!peruDate) return "Fecha no disponible";
+  
   return peruDate.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
@@ -163,8 +179,12 @@ export const formatCourseStartDate = (date: Date | string): string => {
  * @param date - Fecha a formatear
  * @returns Fecha formateada en español
  */
-export const formatCourseEndDate = (date: Date | string): string => {
+export const formatCourseEndDate = (date: Date | string | null): string => {
+  if (!date) return "Fecha no disponible";
+  
   const peruDate = convertToPeruTime(date);
+  if (!peruDate) return "Fecha no disponible";
+  
   return peruDate.toLocaleDateString('es-ES', {
     day: 'numeric',
     month: 'long',
@@ -179,8 +199,11 @@ export const formatCourseEndDate = (date: Date | string): string => {
  * @param options - Opciones de formato
  * @returns Fecha formateada
  */
-export const formatCourseDateSafe = (date: Date | string, options: Intl.DateTimeFormatOptions): string => {
+export const formatCourseDateSafe = (date: Date | string | null, options: Intl.DateTimeFormatOptions): string => {
+  if (!date) return "Fecha no disponible";
+  
   const peruDate = convertToPeruTime(date);
+  if (!peruDate) return "Fecha no disponible";
   
   // Asegurar que siempre usemos la zona horaria de Lima
   const formatOptions = {

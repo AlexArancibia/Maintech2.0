@@ -37,6 +37,7 @@ interface Course extends Timestamp {
   description: string;
  
   price: number;
+  priceUSD: number;
   titleSlug: string;
   modality: string;
 }

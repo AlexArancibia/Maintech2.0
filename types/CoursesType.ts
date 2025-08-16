@@ -57,14 +57,15 @@ export interface BasicCourse extends Timestamp {
   info: InfoNode[];
   teacher: Teacher;
   price: number;
+  priceUSD: number;
   titleSlug: string;
   category: BasicCategory;
   modality: string;
   image: Image;
   users_permissions_users: BasicUser[];
   content: InfoNode[];
-  start_date: string;
-  finish_date: string;
+  start_date: string | null;
+  finish_date: string | null;
 }
 
 export interface Attachment {
@@ -79,8 +80,8 @@ export interface Chapter extends Timestamp {
   title: string;
   content: InfoNode[];
   position: number;
-  date:string,
-  hours:number,
+  date: string | null;
+  hours: number;
   chapterSlug: string;
   shortdescription: string | null;
   attachment: Attachment[] | null;

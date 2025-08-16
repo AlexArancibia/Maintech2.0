@@ -13,12 +13,14 @@ import { MapPin, Linkedin } from 'lucide-react';
 import { getImageUrl } from "@/lib/getImageUrl";
 
 interface CourseInfoProps {
-  info: InfoNode[];
-  teacher?: Teacher;
+  info: InfoNode[] | null;
+  teacher: Teacher | null;
 }
 
 // Componente de diálogo para mostrar información completa del profesor
-const TeacherDialog = ({ teacher }: { teacher: Teacher }) => {
+const TeacherDialog = ({ teacher }: { teacher: Teacher | null }) => {
+  if (!teacher) return null;
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -33,23 +35,29 @@ const TeacherDialog = ({ teacher }: { teacher: Teacher }) => {
         <div className="space-y-4">
           <div className="flex flex-col items-center text-center">
             <Avatar className="w-24 h-24 mb-4">
-              <AvatarImage src={getImageUrl(teacher.photo.url)} alt={teacher.name} />
-              <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
+              {teacher.photo && teacher.photo.url ? (
+                <AvatarImage src={getImageUrl(teacher.photo.url)} alt={teacher.name || "Profesor"} />
+              ) : null}
+              <AvatarFallback>{teacher.name ? teacher.name.charAt(0).toUpperCase() : "P"}</AvatarFallback>
             </Avatar>
-            <h3 className="text-xl font-semibold">{teacher.name}</h3>
-            <p className="text-sm text-gray-600">{teacher.titulo}</p>
-            <div className="flex items-center mt-2">
-              <MapPin className="w-4 h-4 text-gray-400 mr-1" />
-              <Badge variant="outline" className="text-xs">
-                {teacher.country}
-              </Badge>
-            </div>
+            <h3 className="text-xl font-semibold">{teacher.name || "Profesor"}</h3>
+            <p className="text-sm text-gray-600">{teacher.titulo || "Instructor"}</p>
+            {teacher.country && (
+              <div className="flex items-center mt-2">
+                <MapPin className="w-4 h-4 text-gray-400 mr-1" />
+                <Badge variant="outline" className="text-xs">
+                  {teacher.country}
+                </Badge>
+              </div>
+            )}
           </div>
           
-          <div>
-            <h4 className="font-medium mb-2">Biografía</h4>
-            <p className="text-sm text-gray-600 leading-relaxed">{teacher.biography}</p>
-          </div>
+          {teacher.biography && (
+            <div>
+              <h4 className="font-medium mb-2">Biografía</h4>
+              <p className="text-sm text-gray-600 leading-relaxed">{teacher.biography}</p>
+            </div>
+          )}
           
           {teacher.linkedin && (
             <div className="pt-2">
@@ -67,9 +75,11 @@ const TeacherDialog = ({ teacher }: { teacher: Teacher }) => {
             </div>
           )}
           
-          <p className="text-xs text-gray-400 text-center mt-4">
-            Miembro desde {new Date(teacher.createdAt).toLocaleDateString('es-ES', { timeZone: 'America/Lima' })}
-          </p>
+          {teacher.createdAt && (
+            <p className="text-xs text-gray-400 text-center mt-4">
+              Miembro desde {new Date(teacher.createdAt).toLocaleDateString('es-ES', { timeZone: 'America/Lima' })}
+            </p>
+          )}
         </div>
       </DialogContent>
     </Dialog>
@@ -77,20 +87,24 @@ const TeacherDialog = ({ teacher }: { teacher: Teacher }) => {
 };
 
 // Componente para mostrar información sutil del profesor
-const TeacherInfoSubtle = ({ teacher }: { teacher: Teacher }) => {
+const TeacherInfoSubtle = ({ teacher }: { teacher: Teacher | null }) => {
+  if (!teacher) return null;
+  
   return (
     <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
       <p className="text-sm text-primary mb-3 font-semibold">Instructor del curso:</p>
       <div className="flex items-center space-x-3">
         <Avatar className="w-12 h-12">
-          <AvatarImage src={getImageUrl(teacher.photo.url)} alt={teacher.name} />
-          <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
+          {teacher.photo && teacher.photo.url ? (
+            <AvatarImage src={getImageUrl(teacher.photo.url)} alt={teacher.name || "Profesor"} />
+          ) : null}
+          <AvatarFallback>{teacher.name ? teacher.name.charAt(0).toUpperCase() : "P"}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-gray-900">{teacher.name}</h4>
-              <p className="text-sm text-gray-600">{teacher.titulo}</p>
+              <h4 className="font-medium text-gray-900">{teacher.name || "Profesor"}</h4>
+              <p className="text-sm text-gray-600">{teacher.titulo || "Instructor"}</p>
             </div>
             <TeacherDialog teacher={teacher} />
           </div>
@@ -212,6 +226,17 @@ export const CourseInfo = ({ info, teacher }: CourseInfoProps) => {
   const [openSection, setOpenSection] = useState<string | null>(null);
 
   console.log("Información recibida en CourseInfo:", info);
+  
+  // Si no hay información del curso, mostrar mensaje
+  if (!info || info.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500 text-lg">Información del curso no disponible</p>
+        <TeacherInfoSubtle teacher={teacher} />
+      </div>
+    );
+  }
+  
   const contentSections = renderContent(info);
   console.log("Secciones de contenido generadas:", contentSections);
 
@@ -236,7 +261,7 @@ export const CourseInfo = ({ info, teacher }: CourseInfoProps) => {
               <div className="space-y-2 mt-12 pl-2">
                 {section.content}
                 {/* Mostrar información del profesor solo en el primer tab */}
-                {index === 0 && teacher && <TeacherInfoSubtle teacher={teacher} />}
+                {index === 0 && <TeacherInfoSubtle teacher={teacher} />}
               </div>
             </TabsContent>
           ))}
@@ -256,7 +281,7 @@ export const CourseInfo = ({ info, teacher }: CourseInfoProps) => {
                 <div className="pt-2 pb-4">
                   {section.content}
                   {/* Mostrar información del profesor solo en el primer accordion item */}
-                  {index === 0 && teacher && <TeacherInfoSubtle teacher={teacher} />}
+                  {index === 0 && <TeacherInfoSubtle teacher={teacher} />}
                 </div>
               </AccordionContent>
             </AccordionItem>

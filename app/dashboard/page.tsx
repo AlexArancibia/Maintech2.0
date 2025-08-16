@@ -223,11 +223,11 @@ function TeacherCourseCard({ course, currentUserId }: TeacherCourseCardProps) {
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4" />
-                    <span>Inicio: {formatCourseStartDate(course.start_date)}</span>
+                    <span>Inicio: {course.start_date ? formatCourseStartDate(course.start_date) : "Por confirmar"}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4" />
-                    <span>Fin: {formatCourseEndDate(course.finish_date)}</span>
+                    <span>Fin: {course.finish_date ? formatCourseEndDate(course.finish_date) : "Por confirmar"}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Banknote className="h-4 w-4" />

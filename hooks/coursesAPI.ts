@@ -51,9 +51,8 @@ export async function getCourseBySlug(
 ): Promise<BasicCourse | DetailedCourse | null> {
   try {
     console.log("Fetching course by slug:", slug, "Detailed:", detailed);
-    const endpoint = detailed
-      ? `/api/courses?filters[titleSlug][$eq]=${slug}&populate[0]=chapters&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][0]=purchases&populate[chapters][populate][attachment]=*&populate[category][fields][0]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email`
-      : `/api/courses?filters[titleSlug][$eq]=${slug}&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[category][fields][0]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email`;
+    // Siempre usar el endpoint básico para evitar problemas con campos faltantes
+    const endpoint = `/api/courses?filters[titleSlug][$eq]=${slug}&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[category][fields][0]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email`;
 
     console.log("Generated endpoint:", endpoint);
     const response = await api.get<{ data: { data: (BasicCourse | DetailedCourse)[] } }>(endpoint);

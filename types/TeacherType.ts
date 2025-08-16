@@ -13,5 +13,5 @@ export interface Teacher extends Timestamp {
     id: number;
     documentId: string;
     url: string;
-  } ;
+  };
 }

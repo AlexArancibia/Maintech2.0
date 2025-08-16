@@ -27,11 +27,13 @@ export default function UpcomingCourses() {
       const upcoming = basicCourses
         .filter((course) => {
           // Solo mostrar cursos que no sean más antiguos que un día antes
-          return !isOlderThanOneDay(course.start_date)
+          return course.start_date && !isOlderThanOneDay(course.start_date)
         })
         .sort((a, b) => {
-          const dateA = convertToPeruTime(new Date(a.start_date))
-          const dateB = convertToPeruTime(new Date(b.start_date))
+          if (!a.start_date || !b.start_date) return 0;
+          const dateA = convertToPeruTime(a.start_date)
+          const dateB = convertToPeruTime(b.start_date)
+          if (!dateA || !dateB) return 0;
           return dateA.getTime() - dateB.getTime()
         })
         .slice(0, 10) // Get the next 10 upcoming courses
@@ -204,12 +206,12 @@ export default function UpcomingCourses() {
                           </div>
                           <div className="p-4 sm:p-6 flex flex-col flex-grow">
                             <div className="flex items-start sm:items-center gap-3 sm:gap-4 mt-4">
-                              <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
+                                                              <div className="bg-[#F1536D] text-white rounded-lg p-2 text-center min-w-[50px] sm:min-w-[60px]">
                                 <div className="text-base sm:text-lg font-bold">
-                                  {formatCourseDateSafe(course.start_date, { day: "numeric" })}
+                                  {course.start_date ? formatCourseDateSafe(course.start_date, { day: "numeric" }) : "?"}
                                 </div>
-                                <div className="text-xs sm:text-sm">
-                                  {formatCourseDateSafe(course.start_date, { month: "short" })}
+                                <div className="text-xs sm:text-lg font-bold">
+                                  {course.start_date ? formatCourseDateSafe(course.start_date, { month: "short" }) : "TBD"}
                                 </div>
                               </div>
                               <div className="flex flex-col flex-grow">
@@ -230,7 +232,7 @@ export default function UpcomingCourses() {
                                     </div>
                                   )}
                                   <div className="text-xs text-gray-500">
-                                    📅 Duración: {calculateDuration(course.start_date, course.finish_date)}
+                                    📅 Duración: {course.start_date && course.finish_date ? calculateDuration(course.start_date, course.finish_date) : "Por confirmar"}
                                   </div>
                                 </div>
                               </div>

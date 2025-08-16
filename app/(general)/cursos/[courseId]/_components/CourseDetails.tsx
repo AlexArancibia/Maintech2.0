@@ -2,10 +2,11 @@ import { Calendar, Clock, DollarSign, BookOpen, Banknote } from 'lucide-react'
 
 interface CourseDetailsProps {
   course: {
-    start_date: string;
-    finish_date: string;
+    start_date: string | null;
+    finish_date: string | null;
     chapters: any[];
     price: number;
+    priceUSD: number;
   }
 }
 
@@ -13,9 +14,9 @@ import { formatCourseStartDate, formatCourseEndDate } from '@/lib/dateUtils'
 
 export function CourseDetails({ course }: CourseDetailsProps) {
   // Calcular duración
-  const startDate = new Date(course.start_date);
-  const endDate = new Date(course.finish_date);
-  const durationInDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)) + 1;
+  const durationInDays = course.start_date && course.finish_date 
+    ? Math.ceil((new Date(course.finish_date).getTime() - new Date(course.start_date).getTime()) / (1000 * 3600 * 24)) + 1
+    : 0;
 
   // Format dates without year
   const formatDateWithoutYear = (date: Date) => {
@@ -33,8 +34,10 @@ export function CourseDetails({ course }: CourseDetailsProps) {
           <p className="text-sm text-slate-400">Fechas</p>
           <div className="text-slate-300">
             <p className="font-medium">
-              {formatCourseStartDate(course.start_date)} - 
-              {formatCourseEndDate(course.finish_date)}
+              {course.start_date && course.finish_date 
+                ? `${formatCourseStartDate(course.start_date)} - ${formatCourseEndDate(course.finish_date)}`
+                : "Fechas por confirmar"
+              }
             </p>
           </div>
         </div>
@@ -43,7 +46,9 @@ export function CourseDetails({ course }: CourseDetailsProps) {
         <Clock className="w-7 h-7 text-cyan-500" />
         <div>
           <p className="text-sm text-slate-400">Duración</p>
-          <p className="font-medium">{durationInDays} días</p>
+          <p className="font-medium">
+            {durationInDays > 0 ? `${durationInDays} días` : "Por confirmar"}
+          </p>
         </div>
       </div>
       <div className="flex items-center gap-2 text-slate-300">

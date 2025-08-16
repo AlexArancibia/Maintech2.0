@@ -89,7 +89,7 @@ export default function PurchasedCourseCard({ course }: CourseCardProps) {
         <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
           <div className="flex items-center">
             <CalendarDays className="w-4 h-4 mr-2 text-accent" />
-            <span>{formatCourseStartDate(course.start_date)}</span>
+            <span>{course.start_date ? formatCourseStartDate(course.start_date) : "Por confirmar"}</span>
           </div>
           <div className="flex items-center">
             <Clock className="w-4 h-4 mr-2 text-accent" />

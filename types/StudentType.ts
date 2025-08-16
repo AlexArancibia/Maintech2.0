@@ -10,7 +10,7 @@ export interface User {
   confirmationToken: string;
   confirmed: boolean;
   blocked: boolean;
-  isTeacher : boolean;
+  isTeacher: boolean;
   createdAt: string;
   updatedAt: string;
 }

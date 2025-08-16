@@ -85,8 +85,17 @@ export default function CourseDetailsPage() {
       setIsLoading(true)
       try {
         const fetchedCourse = await getCourseBySlug(params.courseId, true)
-        if (fetchedCourse && "chapters" in fetchedCourse) {
-          setCourse(fetchedCourse)
+        if (fetchedCourse && fetchedCourse.title && fetchedCourse.titleSlug) {
+          // Si el curso no tiene capítulos, crear un objeto con capítulos vacíos
+          const courseWithChapters = {
+            ...fetchedCourse,
+            chapters: 'chapters' in fetchedCourse ? fetchedCourse.chapters || [] : [],
+            info: 'info' in fetchedCourse ? fetchedCourse.info || [] : [],
+            teacher: fetchedCourse.teacher || null,
+            category: fetchedCourse.category || null
+          };
+          
+          setCourse(courseWithChapters)
           if (user) {
             const purchaseFound = purchasedCourses.find((item) => item.titleSlug === params.courseId)
             setIsCoursePurchased(!!purchaseFound)
@@ -181,7 +190,25 @@ export default function CourseDetailsPage() {
     return <div className="text-center text-red-500 mt-8">{error || "Failed to load course"}</div>
   }
 
-  const isFreeCourse = course.price === 0
+  // Validar que el curso tenga los campos mínimos necesarios
+  if (!course.title || !course.titleSlug) {
+    return <div className="text-center text-red-500 mt-8">Información del curso incompleta</div>
+  }
+
+  // Asegurar que el curso tenga todos los campos necesarios con valores por defecto
+  const safeCourse = {
+    ...course,
+    chapters: 'chapters' in course ? course.chapters || [] : [],
+    info: 'info' in course ? course.info || [] : [],
+    teacher: course.teacher || null,
+    category: course.category || null,
+    image: course.image || { id: 0, documentId: "", url: "", name: "" },
+    modality: course.modality || "No especificada",
+    price: course.price || 0,
+    priceUSD: course.priceUSD || 0
+  };
+
+  const isFreeCourse = safeCourse.price === 0 || safeCourse.price === null || safeCourse.price === undefined
 
   return (
     <>
@@ -191,18 +218,24 @@ export default function CourseDetailsPage() {
             <div className="lg:col-span-2">
               <div className="space-y-6">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold text-white mt-2">{course.title}</h1>
+                  <h1 className="text-3xl md:text-4xl font-bold text-white mt-2">{safeCourse.title}</h1>
                 </div>
 
-                <div className="w-full rounded-lg overflow-hidden bg-slate-800">
-                  <img
-                    src={getImageUrl(course.image.url) || "/placeholder.svg"}
-                    alt={course.title}
-                    className="w-full object-contain"
-                  />
-                </div>
+                {safeCourse.image && safeCourse.image.url ? (
+                  <div className="w-full rounded-lg overflow-hidden bg-slate-800">
+                    <img
+                      src={getImageUrl(safeCourse.image.url) || "/placeholder.svg"}
+                      alt={safeCourse.title}
+                      className="w-full object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full rounded-lg overflow-hidden bg-slate-800 h-64 flex items-center justify-center">
+                    <p className="text-white/60">Imagen no disponible</p>
+                  </div>
+                )}
 
-                <CourseDetails course={course} />
+                <CourseDetails course={safeCourse} />
               </div>
             </div>
 
@@ -225,10 +258,10 @@ export default function CourseDetailsPage() {
                             <div className="space-y-4">
                               <div className="text-center">
                                 <div className="text-2xl font-bold text-white mb-2">
-                                  {isFreeCourse ? "Gratis" : `$${course.price}`}
+                                  {isFreeCourse ? "Gratis" : course.price ? `S/ ${course.price.toFixed(2)}` : "Precio por confirmar"}
                                 </div>
                                 <p className="text-sm text-white/70">
-                                  {isFreeCourse ? "Sin costo de inscripción. Acceso inmediato con inicio flexible. Modalidad " : "Precio del curso completo. Acceso inmediato con inicio flexible. Modalidad "}{course.modality} con {course.chapters.length} capítulos.
+                                  {isFreeCourse ? "Sin costo de inscripción. Acceso inmediato con inicio flexible. Modalidad " : "Precio del curso completo. Acceso inmediato con inicio flexible. Modalidad "}{course.modality || "No especificada"} con {course.chapters?.length || 0} capítulos.
                                 </p>
                               </div>
                               
@@ -406,24 +439,34 @@ export default function CourseDetailsPage() {
                       <AccordionContent>
                         <Card className="bg-black/10 backdrop-blur-md border border-white/10 shadow-lg mt-2">
                           <CardContent className="pt-6">
-                            {course.teacher && (
+                            {course.teacher ? (
                               <div className="mb-6">
                                 <div className="flex items-center space-x-4 mb-4">
                                   <div className="w-16 h-16 rounded-full overflow-hidden">
-                                    <img
-                                      src={getImageUrl(course.teacher.photo.url)}
-                                      alt={course.teacher.name}
-                                      className="w-full h-full object-cover"
-                                    />
+                                    {course.teacher.photo && course.teacher.photo.url ? (
+                                      <img
+                                        src={getImageUrl(course.teacher.photo.url)}
+                                        alt={course.teacher.name || "Profesor"}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                                        <span className="text-gray-600 text-lg font-bold">
+                                          {course.teacher.name ? course.teacher.name.charAt(0).toUpperCase() : "P"}
+                                        </span>
+                                      </div>
+                                    )}
                                   </div>
                                   <div>
-                                    <h3 className="text-lg font-semibold text-white">{course.teacher.name}</h3>
-                                    <p className="text-sm text-white/70">{course.teacher.titulo}</p>
+                                    <h3 className="text-lg font-semibold text-white">{course.teacher.name || "Profesor"}</h3>
+                                    <p className="text-sm text-white/70">{course.teacher.titulo || "Instructor"}</p>
                                   </div>
                                 </div>
-                                <p className="text-sm text-white/80 mb-4 line-clamp-3">
-                                  {course.teacher.biography}
-                                </p>
+                                {course.teacher.biography && (
+                                  <p className="text-sm text-white/80 mb-4 line-clamp-3">
+                                    {course.teacher.biography}
+                                  </p>
+                                )}
                                 
                                 {/* LinkedIn del profesor */}
                                 {course.teacher.linkedin && (
@@ -441,6 +484,10 @@ export default function CourseDetailsPage() {
                                     </Button>
                                   </div>
                                 )}
+                              </div>
+                            ) : (
+                              <div className="text-center py-4">
+                                <p className="text-white/60">Información del profesor no disponible</p>
                               </div>
                             )}
                           </CardContent>
@@ -467,10 +514,10 @@ export default function CourseDetailsPage() {
                             <div className="space-y-4">
                               <div className="text-center">
                                 <div className="text-2xl font-bold text-white mb-2">
-                                  {isFreeCourse ? "Gratis" : `$${course.price}`}
+                                  {isFreeCourse ? "Gratis" : course.price ? `S/ ${course.price.toFixed(2)}` : "Precio por confirmar"}
                                 </div>
                                 <p className="text-sm text-white/70">
-                                  {isFreeCourse ? "Sin costo de inscripción. Acceso inmediato con inicio flexible. Modalidad " : "Precio del curso completo. Acceso inmediato con inicio flexible. Modalidad "}{course.modality} con {course.chapters.length} capítulos.
+                                  {isFreeCourse ? "Sin costo de inscripción. Acceso inmediato con inicio flexible. Modalidad " : "Precio del curso completo. Acceso inmediato con inicio flexible. Modalidad "}{course.modality || "No especificada"} con {course.chapters?.length || 0} capítulos.
                                 </p>
                               </div>
                               
@@ -648,24 +695,34 @@ export default function CourseDetailsPage() {
                       <AccordionContent>
                         <Card className="bg-black/10 backdrop-blur-md border border-white/10 shadow-lg mt-2">
                           <CardContent className="pt-6">
-                            {course.teacher && (
+                            {course.teacher ? (
                               <div className="mb-6">
                                 <div className="flex items-center space-x-4 mb-4">
                                   <div className="w-16 h-16 rounded-full overflow-hidden">
-                                    <img
-                                      src={getImageUrl(course.teacher.photo.url)}
-                                      alt={course.teacher.name}
-                                      className="w-full h-full object-cover"
-                                    />
+                                    {course.teacher.photo && course.teacher.photo.url ? (
+                                      <img
+                                        src={getImageUrl(course.teacher.photo.url)}
+                                        alt={course.teacher.name || "Profesor"}
+                                        className="w-full h-full object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                                        <span className="text-gray-600 text-lg font-bold">
+                                          {course.teacher.name ? course.teacher.name.charAt(0).toUpperCase() : "P"}
+                                        </span>
+                                      </div>
+                                    )}
                                   </div>
                                   <div>
-                                    <h3 className="text-lg font-semibold text-white">{course.teacher.name}</h3>
-                                    <p className="text-sm text-white/70">{course.teacher.titulo}</p>
+                                    <h3 className="text-lg font-semibold text-white">{course.teacher.name || "Profesor"}</h3>
+                                    <p className="text-sm text-white/70">{course.teacher.titulo || "Instructor"}</p>
                                   </div>
                                 </div>
-                                <p className="text-sm text-white/80 mb-4 line-clamp-3">
-                                  {course.teacher.biography}
-                                </p>
+                                {course.teacher.biography && (
+                                  <p className="text-sm text-white/80 mb-4 line-clamp-3">
+                                    {course.teacher.biography}
+                                  </p>
+                                )}
                                 
                                 {/* LinkedIn del profesor */}
                                 {course.teacher.linkedin && (
@@ -683,6 +740,10 @@ export default function CourseDetailsPage() {
                                     </Button>
                                   </div>
                                 )}
+                              </div>
+                            ) : (
+                              <div className="text-center py-4">
+                                <p className="text-white/60">Información del profesor no disponible</p>
                               </div>
                             )}
                           </CardContent>
@@ -703,9 +764,9 @@ export default function CourseDetailsPage() {
         </div>
         <div className="content-section flex gap-4">
           <div className="w-full p-6 border  transition-all shadow-none hover:shadow-none     bg-white/80 rounded-xl">
-            <CourseInfo info={course.info} teacher={course.teacher} />
+            <CourseInfo info={safeCourse.info} teacher={safeCourse.teacher} />
 
-            <ChapterInfo chapters={course.chapters} />
+            <ChapterInfo chapters={safeCourse.chapters} />
 
             <section className=" mb-4 sm:mb-4 ">
               {isLoading ? (
@@ -719,7 +780,7 @@ export default function CourseDetailsPage() {
               ) : (() => {
                 const relatedCourses = basicCourses
                   .filter(basicCourse => basicCourse.titleSlug !== params.courseId)
-                  .filter(basicCourse => basicCourse.category?.name === course.category?.name);
+                  .filter(basicCourse => basicCourse.category?.name === safeCourse.category?.name);
                 if (relatedCourses.length === 0) return null;
                 return (
                   <>

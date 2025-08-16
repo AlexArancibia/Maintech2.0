@@ -5,10 +5,19 @@ import { Chapter } from '@/types/CoursesType'
 import { cn } from "@/lib/utils"
 
 interface ChapterInfoProps {
-  chapters: Chapter[];
+  chapters: Chapter[] | null;
 }
 
 export function ChapterInfo({ chapters }: ChapterInfoProps) {
+  // Si no hay capítulos, mostrar mensaje
+  if (!chapters || chapters.length === 0) {
+    return (
+      <div className="mb-16 mt-6 text-center py-8">
+        <p className="text-gray-500 text-lg">Contenido del curso no disponible</p>
+      </div>
+    );
+  }
+
   return (
     <div className=" mb-16 mt-6 ">
       <Accordion type="single" collapsible className="w-full space-y-4">
