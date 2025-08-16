@@ -164,6 +164,12 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
     e.preventDefault();
     const now = getCurrentPeruTime();
     const sessionTime = convertToPeruTime(chapter.date);
+    
+    if (!sessionTime) {
+      console.error("No se pudo convertir la fecha de la sesión");
+      return;
+    }
+    
     sessionTime.setMinutes(sessionTime.getMinutes() - 10);
     
     console.log("Hora actual (Perú):", now);
@@ -294,7 +300,7 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
                     <Calendar className="w-8 h-8 text-accent" />
                     <div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">Fecha y hora</p>
-                      <p className="font-medium text-gray-700 dark:text-gray-200">{formatDate(chapter.date)}</p>
+                      <p className="font-medium text-gray-700 dark:text-gray-200">{chapter.date ? formatDate(chapter.date) : 'No disponible'}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
@@ -345,23 +351,22 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
             
           )}
           {chapter.attachment && chapter.attachment.length > 0 && (
-          <TabsContent value="attachment">
-              {chapter.attachment && chapter.attachment.length > 0 && (
-                <div className="mt-8">
-                  <h3 className="text-xl font-semibold text-gray-700 mb-4">Archivos adjuntos</h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {chapter.attachment.map((file, index) => (
-                      <Button key={index} asChild variant="outline" className="w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800">
-                        <Link href={validateUrl(file.url)} target="_blank" rel="noopener noreferrer" className="flex items-center p-4">
-                          <Paperclip className="w-5 h-5 mr-3 text-cyan-500" />
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{file.name}</span>
-                        </Link>
-                      </Button>
-                    ))}
-                  </div>
+            <TabsContent value="attachment">
+              <div className="mt-8">
+                <h3 className="text-xl font-semibold text-gray-700 mb-4">Archivos adjuntos</h3>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {chapter.attachment.map((file, index) => (
+                    <Button key={index} asChild variant="outline" className="w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800">
+                      <Link href={validateUrl(file.url)} target="_blank" rel="noopener noreferrer" className="flex items-center p-4">
+                        <Paperclip className="w-5 h-5 mr-3 text-cyan-500" />
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{file.name}</span>
+                      </Link>
+                    </Button>
+                  ))}
                 </div>
-              )}
-            </TabsContent>)}
+              </div>
+            </TabsContent>
+          )}
 
           {/* Tab de contenido para capítulos sin live session ni quiz */}
           {!chapter.liveSessionUrl && (!chapter.quiz || chapter.quiz.length === 0) && (
