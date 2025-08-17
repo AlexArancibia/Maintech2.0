@@ -13,6 +13,7 @@ import type { DetailedCourse } from "@/types/CoursesType"
 import { ArrowLeft, CreditCard, DollarSign, Shield, CheckCircle, User, Lock, Mail, CheckSquare, Square, Building2 } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/hooks/AuthContext"
+import { useCurrency } from "@/hooks/CurrencyContext"
 import { useApiData } from "@/hooks/ApiContext"
 import api from "@/lib/axios"
 
@@ -29,7 +30,11 @@ interface PostPurchase {
 }
 
 export default function CheckoutPage() {
+  console.log("🎬 [CHECKOUT_PAGE] Componente renderizado")
+  console.log("📋 [CHECKOUT_PAGE] Parámetros de la URL:", useParams<Params>())
+  
   const { user, login, createUser } = useAuth()
+  const { currency, formatPrice } = useCurrency()
   const { refreshPurchasedCourses } = useApiData()
   const router = useRouter()
   const params = useParams<Params>()
@@ -51,27 +56,95 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     async function fetchData() {
+      console.log("🚀 [CHECKOUT] Iniciando fetchData...")
+      console.log("📋 [CHECKOUT] Parámetros recibidos:")
+      console.log("   - courseId (params):", params.courseId)
+      console.log("   - Tipo de courseId:", typeof params.courseId)
+      console.log("   - User:", user)
+      
       setIsLoading(true)
       try {
+        console.log("🔍 [CHECKOUT] Llamando a getCourseBySlug...")
+        console.log("   - Parámetros:", { slug: params.courseId, detailed: true })
+        
         const fetchedCourse = await getCourseBySlug(params.courseId, true)
-        if (fetchedCourse && "chapters" in fetchedCourse) {
-          setCourse(fetchedCourse)
+        
+        console.log("📥 [CHECKOUT] Respuesta de getCourseBySlug:")
+        console.log("   - fetchedCourse:", fetchedCourse)
+        console.log("   - Tipo:", typeof fetchedCourse)
+        console.log("   - Es null/undefined:", fetchedCourse === null || fetchedCourse === undefined)
+        console.log("   - Tiene chapters:", fetchedCourse && "chapters" in fetchedCourse)
+        
+        if (fetchedCourse) {
+          console.log("✅ [CHECKOUT] Curso encontrado, verificando estructura...")
+          console.log("   - Título:", fetchedCourse.title)
+          console.log("   - ID:", fetchedCourse.id)
+          console.log("   - DocumentId:", fetchedCourse.documentId)
+          console.log("   - Precio:", fetchedCourse.price)
+          console.log("   - Categoría:", fetchedCourse.category)
+          console.log("   - Imagen:", fetchedCourse.image)
+          // Verificar si es DetailedCourse antes de acceder a chapters
+          const isDetailedCourse = "chapters" in fetchedCourse
+          const chaptersInfo = isDetailedCourse ? fetchedCourse.chapters : 'No disponible'
+          const modalityInfo = fetchedCourse.modality || 'No disponible'
           
-          // Pre-llenar datos del usuario si está logueado
-          if (user) {
-            setFormData(prev => ({
-              ...prev,
-              email: user.email || "",
-            }))
-            setCurrentStep('payment')
-            setNewAccountCreated(false) // Usuario ya existente
+          console.log("   - Capítulos:", chaptersInfo)
+          console.log("   - Modalidad:", modalityInfo)
+          console.log("   - Es DetailedCourse:", isDetailedCourse)
+          
+          // Verificar si tiene la estructura mínima requerida
+          const hasRequiredFields = fetchedCourse.title && 
+                                  fetchedCourse.documentId && 
+                                  fetchedCourse.image && 
+                                  fetchedCourse.image.url
+          
+          console.log("🔍 [CHECKOUT] Verificación de campos requeridos:")
+          console.log("   - Tiene título:", !!fetchedCourse.title)
+          console.log("   - Tiene documentId:", !!fetchedCourse.documentId)
+          console.log("   - Tiene imagen:", !!fetchedCourse.image)
+          console.log("   - Tiene URL de imagen:", !!(fetchedCourse.image && fetchedCourse.image.url))
+          console.log("   - Todos los campos requeridos:", hasRequiredFields)
+          
+          if (fetchedCourse && isDetailedCourse && hasRequiredFields) {
+            console.log("✅ [CHECKOUT] Curso válido, estableciendo en estado...")
+            setCourse(fetchedCourse)
+            
+            // Pre-llenar datos del usuario si está logueado
+            if (user) {
+              console.log("👤 [CHECKOUT] Usuario logueado, pre-llenando datos...")
+              setFormData(prev => ({
+                ...prev,
+                email: user.email || "",
+              }))
+              setCurrentStep('payment')
+              setNewAccountCreated(false) // Usuario ya existente
+            } else {
+              console.log("👤 [CHECKOUT] No hay usuario logueado, manteniendo en paso de auth...")
+            }
+          } else {
+            console.log("❌ [CHECKOUT] Curso inválido o incompleto:")
+            console.log("   - Tiene chapters:", isDetailedCourse)
+            console.log("   - Tiene campos requeridos:", hasRequiredFields)
+            console.log("   - Estructura del curso:", {
+              title: fetchedCourse.title,
+              documentId: fetchedCourse.documentId,
+              image: fetchedCourse.image,
+              chapters: chaptersInfo
+            })
+            setError("Course not found or insufficient details")
           }
         } else {
+          console.log("❌ [CHECKOUT] getCourseBySlug retornó null/undefined")
           setError("Course not found or insufficient details")
         }
       } catch (err) {
+        console.error("💥 [CHECKOUT] Error en fetchData:")
+        console.error("   - Error:", err)
+        console.error("   - Mensaje:", err instanceof Error ? err.message : 'Error desconocido')
+        console.error("   - Stack:", err instanceof Error ? err.stack : 'No disponible')
         setError("Failed to fetch course details")
       } finally {
+        console.log("🏁 [CHECKOUT] Finalizando fetchData, isLoading = false")
         setIsLoading(false)
       }
     }
@@ -126,18 +199,32 @@ export default function CheckoutPage() {
   const handleMercadoPagoSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log("💳 [MERCADOPAGO] Iniciando proceso de pago...")
+    console.log("📋 [MERCADOPAGO] Estado actual:")
+    console.log("   - Course:", course)
+    console.log("   - User:", user)
+    console.log("   - Course ID:", course?.id)
+    console.log("   - Course DocumentId:", course?.documentId)
+    console.log("   - Course Title:", course?.title)
+    console.log("   - Course Price:", course?.price)
+    
     if (!course || !user) {
+      console.error("❌ [MERCADOPAGO] Faltan datos críticos:")
+      console.error("   - Course existe:", !!course)
+      console.error("   - User existe:", !!user)
       setError("Error: Curso o usuario no encontrado")
       return
     }
 
     // Validar que tenemos todos los datos necesarios del curso
     if (!course.title || !course.documentId) {
-      console.error("❌ Datos del curso incompletos:", {
+      console.error("❌ [MERCADOPAGO] Datos del curso incompletos:", {
         title: course.title,
         price: course.price,
         documentId: course.documentId,
-        imageUrl: course.image?.url
+        imageUrl: course.image?.url,
+        hasImage: !!course.image,
+        imageUrlExists: !!(course.image && course.image.url)
       })
       setError("Error: Información del curso incompleta")
       return
@@ -214,11 +301,13 @@ export default function CheckoutPage() {
 
   const linkCourseToUser = async (userId: number, courseId: string) => {
     try {
-      console.log("🔗 Iniciando vinculación de curso al usuario...")
-      console.log("📋 Datos de entrada:")
+      console.log("🔗 [LINK_COURSE] Iniciando vinculación de curso al usuario...")
+      console.log("📋 [LINK_COURSE] Datos de entrada:")
       console.log("   - userId:", userId)
       console.log("   - courseId:", courseId)
       console.log("   - Tipo de courseId:", typeof courseId)
+      console.log("   - userId es válido:", userId > 0)
+      console.log("   - courseId es válido:", courseId && courseId.length > 0)
       
       const payload: PostPurchase = {
         data: {
@@ -228,21 +317,29 @@ export default function CheckoutPage() {
         },
       }
       
-      console.log("📤 Payload a enviar:", payload)
-      console.log("🌐 URL de la API:", `/api/courses/${courseId}`)
+      console.log("📤 [LINK_COURSE] Payload a enviar:", payload)
+      console.log("🌐 [LINK_COURSE] URL de la API:", `/api/courses/${courseId}`)
+      console.log("🔧 [LINK_COURSE] Configuración de axios:")
+      console.log("   - Base URL:", api.defaults.baseURL)
+      console.log("   - Headers:", api.defaults.headers)
       
       const response = await api.put(`/api/courses/${courseId}`, payload)
       
-      console.log("✅ Respuesta exitosa de la API:")
+      console.log("✅ [LINK_COURSE] Respuesta exitosa de la API:")
       console.log("   - Status:", response.status)
+      console.log("   - Status Text:", response.statusText)
       console.log("   - Data:", response.data)
+      console.log("   - Headers:", response.headers)
       
       return true
     } catch (error: any) {
-      console.error("❌ Error al vincular curso al usuario:")
+      console.error("❌ [LINK_COURSE] Error al vincular curso al usuario:")
       console.error("   - Mensaje:", error.message)
+      console.error("   - Tipo de error:", error.constructor.name)
       console.error("   - Status:", error.response?.status)
+      console.error("   - Status Text:", error.response?.statusText)
       console.error("   - Data:", error.response?.data)
+      console.error("   - Headers:", error.response?.headers)
       console.error("   - URL intentada:", `/api/courses/${courseId}`)
       console.error("   - Payload enviado:", {
         data: {
@@ -251,6 +348,16 @@ export default function CheckoutPage() {
           },
         },
       })
+      console.error("   - Stack trace:", error.stack)
+      
+      // Log adicional para errores de red
+      if (error.code) {
+        console.error("   - Error code:", error.code)
+      }
+      if (error.syscall) {
+        console.error("   - Syscall:", error.syscall)
+      }
+      
       return false
     }
   }
@@ -258,8 +365,18 @@ export default function CheckoutPage() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    console.log("🚀 Iniciando proceso de checkout...")
-    console.log("📋 Método de pago seleccionado:", selectedPaymentMethod)
+    console.log("🚀 [CHECKOUT] Iniciando proceso de checkout...")
+    console.log("📋 [CHECKOUT] Método de pago seleccionado:", selectedPaymentMethod)
+    console.log("📋 [CHECKOUT] Estado del curso:")
+    console.log("   - Course existe:", !!course)
+    console.log("   - Course ID:", course?.id)
+    console.log("   - Course DocumentId:", course?.documentId)
+    console.log("   - Course Title:", course?.title)
+    console.log("   - Course Price:", course?.price)
+    console.log("   - Course Image:", course?.image)
+    console.log("   - User existe:", !!user)
+    console.log("   - User ID:", user?.id)
+    console.log("   - User Email:", user?.email)
     
     const isFreeCourse = !course?.price || course.price <= 0
 
@@ -767,7 +884,16 @@ export default function CheckoutPage() {
                     {(!course.price || course.price <= 0) ? (
                       <span className="text-2xl font-bold text-green-600">Gratis</span>
                     ) : (
-                      <span className="text-2xl font-bold text-foreground">S/ {course.price.toFixed(2)}</span>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-foreground">
+                          {formatPrice(course.price, course.priceUSD)}
+                        </div>
+                        {currency === 'USD' && (
+                          <div className="text-sm text-muted-foreground">
+                            Pago en soles: S/ {course.price.toFixed(2)}
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
                   {course.price && course.price > 0 && (

@@ -12,5 +12,7 @@ export interface Category extends Timestamp {
   documentId: string;
   name: string;
   slug: string;
+  description: string;
   category_img: CategoryImage | null;
+  certificate_img?: CategoryImage | null;
 }

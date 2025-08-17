@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://maintech.com/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow important pages
+Allow: /cursos/
+Allow: /quienes-somos/
+Allow: /solutions/
+Allow: /escribenos/
+Allow: /politica-de-calidad/
+Allow: /politica-privacidad/
+Allow: /libro-reclamaciones/
+
+# Crawl delay
+Crawl-delay: 1

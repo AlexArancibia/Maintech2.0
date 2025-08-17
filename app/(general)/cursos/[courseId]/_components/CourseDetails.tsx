@@ -1,4 +1,5 @@
 import { Calendar, Clock, DollarSign, BookOpen, Banknote } from 'lucide-react'
+import { useCurrency } from '@/hooks/CurrencyContext'
 
 interface CourseDetailsProps {
   course: {
@@ -13,6 +14,8 @@ interface CourseDetailsProps {
 import { formatCourseStartDate, formatCourseEndDate } from '@/lib/dateUtils'
 
 export function CourseDetails({ course }: CourseDetailsProps) {
+  const { formatPrice } = useCurrency();
+  
   // Calcular duración
   const durationInDays = course.start_date && course.finish_date 
     ? Math.ceil((new Date(course.finish_date).getTime() - new Date(course.start_date).getTime()) / (1000 * 3600 * 24)) + 1
@@ -69,7 +72,7 @@ export function CourseDetails({ course }: CourseDetailsProps) {
                 <span className="  px-2 py-0.5 rounded bg-green-500 text-white text-xs font-semibold shadow animate-pulse border border-green-700">GRATUITO</span>
               </>
             ) : (
-              `S/ ${course.price.toFixed(2)}`
+              formatPrice(course.price, course.priceUSD)
             )}
           </p>
         </div>

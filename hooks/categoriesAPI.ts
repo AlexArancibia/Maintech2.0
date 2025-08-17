@@ -20,7 +20,7 @@ export interface ApiResponse<T> {
 export async function getCategories(): Promise<Category[]> {
   
   try {
-    const response = await api.get<ApiResponse<Category>>('/api/categories');
+    const response = await api.get<ApiResponse<Category>>('/api/categories?populate[category_img][fields][0]=url');
     return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

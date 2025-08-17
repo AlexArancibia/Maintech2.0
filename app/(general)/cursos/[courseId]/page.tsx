@@ -16,6 +16,7 @@ import Link from "next/link"
 import CourseCard from "@/components/CourseCard"
 import api from "@/lib/axios"
 import { useAuth } from "@/hooks/AuthContext"
+import { useCurrency } from "@/hooks/CurrencyContext"
 import { CourseDetails } from "./_components/CourseDetails"
 import { CourseInfo } from "./_components/CourseInfo"
 import { ChapterInfo } from "./_components/ChapterInfo"
@@ -38,6 +39,7 @@ interface PostPurchase {
 
 export default function CourseDetailsPage() {
   const { user, purchasedCourses } = useAuth()
+  const { formatPrice } = useCurrency()
   const router = useRouter()
   const params = useParams<Params>()
   const { basicCourses, categories } = useApiData()
@@ -258,7 +260,7 @@ export default function CourseDetailsPage() {
                             <div className="space-y-4">
                               <div className="text-center">
                                 <div className="text-2xl font-bold text-white mb-2">
-                                  {isFreeCourse ? "Gratis" : course.price ? `S/ ${course.price.toFixed(2)}` : "Precio por confirmar"}
+                                  {isFreeCourse ? "Gratis" : course.price ? formatPrice(course.price, course.priceUSD) : "Precio por confirmar"}
                                 </div>
                                 <p className="text-sm text-white/70">
                                   {isFreeCourse ? "Sin costo de inscripción. Acceso inmediato con inicio flexible. Modalidad " : "Precio del curso completo. Acceso inmediato con inicio flexible. Modalidad "}{course.modality || "No especificada"} con {course.chapters?.length || 0} capítulos.
@@ -514,7 +516,7 @@ export default function CourseDetailsPage() {
                             <div className="space-y-4">
                               <div className="text-center">
                                 <div className="text-2xl font-bold text-white mb-2">
-                                  {isFreeCourse ? "Gratis" : course.price ? `S/ ${course.price.toFixed(2)}` : "Precio por confirmar"}
+                                  {isFreeCourse ? "Gratis" : course.price ? formatPrice(course.price, course.priceUSD) : "Precio por confirmar"}
                                 </div>
                                 <p className="text-sm text-white/70">
                                   {isFreeCourse ? "Sin costo de inscripción. Acceso inmediato con inicio flexible. Modalidad " : "Precio del curso completo. Acceso inmediato con inicio flexible. Modalidad "}{course.modality || "No especificada"} con {course.chapters?.length || 0} capítulos.

@@ -93,6 +93,7 @@ export default function Footer() {
                     <FooterLink href="/politica-privacidad">Política de privacidad</FooterLink>
                     <FooterLink href="/politica-de-calidad">Política de calidad</FooterLink>
                     <FooterLink href="/libro-reclamaciones">Libro de reclamaciones</FooterLink>
+                    <FooterLink href="/verificar-certificado">Verificar Certificado</FooterLink>
                   </div>
                 </div>
               </div>

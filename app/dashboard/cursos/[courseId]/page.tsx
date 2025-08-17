@@ -119,12 +119,17 @@ export default function CourseComponent() {
   }, [user, chapters, hasCreatedProgresses]);
   const calculateProgress = () => {
     if (!chapters.length || !user) return 0;
-    const completedChapters = chapters.filter(chapter => 
-      chapter.user_progresses?.some(progress => 
-        progress.isCompleted && progress.users_permissions_user?.id === user.id
-      )
-    ).length;
-    return (completedChapters / chapters.length) * 100;
+    try {
+      const completedChapters = chapters.filter(chapter => 
+        chapter.user_progresses?.some(progress => 
+          progress.isCompleted && progress.users_permissions_user?.id === user.id
+        )
+      ).length;
+      return (completedChapters / chapters.length) * 100;
+    } catch (error) {
+      console.error("Error calculating progress:", error);
+      return 0;
+    }
   };
 
   if (error) return <div className="text-red-500 text-center py-8">Error: {error}</div>;
@@ -160,19 +165,21 @@ export default function CourseComponent() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="container-section p-8 sm:p-16 h-[420px] bg-[url('/fondocurso.png')]  bg-center">
+      <div className="container-section p-8 sm:p-16 h-[270px] bg-[url('/fondocurso.png')]  bg-center">
         <div className="content-section">
           <header className="mb-8 flex flex-col gap-4">
             <h1 className="text-4xl font-bold  text-white">{course?.title }</h1>
             <p className="text-xl text-muted-foreground text-white">{course?.category.name || ""}</p>
-            <div className="w-[500px]">
-            {user && <CourseProgress 
-            progress={calculateProgress()}
-            user={user}
-            course={course!}
-             />}
-
-            
+            <div className="max-w-[500px]">
+            {user && course && (
+              <div key={`${user.id}-${course.id}`}>
+                <CourseProgress 
+                  progress={calculateProgress()}
+                  user={user}
+                  course={course}
+                />
+              </div>
+            )}
             </div>
           </header>
         </div>

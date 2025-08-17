@@ -1,20 +1,17 @@
-import React from 'react'
 import SomosBanner from '../_components/SomosBanner'
 import MisionVision from '../_components/MisionVision'
 import FeaturesSomos from '../_components/FeaturesSomos'
-import WorkWithUs from '../_components/WorkWithUs'
 import { PartnersSection } from '../_components/Partner'
+import WorkWithUs from '../_components/WorkWithUs'
 
-function QuienesSomos() {
+export default function QuienesSomosPage() {
   return (
-    <>
-    <SomosBanner />
-    <MisionVision />
-    <FeaturesSomos />
-    <WorkWithUs />
-    <PartnersSection />
-    </>
+    <div className="min-h-screen bg-gray-50">
+      <SomosBanner />
+      <MisionVision />
+      <FeaturesSomos />
+      <PartnersSection />
+      <WorkWithUs />
+    </div>
   )
 }
-
-export default QuienesSomos

@@ -7,6 +7,7 @@ export interface BasicCategory {
   id: number;
   documentId: string;
   name: string;
+  certificate_img?: Image | null;
 }
 
 export interface Image {

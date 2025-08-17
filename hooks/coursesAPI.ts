@@ -19,7 +19,7 @@ export async function getBasicCourses(): Promise<BasicCourse[]> {
   try {
     console.log("Fetching basic courses...");
     const response = await api.get<ApiResponse<BasicCourse>>(
-      '/api/courses?populate[image][fields][0]=url&populate[image][fields][1]=name&populate[category][fields][0]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email'
+      '/api/courses?populate[image][fields][0]=url&populate[image][fields][1]=name&populate[category][fields][0]=name&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email'
     );
     console.log("Response received:", response);
     console.log("Extracted data:", response.data.data);
@@ -34,7 +34,7 @@ export async function getDetailedCourses(): Promise<DetailedCourse[]> {
   try {
     console.log("Fetching detailed courses...");
     const response = await api.get<ApiResponse<DetailedCourse>>(
-      '/api/courses?populate[chapters][populate][0]=user_progress&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[0]=category&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email'
+      '/api/courses?populate[chapters][populate][0]=user_progress&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[0]=category&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email'
     );
     console.log("Response received:", response);
     console.log("Extracted data:", response.data.data);
@@ -51,8 +51,9 @@ export async function getCourseBySlug(
 ): Promise<BasicCourse | DetailedCourse | null> {
   try {
     console.log("Fetching course by slug:", slug, "Detailed:", detailed);
-    // Siempre usar el endpoint básico para evitar problemas con campos faltantes
-    const endpoint = `/api/courses?filters[titleSlug][$eq]=${slug}&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[category][fields][0]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email`;
+    const endpoint = detailed
+      ? `/api/courses?filters[titleSlug][$eq]=${slug}&populate[0]=chapters&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][0]=purchases&populate[chapters][populate][attachment]=*&populate[category][fields][0]=name&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email`
+      : `/api/courses?filters[titleSlug][$eq]=${slug}&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[category][fields][0]=name&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email`;
 
     console.log("Generated endpoint:", endpoint);
     const response = await api.get<{ data: { data: (BasicCourse | DetailedCourse)[] } }>(endpoint);
@@ -72,7 +73,7 @@ export async function getCourseBySlug(
 export async function getCoursesByStudent(studentId: string): Promise<BasicCourse[]> {
   try {
     console.log("Fetching courses for student ID:", studentId);
-    const endpoint = `/api/courses?filters[users_permissions_users][email][$eq]=${studentId}&populate[0]=chapters&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[category][fields][0]=name&populate=teacher`;
+    const endpoint = `/api/courses?filters[users_permissions_users][email][$eq]=${studentId}&populate[0]=chapters&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[category][fields][0]=name&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate=teacher`;
     console.log("Generated endpoint:", endpoint);
 
     const response = await api.get<ApiResponse<BasicCourse>>(endpoint);
@@ -127,7 +128,7 @@ export async function getPurchasedCourses(studentId: string | undefined): Promis
     
     console.log("Fetching detailed courses...");
     const response = await api.get<ApiResponse<DetailedCourse>>(
-      `/api/courses?filters[users_permissions_users][email][$eq]=${studentId}&populate[chapters][populate][0]=user_progress&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=*&populate[chapters][populate][user_progresses][populate][0]=quiz_attempt&populate[chapters][populate][user_progresses][populate][1]=users_permissions_user&populate=category&populate[chapters][populate][quiz][populate][question][populate]=*`
+      `/api/courses?filters[users_permissions_users][email][$eq]=${studentId}&populate[chapters][populate][0]=user_progress&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=*&populate[chapters][populate][user_progresses][populate][0]=quiz_attempt&populate[chapters][populate][user_progresses][populate][1]=users_permissions_user&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[chapters][populate][quiz][populate][question][populate]=*`
     );
     console.log("Student: ",studentId)
     console.log("Purchased Courses Response received:", response);

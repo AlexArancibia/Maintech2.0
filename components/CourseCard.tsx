@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { BasicCourse } from '@/types/CoursesType'
 import { getImageUrl } from '@/lib/getImageUrl'
 import { convertToPeruTime, calculateDuration, formatCourseStartDate } from '@/lib/dateUtils'
+import { useCurrency } from '@/hooks/CurrencyContext'
 
 interface CourseCardProps {
   course: BasicCourse;
@@ -14,6 +15,7 @@ interface CourseCardProps {
 
 export default function CourseCard({ course }: CourseCardProps) {
   const startDate = convertToPeruTime(course.start_date);
+  const { formatPrice } = useCurrency();
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative">
@@ -36,7 +38,7 @@ export default function CourseCard({ course }: CourseCardProps) {
             </div>
           ) : (
             <div className="absolute bottom-2 right-2 bg-black/60 px-3 py-1.5 rounded-full text-white font-bold">
-              S/ {course.price.toFixed(2)}
+              {formatPrice(course.price, course.priceUSD)}
             </div>
           )}
         </div>

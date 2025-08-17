@@ -4,7 +4,6 @@ import { BasicUser } from "./StudentType";
 
 export interface Certificate extends Timestamp {
   id: number;
-  documentId: string;
   course: BasicCourse;
   users_permissions_user: BasicUser;
   finished_date: string | null;
