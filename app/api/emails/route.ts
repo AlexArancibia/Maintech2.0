@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // Enviar confirmación automática al usuario
     await sendEmail({
       sender: process.env.MAIL_FROM || 'noreply@maintech.com',
-      receipents: [email], // Correo del usuario
+      recipients: [email], // Correo del usuario
       subject: 'Confirmación de mensaje - Maintech',
       message: `Confirmación de mensaje\n\nHemos recibido tu mensaje y nos pondremos en contacto contigo pronto.\n\nSaludos,\nEquipo Maintech`
     })
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Enviar notificación a la empresa
     await sendEmail({
       sender: process.env.MAIL_FROM || 'noreply@maintech.com',
-      receipents: [process.env.MAIL_TO || 'admin@maintech.com'],
+      recipients: [process.env.MAIL_TO || 'admin@maintech.com'],
       subject: `Nueva solicitud de contacto: ${nombre}`,
       message: emailMessage
     })

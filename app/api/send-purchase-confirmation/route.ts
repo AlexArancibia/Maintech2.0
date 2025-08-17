@@ -95,7 +95,7 @@ maintech.com.pe
     // Enviar email de confirmación de compra
     await sendEmail({
       sender: process.env.MAIL_FROM || 'noreply@maintech.com',
-      receipents: [userEmail],
+      recipients: [userEmail],
       subject: `¡Bienvenido a MainTech! Tu curso "${courseTitle}" está listo`,
       message: emailMessage
     })

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     // Enviar email de bienvenida al curso
     await sendEmail({
       sender: process.env.MAIL_FROM || 'noreply@maintech.com',
-      receipents: [userEmail],
+      recipients: [userEmail],
       subject: `¡Bienvenido al curso: ${courseTitle}!`,
       message: `Bienvenido al curso\n\nHola ${userName},\n\n¡Bienvenido al curso "${courseTitle}"!\n\nTu inscripción ha sido confirmada y ya tienes acceso al contenido.\n\n¡Comienza tu aprendizaje ahora!\n\nSaludos,\nEquipo Maintech`
     })
