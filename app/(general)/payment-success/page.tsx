@@ -19,6 +19,7 @@ function PaymentSuccessContent() {
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('loading')
   const [error, setError] = useState<string | null>(null)
   const [isRedirecting, setIsRedirecting] = useState(false)
+  const [externalReference, setExternalReference] = useState<string | null>(null)
 
   useEffect(() => {
     const handlePaymentVerification = async () => {
@@ -27,14 +28,17 @@ function PaymentSuccessContent() {
         const status = searchParams.get('status')
         const collectionStatus = searchParams.get('collection_status')
         const paymentId = searchParams.get('payment_id') || searchParams.get('collection_id')
-        const externalReference = searchParams.get('external_reference')
+        const externalRef = searchParams.get('external_reference')
         const preferenceId = searchParams.get('preference_id')
+        
+        // Set external reference in state for use in other functions
+        setExternalReference(externalRef)
 
         console.log('Payment success page loaded:', {
           status,
           collectionStatus,
           paymentId,
-          externalReference,
+          externalReference: externalRef,
           preferenceId
         })
 
@@ -57,8 +61,8 @@ function PaymentSuccessContent() {
               setIsRedirecting(true)
               setTimeout(() => {
                 // Si tenemos external_reference (courseId), redirigir a la página de éxito específica del curso
-                if (externalReference) {
-                  router.push(`/checkout/success/${externalReference}`)
+                if (externalRef) {
+                  router.push(`/checkout/success/${externalRef}`)
                 } else {
                   router.push('/dashboard')
                 }
