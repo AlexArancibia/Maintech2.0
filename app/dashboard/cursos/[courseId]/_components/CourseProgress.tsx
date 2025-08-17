@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import type { DetailedCourse } from "@/types/CoursesType"
 import type { User } from "@/types/StudentType"
@@ -56,12 +56,11 @@ export default function CourseProgress({ progress, user, course }: CourseProgres
   // Validar que los datos necesarios estén disponibles - MOVED AFTER HOOKS
   if (!user?.id || !course?.id) {
     return (
-      <Card className="mb-4 sm:mb-6 shadow-none border-none bg-black/30 bg-opacity-25 rounded-lg">
-        <CardContent className="p-4 sm:p-6">
-          <div className="animate-pulse space-y-3">
-            <div className="h-4 sm:h-5 bg-gray-300/20 rounded w-3/4"></div>
-            <div className="h-3 sm:h-4 bg-gray-300/20 rounded w-1/2"></div>
-            <div className="h-3 sm:h-4 bg-gray-300/20 rounded w-2/3"></div>
+      <Card className="mb-4 shadow-none border-none bg-black/30 bg-opacity-25 rounded-lg">
+        <CardContent className="p-4">
+          <div className="animate-pulse space-y-2">
+            <div className="h-4 bg-gray-300/20 rounded w-3/4"></div>
+            <div className="h-3 bg-gray-300/20 rounded w-1/2"></div>
           </div>
         </CardContent>
       </Card>
@@ -230,73 +229,66 @@ export default function CourseProgress({ progress, user, course }: CourseProgres
   // If user has a certificate, show CertificateInfo component
   if (hasCertificate) {
     return (
-   
-        <CertificateInfo 
-          user={user} 
-          course={course} 
-          onGenerateCertificate={handleCertificate}
-        />
-   
+      <CertificateInfo 
+        user={user} 
+        course={course} 
+        onGenerateCertificate={handleCertificate}
+      />
     )
   }
 
   return (
-    <Card className="mb-4 sm:mb-6 shadow-none border-none bg-black/30 bg-opacity-25 rounded-lg">
-      <CardHeader className="pb-3 sm:pb-4">
-        <CardTitle className="text-lg sm:text-xl md:text-2xl font-bold text-white text-center sm:text-left">
-          📊 Progreso del Curso
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 sm:space-y-6 px-4 sm:px-6">
+    <Card className="mb-4 shadow-none border-none bg-black/30 bg-opacity-25 rounded-lg">
+      <CardContent className="p-4 space-y-3">
         {/* Progress Section */}
-        <div className="space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-            <span className="text-sm text-gray-300 text-center sm:text-left">Progreso actual</span>
-            <span className="text-lg sm:text-xl font-bold text-white text-center sm:text-right">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-300">Progreso actual</span>
+            <span className="text-lg font-bold text-white">
               {Math.round(progress)}%
             </span>
           </div>
           
           <Progress 
             value={progress} 
-            className="w-full h-2 sm:h-3 bg-gray-700/50" 
+            className="w-full h-2 bg-gray-700/50" 
           />
           
-          <p className="text-sm sm:text-base text-gray-400 text-center sm:text-left">
+          <p className="text-sm text-gray-400 text-center">
             {progress === 100 
               ? "¡Felicidades! Has completado el curso 🎉" 
-              : `Continúa aprendiendo para completar el curso (${100 - Math.round(progress)}% restante)`
+              : `${100 - Math.round(progress)}% restante para completar`
             }
           </p>
         </div>
 
         {/* Certificate Generation Section */}
         {progress === 100 && (
-          <div className="pt-4 border-t border-gray-600/30">
-            <div className="text-center sm:text-left space-y-4">
-              <div className="space-y-2">
-                <h3 className="text-lg sm:text-xl font-semibold text-green-400">
+          <div className="pt-3 border-t border-gray-600/30">
+            <div className="text-center space-y-3">
+              <div className="space-y-1">
+                <h3 className="text-lg font-semibold text-green-400">
                   🎓 ¡Certificado Disponible!
                 </h3>
-                <p className="text-sm sm:text-base text-gray-300 max-w-md mx-auto sm:mx-0">
-                  Has completado exitosamente este curso. Genera tu certificado oficial para demostrar tus conocimientos.
+                <p className="text-sm text-gray-300">
+                  Genera tu certificado oficial para demostrar tus conocimientos.
                 </p>
               </div>
               
               <Button
                 size="lg"
-                className="w-full sm:w-auto bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold px-6 sm:px-8 py-2 sm:py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 onClick={handleCertificate}
                 disabled={isGenerating}
               >
                 {isGenerating ? (
                   <div className="flex items-center justify-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
-                    <span className="text-sm sm:text-base">Generando...</span>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Generando...</span>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center gap-2">
-                    <span className="text-sm sm:text-base">📜 Generar Certificado</span>
+                    <span>📜 Generar Certificado</span>
                   </div>
                 )}
               </Button>
@@ -306,9 +298,9 @@ export default function CourseProgress({ progress, user, course }: CourseProgres
 
         {/* Progress Info for incomplete courses */}
         {progress < 100 && (
-          <div className="pt-4 border-t border-gray-600/30">
-            <div className="text-center sm:text-left">
-              <p className="text-sm sm:text-base text-gray-400">
+          <div className="pt-3 border-t border-gray-600/30">
+            <div className="text-center">
+              <p className="text-sm text-gray-400">
                 Necesitas completar el {100 - Math.round(progress)}% restante para obtener tu certificado
               </p>
             </div>

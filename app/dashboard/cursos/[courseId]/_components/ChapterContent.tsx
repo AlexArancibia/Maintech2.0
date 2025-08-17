@@ -18,9 +18,10 @@ import { convertToPeruTime, getCurrentPeruTime, formatDateTime } from "@/lib/dat
 
 interface ChapterContentProps {
   chapter: DetailedChapter;
+  courseTitle?: string;
 }
 
-export default function ChapterContent({ chapter }: ChapterContentProps) {
+export default function ChapterContent({ chapter, courseTitle }: ChapterContentProps) {
 
    const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(() => {
@@ -103,6 +104,46 @@ export default function ChapterContent({ chapter }: ChapterContentProps) {
             chapter.user_progresses.push(newProgress);
           } else {
             chapter.user_progresses = [newProgress];
+          }
+
+                    // Enviar email de bienvenida solo si es el primer capítulo (inscripción al curso)
+          console.log(`📧 [EMAIL] Verificando envío para capítulo ${chapter.id}, posición: ${chapter.position}`);
+          if (chapter.position === 1) {
+            // Verificar si ya se envió el email de bienvenida para este curso
+            const emailSentKey = `welcome_email_sent_${chapter.course?.id}_${user.email}`;
+            const hasEmailBeenSent = localStorage.getItem(emailSentKey);
+            
+            if (hasEmailBeenSent) {
+              console.log('📧 [EMAIL] Email de bienvenida ya fue enviado para este curso, saltando...');
+            } else {
+              console.log(`📧 [EMAIL] ¡Es el primer capítulo! Enviando email de bienvenida a: ${user.email}`);
+              try {
+                const emailResponse = await fetch('/api/send-course-welcome', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    userEmail: user.email,
+                    userName: user.username || user.email,
+                    courseTitle: courseTitle || 'Curso'
+                  }),
+                });
+                
+                if (emailResponse.ok) {
+                  const emailData = await emailResponse.json();
+                  console.log('✅ [EMAIL] Email de bienvenida enviado exitosamente:', emailData);
+                  // Marcar como enviado para evitar duplicados
+                  localStorage.setItem(emailSentKey, 'true');
+                } else {
+                  console.error('❌ [EMAIL] Error en respuesta de API:', emailResponse.status, emailResponse.statusText);
+                }
+              } catch (emailError) {
+                console.error('❌ [EMAIL] Error al enviar email de bienvenida:', emailError);
+              }
+            }
+          } else {
+            console.log(`📧 [EMAIL] No es el primer capítulo (posición ${chapter.position}), no se envía email`);
           }
         } catch (createError: any) {
           console.error(`Error creating user progress for chapter ${chapter.id}:`, createError);

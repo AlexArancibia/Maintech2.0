@@ -71,6 +71,8 @@ export default function CourseComponent() {
   useEffect(() => {
     const createMissingUserProgresses = async () => {
       if (!user || !chapters.length || hasCreatedProgresses) return;
+      
+      console.log('📧 [EMAIL] Iniciando verificación de progresos y envío de emails...');
 
       console.log(`Checking for missing user progress in course with ${chapters.length} chapters`);
 
@@ -98,6 +100,46 @@ export default function CourseComponent() {
               chapter.user_progresses.push(response.data.data);
             } else {
               chapter.user_progresses = [response.data.data];
+            }
+
+            // Enviar email de bienvenida solo si es el primer capítulo (inscripción al curso)
+            console.log(`📧 [EMAIL] Verificando envío para capítulo ${chapter.id}, posición: ${chapter.position}`);
+            if (chapter.position === 1) {
+              // Verificar si ya se envió el email de bienvenida para este curso
+              const emailSentKey = `welcome_email_sent_${course?.id}_${user.email}`;
+              const hasEmailBeenSent = localStorage.getItem(emailSentKey);
+              
+              if (hasEmailBeenSent) {
+                console.log('📧 [EMAIL] Email de bienvenida ya fue enviado para este curso, saltando...');
+              } else {
+                console.log(`📧 [EMAIL] ¡Es el primer capítulo! Enviando email de bienvenida a: ${user.email}`);
+                try {
+                  const emailResponse = await fetch('/api/send-course-welcome', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      userEmail: user.email,
+                      userName: user.username || user.email,
+                      courseTitle: course?.title || 'Curso'
+                    }),
+                  });
+                  
+                  if (emailResponse.ok) {
+                    const emailData = await emailResponse.json();
+                    console.log('✅ [EMAIL] Email de bienvenida enviado exitosamente:', emailData);
+                    // Marcar como enviado para evitar duplicados
+                    localStorage.setItem(emailSentKey, 'true');
+                  } else {
+                    console.error('❌ [EMAIL] Error en respuesta de API:', emailResponse.status, emailResponse.statusText);
+                  }
+                } catch (emailError) {
+                  console.error('❌ [EMAIL] Error al enviar email de bienvenida:', emailError);
+                }
+              }
+            } else {
+              console.log(`📧 [EMAIL] No es el primer capítulo (posición ${chapter.position}), no se envía email`);
             }
           } catch (error: any) {
             console.error(`Error creating user progress for chapter ${chapter.id}:`, error);
@@ -198,7 +240,7 @@ export default function CourseComponent() {
               />
             </div>
             <div className="md:w-2/3">
-              {selectedChapter && <ChapterContent chapter={selectedChapter} />}
+              {selectedChapter && <ChapterContent chapter={selectedChapter} courseTitle={course?.title} />}
             </div>
           </div>
         </div>

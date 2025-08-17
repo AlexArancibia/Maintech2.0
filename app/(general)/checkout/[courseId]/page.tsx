@@ -153,6 +153,12 @@ export default function CheckoutPage() {
 
   const handleUserCreation = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    console.log("👤 [USER_CREATION] ==========================================")
+    console.log("👤 [USER_CREATION] FUNCIÓN handleUserCreation EJECUTADA")
+    console.log("👤 [USER_CREATION] Iniciando creación de usuario...")
+    console.log("👤 [USER_CREATION] ==========================================")
+    
     setIsProcessing(true)
     
     try {
@@ -199,7 +205,10 @@ export default function CheckoutPage() {
   const handleMercadoPagoSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log("💳 [MERCADOPAGO] ==========================================")
+    console.log("💳 [MERCADOPAGO] FUNCIÓN handleMercadoPagoSubmit EJECUTADA")
     console.log("💳 [MERCADOPAGO] Iniciando proceso de pago...")
+    console.log("💳 [MERCADOPAGO] ==========================================")
     console.log("📋 [MERCADOPAGO] Estado actual:")
     console.log("   - Course:", course)
     console.log("   - User:", user)
@@ -235,12 +244,12 @@ export default function CheckoutPage() {
       // Matriculación directa
       setIsProcessing(true)
       try {
-        const linkSuccess = await linkCourseToUser(user.id, course.documentId)
+        const linkSuccess = await linkCourseToUser(user.id, course.documentId, course)
         if (!linkSuccess) {
           throw new Error("Error al vincular el curso con tu cuenta")
         }
         await refreshPurchasedCourses()
-        router.push('/dashboard')
+        router.push(`/checkout/success/${params.courseId}`)
         return
       } catch (err: any) {
         setError(err.message || 'No se pudo completar la matrícula gratuita')
@@ -299,9 +308,12 @@ export default function CheckoutPage() {
     }
   }
 
-  const linkCourseToUser = async (userId: number, courseId: string) => {
+  const linkCourseToUser = async (userId: number, courseId: string, courseData?: any) => {
     try {
+      console.log("🔗 [LINK_COURSE] ==========================================")
+      console.log("🔗 [LINK_COURSE] FUNCIÓN linkCourseToUser EJECUTADA")
       console.log("🔗 [LINK_COURSE] Iniciando vinculación de curso al usuario...")
+      console.log("🔗 [LINK_COURSE] ==========================================")
       console.log("📋 [LINK_COURSE] Datos de entrada:")
       console.log("   - userId:", userId)
       console.log("   - courseId:", courseId)
@@ -330,6 +342,35 @@ export default function CheckoutPage() {
       console.log("   - Status Text:", response.statusText)
       console.log("   - Data:", response.data)
       console.log("   - Headers:", response.headers)
+      
+      // Enviar email de confirmación de compra
+      if (courseData) {
+        try {
+          console.log("📧 [EMAIL] Enviando confirmación de compra...")
+          const emailResponse = await fetch('/api/send-purchase-confirmation', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userEmail: user?.email,
+              userName: user?.username || user?.email,
+              courseTitle: courseData.title || 'Curso',
+              coursePrice: courseData.price || 0,
+              paymentMethod: 'Compra directa'
+            }),
+          });
+          
+          if (emailResponse.ok) {
+            const emailData = await emailResponse.json();
+            console.log('✅ [EMAIL] Email de confirmación enviado exitosamente:', emailData);
+          } else {
+            console.error('❌ [EMAIL] Error en respuesta de API de email:', emailResponse.status, emailResponse.statusText);
+          }
+        } catch (emailError) {
+          console.error('❌ [EMAIL] Error al enviar email de confirmación:', emailError);
+        }
+      }
       
       return true
     } catch (error: any) {
@@ -365,8 +406,13 @@ export default function CheckoutPage() {
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    console.log("🚀 [CHECKOUT] ==========================================")
+    console.log("🚀 [CHECKOUT] FUNCIÓN handleCheckout EJECUTADA")
     console.log("🚀 [CHECKOUT] Iniciando proceso de checkout...")
+    console.log("🚀 [CHECKOUT] ==========================================")
     console.log("📋 [CHECKOUT] Método de pago seleccionado:", selectedPaymentMethod)
+    console.log("📋 [CHECKOUT] Curso:", course?.title)
+    console.log("📋 [CHECKOUT] Usuario:", user?.email)
     console.log("📋 [CHECKOUT] Estado del curso:")
     console.log("   - Course existe:", !!course)
     console.log("   - Course ID:", course?.id)
@@ -393,7 +439,7 @@ export default function CheckoutPage() {
           throw new Error('Error al vincular el curso con tu cuenta')
         }
         await refreshPurchasedCourses()
-        router.push('/dashboard')
+        router.push(`/checkout/success/${params.courseId}`)
         return
       } catch (err: any) {
         setError(err.message || 'No se pudo completar la matrícula gratuita')
@@ -442,6 +488,33 @@ export default function CheckoutPage() {
         await new Promise(resolve => setTimeout(resolve, 2000))
         paymentSuccess = true
         console.log("✅ Pago simulado exitoso")
+        
+        // Enviar email de confirmación para depósito directo
+        try {
+          console.log("📧 [EMAIL] Enviando confirmación de depósito directo...")
+          const emailResponse = await fetch('/api/send-purchase-confirmation', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userEmail: user?.email,
+              userName: user?.username || user?.email,
+              courseTitle: course?.title || 'Curso',
+              coursePrice: course?.price || 0,
+              paymentMethod: 'Depósito directo'
+            }),
+          });
+          
+          if (emailResponse.ok) {
+            const emailData = await emailResponse.json();
+            console.log('✅ [EMAIL] Email de confirmación de depósito enviado exitosamente:', emailData);
+          } else {
+            console.error('❌ [EMAIL] Error en respuesta de API de email:', emailResponse.status, emailResponse.statusText);
+          }
+        } catch (emailError) {
+          console.error('❌ [EMAIL] Error al enviar email de confirmación de depósito:', emailError);
+        }
       }
       
       if (!paymentSuccess) {
@@ -456,8 +529,10 @@ export default function CheckoutPage() {
         console.log("   - User ID:", user.id)
         console.log("   - Course DocumentId:", course.documentId)
         console.log("   - Course ID:", course.id)
+        console.log("   - Course Title:", course.title)
+        console.log("   - Course Price:", course.price)
         
-        const linkSuccess = await linkCourseToUser(user.id, course.documentId)
+        const linkSuccess = await linkCourseToUser(user.id, course.documentId, course)
         
         if (!linkSuccess) {
           console.log("❌ Falló la vinculación del curso")
@@ -476,9 +551,9 @@ export default function CheckoutPage() {
       await refreshPurchasedCourses()
       console.log("✅ Cursos comprados actualizados")
 
-      // 4. Redirigir al dashboard
-      console.log("🎯 Redirigiendo al dashboard...")
-      router.push('/dashboard')
+      // 4. Redirigir a la página de éxito
+      console.log("🎯 Redirigiendo a la página de éxito...")
+      router.push(`/checkout/success/${params.courseId}`)
       
     } catch (error: any) {
       console.error("❌ Error en el proceso de checkout:")
@@ -708,7 +783,10 @@ export default function CheckoutPage() {
                       <div className="border border-border rounded-lg p-4">
                         <div 
                           className="flex items-center gap-3 cursor-pointer"
-                          onClick={() => setSelectedPaymentMethod(selectedPaymentMethod === 'mercadopago' ? null : 'mercadopago')}
+                          onClick={() => {
+                            console.log("🔘 [MERCADOPAGO_SELECTION] MercadoPago seleccionado")
+                            setSelectedPaymentMethod(selectedPaymentMethod === 'mercadopago' ? null : 'mercadopago')
+                          }}
                         >
                           {selectedPaymentMethod === 'mercadopago' ? (
                             <CheckSquare className="w-5 h-5 text-primary" />
@@ -732,7 +810,10 @@ export default function CheckoutPage() {
                             
                             <Button
                               type="button"
-                              onClick={handleMercadoPagoSubmit}
+                              onClick={(e) => {
+                                console.log("🔘 [MERCADOPAGO_BUTTON] Botón de MercadoPago clickeado")
+                                handleMercadoPagoSubmit(e)
+                              }}
                               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
                               disabled={isProcessing}
                             >
@@ -756,7 +837,10 @@ export default function CheckoutPage() {
                       <div className="border border-border rounded-lg p-4">
                         <div 
                           className="flex items-center gap-3 cursor-pointer"
-                          onClick={() => setSelectedPaymentMethod(selectedPaymentMethod === 'deposito' ? null : 'deposito')}
+                          onClick={() => {
+                            console.log("🔘 [DEPOSITO_SELECTION] Depósito directo seleccionado")
+                            setSelectedPaymentMethod(selectedPaymentMethod === 'deposito' ? null : 'deposito')
+                          }}
                         >
                           {selectedPaymentMethod === 'deposito' ? (
                             <CheckSquare className="w-5 h-5 text-primary" />
@@ -822,6 +906,7 @@ export default function CheckoutPage() {
                       type="submit"
                       className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground shadow-lg"
                       disabled={isProcessing || (!(!course?.price || course.price <= 0) && !selectedPaymentMethod)}
+                      onClick={() => console.log("🔘 [BUTTON] Botón de checkout clickeado")}
                     >
                       {isProcessing ? (
                         <div className="flex items-center gap-2">

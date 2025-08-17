@@ -56,7 +56,12 @@ function PaymentSuccessContent() {
               // Redirigir después de actualizar los cursos
               setIsRedirecting(true)
               setTimeout(() => {
-                router.push('/dashboard')
+                // Si tenemos external_reference (courseId), redirigir a la página de éxito específica del curso
+                if (externalReference) {
+                  router.push(`/checkout/success/${externalReference}`)
+                } else {
+                  router.push('/dashboard')
+                }
               }, 3000)
             } catch (refreshError) {
               console.error('Error al actualizar cursos:', refreshError)
@@ -100,7 +105,12 @@ function PaymentSuccessContent() {
       setPaymentStatus('approved')
       setIsRedirecting(true)
       setTimeout(() => {
-        router.push('/dashboard')
+        // Si tenemos external_reference (courseId), redirigir a la página de éxito específica del curso
+        if (externalReference) {
+          router.push(`/checkout/success/${externalReference}`)
+        } else {
+          router.push('/dashboard')
+        }
       }, 2000)
     } catch (error) {
       console.error('Error en reintento:', error)
