@@ -92,11 +92,13 @@ export default function NotFound() {
         <div className="mt-8">
           <Button 
             variant="ghost" 
-            onClick={() => window.history.back()}
+            asChild
             className="text-gray-500 hover:text-gray-700 flex items-center gap-2"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Volver atrás
+            <Link href="/">
+              <ArrowLeft className="w-4 h-4" />
+              Volver al Inicio
+            </Link>
           </Button>
         </div>
       </div>
