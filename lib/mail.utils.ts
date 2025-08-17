@@ -64,16 +64,17 @@ const createHtmlTemplate = (content: string): string => {
 
 type SendEmailDto ={
   sender: string,
-  receipents: string[],
+  recipients: string[],
   subject: string,
   message: string,
+  html?: string,
 }
 
 export const sendEmail = async (dto:SendEmailDto) => {
-  const {sender,receipents,subject,message} = dto
+  const {sender,recipients,subject,message,html} = dto
   
   console.log('📧 [EMAIL] Iniciando envío de correo...')
-  console.log('📧 [EMAIL] Destinatarios:', receipents)
+  console.log('📧 [EMAIL] Destinatarios:', recipients)
   console.log('📧 [EMAIL] Asunto:', subject)
   console.log('📧 [EMAIL] Remitente:', sender)
   
@@ -85,9 +86,9 @@ export const sendEmail = async (dto:SendEmailDto) => {
     
     const result = await transport.sendMail({
       from: sender,
-      to: receipents,
+      to: recipients,
       subject,
-      html: createHtmlTemplate(message),
+      html: html || createHtmlTemplate(message),
       text: message
     })
     
