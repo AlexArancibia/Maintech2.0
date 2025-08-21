@@ -23,7 +23,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { href: "/cursos", label: "Nuestros Cursos", icon: BookOpen },
-  { href: "/solutions", label: "Soluciones", icon: Zap },
+  { href: "/solutions", label: "Nuestras Soluciones", icon: Zap },
   { 
     href: "/conocenos", 
     label: "Conócenos",
@@ -44,7 +44,7 @@ const DynamicLogo: React.FC = () => {
   return (
     <Link href="/" className="flex items-center space-x-3 transition-transform duration-200 hover:scale-105 active:scale-95">
       <img src="/logo 1.png" alt="MainTech Logo" className="h-10 w-auto" />
-      <div className="flex items-center">
+      <div className="hidden lg:flex items-center">
         <div className="w-px h-6 bg-gray-300 mx-2"></div>
         <div className=" flex flex-col pl-2">
           <span className="text-2xl font-bold text-gray-900">MainTech</span>
@@ -64,10 +64,11 @@ const MobileLogo: React.FC = () => {
   
   return (
     <Link href="/" className="flex flex-col items-center transition-transform duration-200 hover:scale-105 active:scale-95">
-      <img src="/logo 1.png" alt="MainTech Logo" className="h-10 w-auto mb-1" />
+      <img src="/logo 1.png" alt="MainTech Logo" className="h-12 w-auto mb-3" />
+      <div className="w-48 h-px bg-border mx-auto mb-3"></div>
       <div className="text-center">
-        <span className="text-sm font-bold text-gray-900">MainTech</span>
-        <div className="text-xs font-medium text-gray-600">
+        <span className="text-xl font-bold text-gray-900">MainTech</span>
+        <div className="text-lg font-medium text-gray-600 -mt-2">
           {isSolutionsPage ? 'Solutions' : 'Academy'}
         </div>
       </div>
@@ -216,20 +217,20 @@ export function MainNav() {
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
               <button 
-                className="md:hidden p-2 rounded-lg transition-all duration-200 hover:bg-gray-100 hover:scale-105 active:bg-gray-200 active:scale-95"
+                className="lg:hidden p-2 rounded-lg transition-all duration-200 hover:bg-gray-100 hover:scale-105 active:bg-gray-200 active:scale-95"
                 aria-label="Abrir menú"
               >
                 <Menu size={24} />
               </button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-gray-50">
+            <SheetContent side="right" className="w-[350px] sm:w-[450px] bg-gray-50">
               <SheetHeader>
                 <SheetTitle className="text-center">
                   <MobileLogo />
                 </SheetTitle>
               </SheetHeader>
               
-              <div className="mt-8 space-y-6">
+              <div className="mt-8 space-y-4">
                 {/* Currency Selector */}
                 <div className="flex justify-center">
                   <div className="w-full max-w-xs">
@@ -249,9 +250,6 @@ export function MainNav() {
                     />
                   ))}
                 </div>
-                
-                {/* Separator */}
-                <div className="border-t border-gray-200 my-4"></div>
                 
                 {/* User Section */}
                 {isLoading ? (
@@ -302,7 +300,7 @@ export function MainNav() {
             </SheetContent>
           </Sheet>
 
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden lg:flex items-center space-x-3">
             {memoizedNavItems.map((item) => (
               <DesktopNavItem 
                 key={item.href}

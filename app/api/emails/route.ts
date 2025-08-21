@@ -15,14 +15,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Formatear el mensaje para el email
-    const emailMessage = `Nombre: ${nombre}\nEmail: ${email}\nTeléfono: ${telefono}\nMensaje: ${mensaje}`
+    const emailMessage = `Nueva consulta recibida:\n\nNombre: ${nombre}\nEmail: ${email}\nTeléfono: ${telefono}\nAsunto: ${asunto || 'Consulta general'}\n\nMensaje:\n${mensaje}`
 
     // Enviar confirmación automática al usuario
     await sendEmail({
       sender: process.env.MAIL_FROM || 'noreply@maintech.com',
       recipients: [email], // Correo del usuario
-      subject: 'Confirmación de mensaje - Maintech',
-      message: `Confirmación de mensaje\n\nHemos recibido tu mensaje y nos pondremos en contacto contigo pronto.\n\nSaludos,\nEquipo Maintech`
+      subject: asunto ? `Confirmación: ${asunto}` : 'Confirmación de mensaje - Maintech',
+      message: `Hola ${nombre},\n\nHemos recibido tu mensaje y nos pondremos en contacto contigo pronto.\n\nGracias por tu interés en Maintech.\n\nSaludos,\nEquipo Maintech`
     })
 
     // Enviar notificación a la empresa
