@@ -11,43 +11,31 @@ import {
   FaDesktop, 
   FaDollarSign 
 } from "react-icons/fa"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { getCardSections } from "@/hooks/cardSectionsAPI"
 
-const achievements = [
-  {
-    title: "Experiencia con +40 empresas",
-    description: "del sector industrial a nivel LATAM",
-    icon: FaUsers
-  },
-  {
-    title: "Planes de formación",
-    description: "a nivel LATAM",
-    icon: FaGraduationCap
-  },
-  {
-    title: "+500 trabajos",
-    description: "a nivel LATAM",
-    icon: FaBriefcase
-  },
-  {
-    title: "+1.000 MW analizados en centrales de generación",
-    description: "somos especialistas en Turbomaquinaria",
-    icon: FaBolt
-  },
-  {
-    title: "Plataforma virtual",
-    description: "para gestión de reportes",
-    icon: FaDesktop
-  },
-  {
-    title: "USD Millones en ahorros a nuestros aliados",
-    description: "en el ciclo de vida de sus activos físicos.",
-    icon: FaDollarSign
-  }
-]
+const icons = [FaUsers, FaGraduationCap, FaBriefcase, FaBolt, FaDesktop, FaDollarSign]
 
 export function WhyChooseUsSection() {
+
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [section, setSection] = useState<any>(null)
+
+  useEffect(() => {
+    async function fetchSection() {
+      const res = await getCardSections({ documentId: "ekm5113zuc5nz0sgvey4gf8j", populateCard: true })
+      setSection(Array.isArray(res) ? res[0] : res)
+    }
+    fetchSection()
+  }, [])
+
+  const achievements = Array.isArray(section?.card)
+    ? section.card.map((card: any, idx: number) => ({
+        title: card.title,
+        description: card.subtitle,
+        icon: icons[idx]
+      }))
+    : []
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % achievements.length)
@@ -61,25 +49,23 @@ export function WhyChooseUsSection() {
     <section className="py-20 relative overflow-hidden">
       {/* Background Image - Positioned to show more left side */}
       <div className="absolute inset-0 bg-[url('/whybanner.jpg')] bg-cover bg-left bg-no-repeat"></div>
-      
       {/* White to transparent gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-transparent"></div>
-      
       <div className="container-section relative z-10">
         <div className="content-section">
           {/* Header - Centered */}
           <h2 className="text-center text-3xl font-bold text-gray-800 mb-6">
-            ¿Por qué elegirnos?
+            {section?.title || "¿Por qué elegirnos?"}
           </h2>
           <span className="mt-2 block h-1 w-20 bg-accent mx-auto mb-12"></span>
 
           {/* Desktop Grid - Hidden on mobile */}
           <div className="hidden md:grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {achievements.map((achievement, index) => (
+            {achievements.map((achievement: {title: string, description: string, icon: any}, index: number) => (
               <Card key={index} className="border-none shadow-lg z-10">
                 <CardContent className="flex flex-col items-center p-6 text-center">
                   <div className="mb-6 rounded-full p-3">
-                    <achievement.icon className="w-16 h-16 text-primary" />
+                    {achievement.icon && <achievement.icon className="w-16 h-16 text-primary" />}
                   </div>
                   <h3 className="mb-4 text-xl font-semibold text-gray-800">
                     {achievement.title}
@@ -99,12 +85,12 @@ export function WhyChooseUsSection() {
                 className="flex transition-transform duration-300 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
-                {achievements.map((achievement, index) => (
+                {achievements.map((achievement: {title: string, description: string, icon: any}, index: number) => (
                   <div key={index} className="w-full flex-shrink-0 px-4">
                     <Card className="border-none shadow-lg z-10">
                       <CardContent className="flex flex-col items-center p-6 text-center">
                         <div className="mb-6 rounded-full p-3">
-                          <achievement.icon className="w-16 h-16 text-primary" />
+                          {achievement.icon && <achievement.icon className="w-16 h-16 text-primary" />}
                         </div>
                         <h3 className="mb-4 text-xl font-semibold text-gray-800">
                           {achievement.title}
@@ -129,10 +115,9 @@ export function WhyChooseUsSection() {
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
-              
               {/* Dots indicator */}
               <div className="flex space-x-2">
-                {achievements.map((_, index) => (
+                {achievements.map((_: any, index: number) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
@@ -142,7 +127,6 @@ export function WhyChooseUsSection() {
                   />
                 ))}
               </div>
-
               <Button
                 variant="outline"
                 size="sm"
@@ -160,9 +144,9 @@ export function WhyChooseUsSection() {
               variant="outline"
               size="default"
               className="border-primary text-primary hover:bg-primary hover:text-white font-semibold py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 group"
-              onClick={() => window.open("https://wa.me/51953804859?text=Me interesa conocer más sobre sus servicios", "_blank")}
+              onClick={() => window.open(section?.buttonLink || "https://wa.me/51953804859?text=Me interesa conocer más sobre sus servicios", "_blank")}
             >
-              Conecta con nosotros
+              {section?.buttonText || "Conecta con nosotros"}
               <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
             </Button>
           </div>

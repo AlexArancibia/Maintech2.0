@@ -1,9 +1,47 @@
+"use client"
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { PhoneCall, Mail, Facebook, Linkedin, ChevronRight, ArrowRight, Instagram, Youtube } from 'lucide-react'
-import { socialLinks } from '@/lib/social'
+import { getCardSections, CardSection } from '@/hooks/cardSectionsAPI'
 
 export default function Footer() {
+
+  const [footerData, setFooterData] = useState<CardSection | null>(null)
+
+  useEffect(() => {
+    async function fetchFooter() {
+      const res = await getCardSections({ documentId: 'ddby7pqxvqcjsyz67a747c8c', populateCard: true })
+      // If API returns array, pick first; if object, use directly
+      setFooterData(Array.isArray(res) ? res[0] : res)
+      // console.log('Footer Strapi:', res)
+    }
+    fetchFooter()
+  }, [])
+
+  // Helper to extract text from card description
+  function getCardText(card: any): string {
+    if (!card?.description?.length) return ''
+    const paragraph = card.description.find((d: any) => d.type === 'paragraph')
+    if (!paragraph || !paragraph.children) return ''
+    // For address, contact, email, etc, just get first text child
+    const textChild = paragraph.children.find((c: any) => c.type === 'text' && c.text)
+    return textChild?.text || ''
+  }
+
+  // Helper to extract link from card description
+  function getCardLink(card: any): string {
+    if (!card?.description?.length) return ''
+    const paragraph = card.description.find((d: any) => d.type === 'paragraph')
+    if (!paragraph || !paragraph.children) return ''
+    const linkChild = paragraph.children.find((c: any) => c.type === 'link' && c.url)
+    return linkChild?.url || ''
+  }
+
+  // Map cards by title for easy access
+  const cards: any[] = Array.isArray(footerData?.card) ? footerData.card : []
+  const cardMap: Record<string, any> = Object.fromEntries(cards.map((card: any) => [card.title?.toLowerCase(), card]))
+
   return (
     <footer className="relative bg-gray-100">
       {/* Contact CTA Section */}
@@ -52,25 +90,24 @@ export default function Footer() {
                 />
                 <div className="space-y-4 text-gray-300 text-sm">
                   <p className="leading-relaxed text-sm">
-                    Valle Blanco Center, Oficina 18,<br />
-                    Cerro Colorado, Arequipa
+                    {getCardText(cardMap['direccion'])}
                   </p>
                   <div className="flex items-center gap-2">
                     <PhoneCall className="w-4 h-4" />
                     <a 
-                      href={`tel:${socialLinks.phone}`} 
+                      href={`tel:${getCardText(cardMap['contacto'])}`} 
                       className="hover:text-white transition-colors"
                     >
-                      +51 {socialLinks.phone}
+                      {getCardText(cardMap['contacto'])}
                     </a>
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />
                     <a 
-                      href={`mailto:${socialLinks.email}`} 
+                      href={`mailto:${getCardText(cardMap['correo'])}`} 
                       className="hover:text-white transition-colors"
                     >
-                      {socialLinks.email}
+                      {getCardText(cardMap['correo'])}
                     </a>
                   </div>
                   
@@ -83,9 +120,8 @@ export default function Footer() {
                   <div className="space-y-3">
                     <FooterLink href="/quienes-somos">Conócenos</FooterLink>
                     <FooterLink href="/cursos">Nuestros Cursos</FooterLink>
-                    <FooterLink href="   /quienes-somos#trabaja-con-nosotros">Trabaja con Nosotros</FooterLink>
-
-                     <FooterLink href="/escribenos">Escribenos</FooterLink>
+                    <FooterLink href="/quienes-somos#trabaja-con-nosotros">Trabaja con Nosotros</FooterLink>
+                    <FooterLink href="/escribenos">Escribenos</FooterLink>
                   </div>
                   <div className="space-y-3">
                     <FooterLink href="/politica-privacidad">Política de privacidad</FooterLink>
@@ -112,7 +148,7 @@ export default function Footer() {
             </div>
             <div className="flex items-center gap-4 lg:mt-0">
                   <a 
-                    href={`https://${socialLinks.facebook}`}
+                    href={getCardLink(cardMap['facebook'])}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-[#00D1FF] transition-colors"
@@ -121,7 +157,7 @@ export default function Footer() {
                     <Facebook className="w-5 h-5" />
                   </a>
                   <a 
-                    href={`https://${socialLinks.linkedin}`}
+                    href={getCardLink(cardMap['linkedin'])}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-[#00D1FF] transition-colors"
@@ -130,7 +166,7 @@ export default function Footer() {
                     <Linkedin className="w-5 h-5" />
                   </a>
                   <a 
-                    href={`https://${socialLinks.instagram}`}
+                    href={getCardLink(cardMap['instagram'])}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-[#00D1FF] transition-colors"
@@ -139,7 +175,7 @@ export default function Footer() {
                     <Instagram className="w-5 h-5" />
                   </a>
                   <a 
-                    href={`https://${socialLinks.youtube}`}
+                    href={getCardLink(cardMap['youtube'])}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-[#00D1FF] transition-colors"
@@ -148,7 +184,7 @@ export default function Footer() {
                     <Youtube className="w-5 h-5" />
                   </a>
                   <a 
-                    href={`https://${socialLinks.tiktok}`}
+                    href={getCardLink(cardMap['tiktok'])}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-[#00D1FF] transition-colors"
@@ -163,7 +199,7 @@ export default function Footer() {
                     </svg>
                   </a>
                   <a 
-                    href={`https://wa.me/${socialLinks.whatsapp}`}
+                    href={getCardLink(cardMap['whatsapp'])}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-[#00D1FF] transition-colors"
