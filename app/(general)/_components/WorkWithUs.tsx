@@ -2,23 +2,28 @@
 import { socialLinks } from '@/lib/social'
 import React from 'react'
 
-const roles = [
-  {
-    title: "DOCENTE",
-    message: "¡Hola! Me interesa ser docente en MAINTECH",
-    image: "/role1.png",
-  },
-  {
-    title: "COORDINADOR",
-    message: "¡Hola! Me interesa el puesto de coordinador en MAINTECH",
-    image: "/role2.png",
-  },
-  {
-    title: "ASESOR",
-    message: "¡Hola! Me interesa ser asesor en MAINTECH",
-    image: "/role3.png",
-  },
-]
+
+import { useEffect, useState } from 'react'
+import { getCardSections } from '@/hooks/cardSectionsAPI'
+
+function useRoles() {
+  const [roles, setRoles] = useState<any[]>([])
+  useEffect(() => {
+    async function fetchRoles() {
+      const res = await getCardSections({ documentId: 'ixoklgqxn382lxbvyg4aha2x', populateCard: true })
+      const section = Array.isArray(res) ? res[0] : res
+      const cards = Array.isArray(section?.card) ? section.card : []
+      const mapped = cards.map((card: any) => ({
+        title: card.title || '',
+        message: `¡Hola! Me interesa el puesto de ${card.title || ''} en MAINTECH`,
+        image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : '/placeholder.svg',
+      }))
+      setRoles(mapped)
+    }
+    fetchRoles()
+  }, [])
+  return roles
+}
 
 const handleWhatsAppClick = (message: string) => {
   const encodedMessage = encodeURIComponent(message)
@@ -26,6 +31,7 @@ const handleWhatsAppClick = (message: string) => {
 }
 
 function WorkWithUs() {
+  const roles = useRoles()
   return (
     <>
       <div className="relative">
