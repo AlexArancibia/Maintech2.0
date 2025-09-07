@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { useCardSection } from "@/hooks/CardSectionsContext";
 
 interface FeatureCard {
   id: number;
@@ -9,48 +10,30 @@ interface FeatureCard {
   buttonText?: string;
   buttonLink?: string;
 }
-import { Card, CardContent } from "@/components/ui/card";
-import { getCardSections } from "@/hooks/cardSectionsAPI";
 
 export default function FeaturesSection() {
-  const [featuresSectionTitle, setFeaturesSectionTitle] = useState<string>("");
-  const [cards, setCards] = useState<FeatureCard[]>([]);
-
-  useEffect(() => {
-    async function fetchFeaturesSection() {
-      try {
-        const sections = await getCardSections({
-          documentId: "fstrvw9pumbbsvv1qcco52o4",
-          populateCard: true
-        });
-        const section = sections[0];
-        console.log("FeaturesSection data:", section);
-        setFeaturesSectionTitle(section?.title || "");
-        const mappedCards = (section?.card || []).map((card: any): FeatureCard => {
-          let description = "";
-          if (Array.isArray(card.description) && card.description.length > 0) {
-            const paragraph = card.description.find((d: any) => d.type === "paragraph");
-            if (paragraph && Array.isArray(paragraph.children) && paragraph.children.length > 0) {
-              description = paragraph.children.map((child: any) => child.text).join(" ");
-            }
-          }
-          return {
-            image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : "/feature1.png",
-            title: card.title,
-            description,
-            buttonText: card.buttonText,
-            buttonLink: card.buttonLink,
-            id: card.id
-          };
-        });
-        setCards(mappedCards);
-        mappedCards.forEach((card: FeatureCard) => console.log("Card asociada:", card));
-      } catch (error) {
-        console.error("Error al obtener features section:", error);
+  const { data: sections, loading, error } = useCardSection("fstrvw9pumbbsvv1qcco52o4", { populateCard: true });
+  
+  const section = sections[0];
+  const featuresSectionTitle = section?.title || "";
+  
+  const cards = (section?.card || []).map((card: any): FeatureCard => {
+    let description = "";
+    if (Array.isArray(card.description) && card.description.length > 0) {
+      const paragraph = card.description.find((d: any) => d.type === "paragraph");
+      if (paragraph && Array.isArray(paragraph.children) && paragraph.children.length > 0) {
+        description = paragraph.children.map((child: any) => child.text).join(" ");
       }
     }
-    fetchFeaturesSection();
-  }, []);
+    return {
+      image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : "/feature1.png",
+      title: card.title,
+      description,
+      buttonText: card.buttonText,
+      buttonLink: card.buttonLink,
+      id: card.id
+    };
+  });
 
   return (
     <section className="relative bg-gray-100 py-16 z-1 container-section">

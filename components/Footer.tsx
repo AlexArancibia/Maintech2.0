@@ -1,23 +1,12 @@
 "use client"
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { PhoneCall, Mail, Facebook, Linkedin, ChevronRight, ArrowRight, Instagram, Youtube } from 'lucide-react'
-import { getCardSections, CardSection } from '@/hooks/cardSectionsAPI'
+import { useCardSection } from '@/hooks/CardSectionsContext'
 
 export default function Footer() {
-
-  const [footerData, setFooterData] = useState<CardSection | null>(null)
-
-  useEffect(() => {
-    async function fetchFooter() {
-      const res = await getCardSections({ documentId: 'ddby7pqxvqcjsyz67a747c8c', populateCard: true })
-      // If API returns array, pick first; if object, use directly
-      setFooterData(Array.isArray(res) ? res[0] : res)
-      // console.log('Footer Strapi:', res)
-    }
-    fetchFooter()
-  }, [])
+  const { data: sections, loading, error } = useCardSection('ddby7pqxvqcjsyz67a747c8c', { populateCard: true });
+  const footerData = sections[0] || null;
 
   // Helper to extract text from card description
   function getCardText(card: any): string {

@@ -3,9 +3,9 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Settings, Shield, Monitor, Cpu, BarChart3, Droplets, Filter, BookOpen, ArrowRight, ChevronDown } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { socialLinks } from "@/lib/social"
-import { getCardSections } from "@/hooks/cardSectionsAPI"
+import { useCardSection } from "@/hooks/CardSectionsContext"
 
 // Array of static icons, colors, images, descriptions for mapping
 const icons = [Shield, Monitor, Cpu, BarChart3, Droplets, Filter, Filter, BookOpen]
@@ -33,14 +33,8 @@ export function ServicesSection() {
     )
   }
 
-  const [section, setSection] = useState<any>(null)
-  useEffect(() => {
-    async function fetchSection() {
-      const res = await getCardSections({ documentId: "xnz2bemu7o0rqvicpiw21n9x", populateCard: true })
-      setSection(Array.isArray(res) ? res[0] : res)
-    }
-    fetchSection()
-  }, [])
+  const { data: sections, loading, error } = useCardSection("xnz2bemu7o0rqvicpiw21n9x", { populateCard: true });
+  const section = sections[0] || null;
 
 
   return (

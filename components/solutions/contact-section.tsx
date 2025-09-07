@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Mail, Phone, MapPin, Send, MessageCircle } from "lucide-react"
-import { useEffect, useState } from "react"
-import { getCardSections } from "@/hooks/cardSectionsAPI"
+import { useState } from "react"
+import { useCardSection } from "@/hooks/CardSectionsContext"
 import { socialLinks } from "@/lib/social"
 import ShaderBackground from "./shader-background"
 
@@ -26,15 +26,8 @@ const services = [
 const contactIcons = [Phone, Mail, MapPin]
 
 export function ContactSection() {
-  const [section, setSection] = useState<any>(null)
-
-  useEffect(() => {
-    async function fetchSection() {
-      const res = await getCardSections({ documentId: "z4q87za2zm8o2y1hiz0ouomo", populateCard: true })
-      setSection(Array.isArray(res) ? res[0] : res)
-    }
-    fetchSection()
-  }, [])
+  const { data: sections, loading, error } = useCardSection("z4q87za2zm8o2y1hiz0ouomo", { populateCard: true });
+  const section = sections[0] || null;
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",

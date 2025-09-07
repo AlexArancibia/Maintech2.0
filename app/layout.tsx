@@ -3,8 +3,10 @@ import "./globals.css";
 import { ApiProvider } from "@/hooks/ApiContext";
 import { AuthContextProvider } from "@/hooks/AuthContext";
 import { CurrencyProvider } from "@/hooks/CurrencyContext";
+import { CardSectionsProvider } from "@/hooks/CardSectionsContext";
 import Footer from "@/components/Footer";
 import { Navbar } from "@/components/NavBar";
+import PagePreloader from "@/components/PagePreloader";
 
 import Analytics from "./analytics";
 
@@ -109,12 +111,14 @@ export default function RootLayout({
         <AuthContextProvider>
           <ApiProvider>
             <CurrencyProvider>
-  
-              <Navbar />
-              
-              {children}
+              <CardSectionsProvider>
+                <PagePreloader />
+                <Navbar />
+                
+                {children}
 
-              <Footer />
+                <Footer />
+              </CardSectionsProvider>
             </CurrencyProvider>
           </ApiProvider>
         </AuthContextProvider>

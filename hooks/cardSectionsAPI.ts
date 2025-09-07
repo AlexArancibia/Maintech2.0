@@ -5,6 +5,9 @@ export interface CardSection {
   id: number;
   title: string;
   description: string;
+  subtitle?: string;
+  buttonText?: string;
+  buttonLink?: string;
   image?: {
     url: string;
     name?: string;

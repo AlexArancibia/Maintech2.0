@@ -1,27 +1,23 @@
 "use client"
 import { socialLinks } from '@/lib/social'
-import React from 'react'
-
-
-import { useEffect, useState } from 'react'
-import { getCardSections } from '@/hooks/cardSectionsAPI'
+import React, { useMemo } from 'react'
+import { useCardSection } from '@/hooks/CardSectionsContext'
 
 function useRoles() {
-  const [roles, setRoles] = useState<any[]>([])
-  useEffect(() => {
-    async function fetchRoles() {
-      const res = await getCardSections({ documentId: 'ixoklgqxn382lxbvyg4aha2x', populateCard: true })
-      const section = Array.isArray(res) ? res[0] : res
-      const cards = Array.isArray(section?.card) ? section.card : []
-      const mapped = cards.map((card: any) => ({
-        title: card.title || '',
-        message: `¡Hola! Me interesa el puesto de ${card.title || ''} en MAINTECH`,
-        image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : '/placeholder.svg',
-      }))
-      setRoles(mapped)
-    }
-    fetchRoles()
-  }, [])
+  const { data: sections, loading, error } = useCardSection('ixoklgqxn382lxbvyg4aha2x', { populateCard: true });
+  
+  const roles = useMemo(() => {
+    const section = sections[0];
+    if (!section) return [];
+    
+    const cards = Array.isArray(section?.card) ? section.card : []
+    return cards.map((card: any) => ({
+      title: card.title || '',
+      message: `¡Hola! Me interesa el puesto de ${card.title || ''} en MAINTECH`,
+      image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : '/placeholder.svg',
+    }))
+  }, [sections]);
+  
   return roles
 }
 

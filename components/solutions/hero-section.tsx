@@ -3,20 +3,11 @@
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Award, CheckCircle } from "lucide-react"
 import Link from "next/link"
-import { getCardSections } from "@/hooks/cardSectionsAPI"
-
-import { useEffect, useState } from "react"
+import { useCardSection } from "@/hooks/CardSectionsContext"
 
 export function HeroSection() {
-  const [section, setSection] = useState<any>(null)
-
-  useEffect(() => {
-    async function fetchSection() {
-      const res = await getCardSections({ documentId: "smk1j7aokc3y54pbklz4juek" })
-      setSection(Array.isArray(res) ? res[0] : res)
-    }
-    fetchSection()
-  }, [])
+  const { data: sections, loading, error } = useCardSection("smk1j7aokc3y54pbklz4juek");
+  const section = sections[0] as any || null;
 
   // Split title for design
   const titleWords = section?.title?.split(' ') || []

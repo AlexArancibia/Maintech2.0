@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Card } from "@/components/ui/card"
 import { motion , AnimatePresence } from "motion/react"
-
-import { getCardSections } from "@/hooks/cardSectionsAPI";
+import { useCardSection } from "@/hooks/CardSectionsContext";
 
 interface TestimonialCard {
   id: number;
@@ -15,41 +14,32 @@ interface TestimonialCard {
 }
 
 export default function Testimonials() {
-  const [testimonials, setTestimonials] = useState<TestimonialCard[]>([]);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-
-  useEffect(() => {
-    async function fetchTestimonials() {
-      try {
-        const sections = await getCardSections({
-          documentId: "k1e6obytf5ad5xpzqx1gjgz4",
-          populateCard: true
-        });
-        const section = sections[0];
-        const mappedTestimonials = (section?.card || []).map((card: any): TestimonialCard => {
-          let testimonial = "";
-          if (Array.isArray(card.description) && card.description.length > 0) {
-            const paragraph = card.description.find((d: any) => d.type === "paragraph");
-            if (paragraph && Array.isArray(paragraph.children) && paragraph.children.length > 0) {
-              testimonial = paragraph.children.map((child: any) => child.text).join(" ");
-            }
-          }
-          return {
-            id: card.id,
-            image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : "",
-            name: card.title,
-            role: card.subtitle,
-            testimonial
-          };
-        });
-        setTestimonials(mappedTestimonials);
-      } catch (error) {
-        console.error("Error al obtener testimonials:", error);
+  
+  const { data: sections, loading, error } = useCardSection("k1e6obytf5ad5xpzqx1gjgz4", { populateCard: true });
+  
+  const testimonials = useMemo(() => {
+    const section = sections[0];
+    if (!section) return [];
+    
+    return (section?.card || []).map((card: any): TestimonialCard => {
+      let testimonial = "";
+      if (Array.isArray(card.description) && card.description.length > 0) {
+        const paragraph = card.description.find((d: any) => d.type === "paragraph");
+        if (paragraph && Array.isArray(paragraph.children) && paragraph.children.length > 0) {
+          testimonial = paragraph.children.map((child: any) => child.text).join(" ");
+        }
       }
-    }
-    fetchTestimonials();
-  }, []);
+      return {
+        id: card.id,
+        image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : "",
+        name: card.title,
+        role: card.subtitle,
+        testimonial
+      };
+    });
+  }, [sections]);
 
   const nextTestimonial = useCallback(() => {
     setActiveTestimonial((prev) => (prev + 1) % testimonials.length);

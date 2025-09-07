@@ -11,23 +11,15 @@ import {
   FaDesktop, 
   FaDollarSign 
 } from "react-icons/fa"
-import { useEffect, useState } from "react"
-import { getCardSections } from "@/hooks/cardSectionsAPI"
+import { useState } from "react"
+import { useCardSection } from "@/hooks/CardSectionsContext"
 
 const icons = [FaUsers, FaGraduationCap, FaBriefcase, FaBolt, FaDesktop, FaDollarSign]
 
 export function WhyChooseUsSection() {
-
   const [currentSlide, setCurrentSlide] = useState(0)
-  const [section, setSection] = useState<any>(null)
-
-  useEffect(() => {
-    async function fetchSection() {
-      const res = await getCardSections({ documentId: "ekm5113zuc5nz0sgvey4gf8j", populateCard: true })
-      setSection(Array.isArray(res) ? res[0] : res)
-    }
-    fetchSection()
-  }, [])
+  const { data: sections, loading, error } = useCardSection("ekm5113zuc5nz0sgvey4gf8j", { populateCard: true });
+  const section = sections[0] || null;
 
   const achievements = Array.isArray(section?.card)
     ? section.card.map((card: any, idx: number) => ({
