@@ -8,7 +8,7 @@ import WorkWithUs from '../_components/WorkWithUs'
 import { useCardSection } from '@/hooks/CardSectionsContext'
 
 export default function QuienesSomosClient() {
-  const { data: sections, loading, error } = useCardSection("bz2dmgrn223q3lxdkyx66nrj", { populateCard: true });
+  const { data: sections, loading, error } = useCardSection("bz2dmgrn223q3lxdkyx66nrj", { populate: "*" });
   const section = sections[0] || null;
   const cards = Array.isArray(section?.card) ? section.card : [];
 

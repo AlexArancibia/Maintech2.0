@@ -51,7 +51,7 @@ function WorkWithUs() {
                   className="group relative rounded-xl h-[300px] sm:h-[350px] md:h-[450px] lg:h-[350px] xl:h-[400px] cursor-pointer transition-all duration-300 hover:scale-105"
                 >
                   <img 
-                    src={role.image || "/placeholder.svg"} 
+                    src={role.image} 
                     alt={role.title}
                     className="w-full h-full object-cover rounded-xl object-left"
                   />  
