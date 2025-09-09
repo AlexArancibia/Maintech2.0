@@ -1,15 +1,25 @@
 "use client";
+import React from "react";
+import { useIsDesktop } from "@/hooks/useIsDesktop";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useCardSection } from "@/hooks/CardSectionsContext";
+import { getStrapiMediaUrl } from "@/lib/getStrapiMediaUrl";
 
 function HomeBanner() {
-  const { data: sections, loading, error } = useCardSection("ponlmmmda3n3wrhw8ilzau85");
+  const { data: sections, loading, error } = useCardSection("ponlmmmda3n3wrhw8ilzau85", { populate: "*" });
   const section = sections[0] || null;
+
+  const isDesktop = useIsDesktop(768);
 
   return (
     <div
-      className="container-section bg-cover bg-center bg-no-repeat sm:bg-[url('/home1.png')] bg-[url('/home-mobile.png')]"
+      className="container-section bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: isDesktop
+          ? `url(${getStrapiMediaUrl(section?.background?.url)})`
+          : `url(${getStrapiMediaUrl(section?.mobileBackground?.url)})`,
+      }}
     >
       <div className="content-section flex flex-col gap-8 md:gap-10 pt-8 lg:justify-center min-h-[600px] md:min-h-[700px] text-white">
         {section && (

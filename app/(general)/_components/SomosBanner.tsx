@@ -2,6 +2,8 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useIsDesktop } from "@/hooks/useIsDesktop";
+import { getStrapiMediaUrl } from "@/lib/getStrapiMediaUrl";
 
 interface SomosBannerProps {
   section: any;
@@ -17,9 +19,16 @@ function getDescription(card: any) {
 }
 
 function SomosBanner({ section, descriptionCard }: SomosBannerProps) {
+  const isDesktop = useIsDesktop(768);
+  console.log ("info somos banner ",section)
   return (
     <div
-      className="container-section bg-cover bg-center bg-no-repeat sm:bg-[url('/somos1.png')] bg-[url('/somos-mobile.png')]"
+      className="container-section bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: isDesktop
+          ? `url(${getStrapiMediaUrl(section?.background?.url)})`
+          : `url(${getStrapiMediaUrl(section?.mobileBackground?.url)})`,
+      }}
     >
       <div className="content-section flex flex-col gap-8 md:gap-10   justify-center min-h-[350px] md:min-h-[500px] text-white">
         <div className="font-orbitron text-4xl md:text-6xl lg:text-7xl ">
