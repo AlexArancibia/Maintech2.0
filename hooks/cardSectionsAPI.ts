@@ -12,6 +12,20 @@ export interface CardSection {
     url: string;
     name?: string;
   };
+  background?: {
+    id: number;
+    documentId: string;
+    name: string;
+    url: string;
+    [key: string]: any;
+  };
+  mobileBackground?: {
+    id: number;
+    documentId: string;
+    name: string;
+    url: string;
+    [key: string]: any;
+  };
   link?: string;
   card?: any[];
   // Agrega aquí otros campos según el modelo de Strapi
