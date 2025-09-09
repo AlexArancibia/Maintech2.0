@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCardSection } from "@/hooks/CardSectionsContext";
+import { getStrapiMediaUrl } from "@/lib/getStrapiMediaUrl";
 
 interface FeatureCard {
   id: number;
@@ -18,6 +19,7 @@ export default function FeaturesSection() {
   const featuresSectionTitle = section?.title || "";
   
   const cards = (section?.card || []).map((card: any): FeatureCard => {
+    console.log("card info", card)
     let description = "";
     if (Array.isArray(card.description) && card.description.length > 0) {
       const paragraph = card.description.find((d: any) => d.type === "paragraph");
@@ -26,7 +28,7 @@ export default function FeaturesSection() {
       }
     }
     return {
-      image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : "/feature1.png",
+      image: getStrapiMediaUrl(card.image?.url),
       title: card.title,
       description,
       buttonText: card.buttonText,

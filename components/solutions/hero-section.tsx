@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, Award, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { useCardSection } from "@/hooks/CardSectionsContext"
+import { useIsDesktop } from "@/hooks/useIsDesktop";
+import { getStrapiMediaUrl } from "@/lib/getStrapiMediaUrl";
 
 export function HeroSection() {
-  const { data: sections, loading, error } = useCardSection("smk1j7aokc3y54pbklz4juek");
+  const { data: sections, loading, error } = useCardSection("smk1j7aokc3y54pbklz4juek", { populate: "*" });
   const section = sections[0] as any || null;
+  const isDesktop = useIsDesktop(768);
 
   // Split title for design
   const titleWords = section?.title?.split(' ') || []
@@ -15,7 +18,14 @@ export function HeroSection() {
   const secondLine = titleWords.slice(3).join(' ')
 
   return (
-    <section className="container-section bg-cover bg-center bg-no-repeat bg-[url('/solutions-banner.png')] relative">
+    <section
+      className="container-section bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: isDesktop
+          ? `url(${getStrapiMediaUrl(section?.background?.url)})`
+          : `url(${getStrapiMediaUrl(section?.mobileBackground?.url)})`,
+      }}
+    >
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-tr lg:bg-gradient-to-r from-primary via-primary/90 to-transparent pointer-events-none"></div>
 
