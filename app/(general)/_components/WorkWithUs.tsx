@@ -1,24 +1,25 @@
 "use client"
 import { socialLinks } from '@/lib/social'
-import React from 'react'
+import React, { useMemo } from 'react'
+import { useCardSection } from '@/hooks/CardSectionsContext'
 
-const roles = [
-  {
-    title: "DOCENTE",
-    message: "¡Hola! Me interesa ser docente en MAINTECH",
-    image: "/role1.png",
-  },
-  {
-    title: "COORDINADOR",
-    message: "¡Hola! Me interesa el puesto de coordinador en MAINTECH",
-    image: "/role2.png",
-  },
-  {
-    title: "ASESOR",
-    message: "¡Hola! Me interesa ser asesor en MAINTECH",
-    image: "/role3.png",
-  },
-]
+function useRoles() {
+  const { data: sections, loading, error } = useCardSection('ixoklgqxn382lxbvyg4aha2x', { populateCard: true });
+  
+  const roles = useMemo(() => {
+    const section = sections[0];
+    if (!section) return [];
+    
+    const cards = Array.isArray(section?.card) ? section.card : []
+    return cards.map((card: any) => ({
+      title: card.title || '',
+      message: `¡Hola! Me interesa el puesto de ${card.title || ''} en MAINTECH`,
+      image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : '/placeholder.svg',
+    }))
+  }, [sections]);
+  
+  return roles
+}
 
 const handleWhatsAppClick = (message: string) => {
   const encodedMessage = encodeURIComponent(message)
@@ -26,6 +27,7 @@ const handleWhatsAppClick = (message: string) => {
 }
 
 function WorkWithUs() {
+  const roles = useRoles()
   return (
     <>
       <div className="relative">
@@ -49,7 +51,7 @@ function WorkWithUs() {
                   className="group relative rounded-xl h-[300px] sm:h-[350px] md:h-[450px] lg:h-[350px] xl:h-[400px] cursor-pointer transition-all duration-300 hover:scale-105"
                 >
                   <img 
-                    src={role.image || "/placeholder.svg"} 
+                    src={role.image} 
                     alt={role.title}
                     className="w-full h-full object-cover rounded-xl object-left"
                   />  

@@ -1,66 +1,61 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Card } from "@/components/ui/card"
 import { motion , AnimatePresence } from "motion/react"
+import { useCardSection } from "@/hooks/CardSectionsContext";
 
-const testimonials = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&q=80",
-    name: "Carlos Rodriguez",
-    role: "Ingeniero Industrial",
-    testimonial: "Los cursos de MainTech han sido fundamentales para mi desarrollo profesional. La calidad de la enseñanza y el contenido práctico superaron mis expectativas."
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&q=80",
-    name: "Juan Pérez",
-    role: "Gerente de Proyectos",
-    testimonial: "Gracias a la formación recibida, pude implementar mejoras significativas en mi empresa. Los instructores son verdaderos expertos en su campo."
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&q=80",
-    name: "Ana Martinez",
-    role: "Directora de Operaciones",
-    testimonial: "La flexibilidad de los cursos online y la atención personalizada hacen de MainTech la mejor opción para profesionales que buscan especializarse."
-  },
-  {
-    id: 4,
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&q=80",
-    name: "Miguel Torres",
-    role: "Consultor Senior",
-    testimonial: "El nivel de profundidad de los cursos y la red de profesionales que he conocido han transformado mi carrera por completo."
-  }, 
-  {
-    id: 5,
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&q=80",
-    name: "Laura Sánchez",
-    role: "Especialista en Calidad",
-    testimonial: "La metodología práctica y los casos de estudio reales me permitieron aplicar inmediatamente lo aprendido en mi trabajo diario."
-  }
-]
+interface TestimonialCard {
+  id: number;
+  image: string;
+  name: string;
+  role: string;
+  testimonial: string;
+}
 
 export default function Testimonials() {
-  const [activeTestimonial, setActiveTestimonial] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  const { data: sections, loading, error } = useCardSection("k1e6obytf5ad5xpzqx1gjgz4", { populateCard: true });
+  
+  const testimonials = useMemo(() => {
+    const section = sections[0];
+    if (!section) return [];
+    
+    return (section?.card || []).map((card: any): TestimonialCard => {
+      let testimonial = "";
+      if (Array.isArray(card.description) && card.description.length > 0) {
+        const paragraph = card.description.find((d: any) => d.type === "paragraph");
+        if (paragraph && Array.isArray(paragraph.children) && paragraph.children.length > 0) {
+          testimonial = paragraph.children.map((child: any) => child.text).join(" ");
+        }
+      }
+      return {
+        id: card.id,
+        image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : "",
+        name: card.title,
+        role: card.subtitle,
+        testimonial
+      };
+    });
+  }, [sections]);
 
   const nextTestimonial = useCallback(() => {
-    setActiveTestimonial((prev) => (prev + 1) % testimonials.length)
-  }, [])
+    setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+  }, [testimonials.length]);
 
   useEffect(() => {
-    if (!isPaused) {
-      const interval = setInterval(nextTestimonial, 3000)
-      return () => clearInterval(interval)
+    if (!isPaused && testimonials.length > 0) {
+      const interval = setInterval(nextTestimonial, 3000);
+      return () => clearInterval(interval);
     }
-  }, [isPaused, nextTestimonial])
+  }, [isPaused, nextTestimonial, testimonials.length]);
 
   const handleTestimonialClick = (index: number) => {
-    setActiveTestimonial(index)
-    setIsPaused(true)
-  }
+    setActiveTestimonial(index);
+    setIsPaused(true);
+  };
 
   return (
     <div className='bg-gray-100'>
@@ -88,19 +83,19 @@ export default function Testimonials() {
               >
                 <div className="w-32 h-32 mx-auto rounded-full border-4 border-white overflow-hidden mb-4">
                   <img
-                    src={testimonials[activeTestimonial].image}
-                    alt={testimonials[activeTestimonial].name}
+                    src={testimonials[activeTestimonial]?.image}
+                    alt={testimonials[activeTestimonial]?.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
                 <p className="text-white text-lg mb-4 px-4">
-                  "{testimonials[activeTestimonial].testimonial}"
+                  "{testimonials[activeTestimonial]?.testimonial}"
                 </p>
                 <p className="text-white font-semibold">
-                  {testimonials[activeTestimonial].name}
+                  {testimonials[activeTestimonial]?.name}
                 </p>
                 <p className="text-white/80 text-sm">
-                  {testimonials[activeTestimonial].role}
+                  {testimonials[activeTestimonial]?.role}
                 </p>
               </motion.div>
             </AnimatePresence>
@@ -166,13 +161,13 @@ export default function Testimonials() {
                   className="max-w-2xl mx-auto text-center"
                 >
                   <p className="text-white text-lg mb-4">
-                    "{testimonials[activeTestimonial].testimonial}"
+                    "{testimonials[activeTestimonial]?.testimonial}"
                   </p>
                   <p className="text-white font-semibold">
-                    {testimonials[activeTestimonial].name}
+                    {testimonials[activeTestimonial]?.name}
                   </p>
                   <p className="text-white/80 text-sm">
-                    {testimonials[activeTestimonial].role}
+                    {testimonials[activeTestimonial]?.role}
                   </p>
                 </motion.div>
               </AnimatePresence>

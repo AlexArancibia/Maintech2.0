@@ -11,10 +11,7 @@ export default function HomePage() {
       <HeroSection />
       <ServicesSection />
       <WhyChooseUsSection />
-      <ContactSection />
-      {/* <JoinTeamSection />
-      <SectorsSection />
-      <ContactSection />   */}
+      <ContactSection /> 
  
     </main>
   )

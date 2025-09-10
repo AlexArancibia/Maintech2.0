@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card"
 import { Mail, Phone, MapPin, Send, MessageCircle } from "lucide-react"
 import { useState } from "react"
+import { useCardSection } from "@/hooks/CardSectionsContext"
 import { socialLinks } from "@/lib/social"
 import ShaderBackground from "./shader-background"
 
@@ -22,7 +23,11 @@ const services = [
   "Planes de Formación"
 ]
 
+const contactIcons = [Phone, Mail, MapPin]
+
 export function ContactSection() {
+  const { data: sections, loading, error } = useCardSection("z4q87za2zm8o2y1hiz0ouomo", { populateCard: true });
+  const section = sections[0] || null;
   const [formData, setFormData] = useState({
     nombre: "",
     email: "",
@@ -115,46 +120,28 @@ export function ContactSection() {
                   </p>
                 </div>
 
-                {/* Contact Information */}
+                {/* Contact Information - Dynamic from Strapi */}
                 <div className="space-y-8">
                   <h3 className="text-xl font-bold text-white mb-6">
                     Información de contacto
                   </h3>
-                  
                   <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
-                        <Phone className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <h4 className="text-white font-semibold mb-1">Teléfono</h4>
-                        <p className="text-white/80 text-base">{socialLinks.phone}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
-                        <Mail className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <h4 className="text-white font-semibold mb-1">Email</h4>
-                        <p className="text-white/80 text-base">{socialLinks.email}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
-                        <MapPin className="w-5 h-5 text-accent" />
-                      </div>
-                      <div>
-                        <h4 className="text-white font-semibold mb-1">Ubicación</h4>
-                        <p className="text-white/80 text-base">Valle Blanco Center, Oficina 18,<br />Cerro Colorado, Arequipa.</p>
-                      </div>
-                    </div>
+                    {Array.isArray(section?.card) && section.card.map((card: any, idx: number) => {
+                      const Icon = contactIcons[idx]
+                      return (
+                        <div key={card.id} className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
+                            {Icon && <Icon className="w-5 h-5 text-accent" />}
+                          </div>
+                          <div>
+                            <h4 className="text-white font-semibold mb-1">{card.title}</h4>
+                            <p className="text-white/80 text-base">{card.subtitle}</p>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
-
-                  <div className="pt-8">
-                  </div>
+                  <div className="pt-8"></div>
                 </div>
               </div>
 
