@@ -103,7 +103,7 @@ const DesktopNavItem: React.FC<{
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute left-0 gap-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-100"
+              className="absolute left-0 gap-0 mt-2 w-48 bg-white shadow-lg rounded-md border border-gray-100 z-50"
             >
               {item.subitems.map((subitem) => {
                 const isSubItemActive = pathname === subitem.href
