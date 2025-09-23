@@ -26,10 +26,14 @@ export function HeroSection() {
           : `url(${getStrapiMediaUrl(section?.mobileBackground?.url)})`,
       }}
     >
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-tr lg:bg-gradient-to-r from-primary via-primary/90 to-transparent pointer-events-none"></div>
+      {/* Hero background z-0 */}
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0 pointer-events-none" style={{ backgroundImage: isDesktop
+        ? `url(${getStrapiMediaUrl(section?.background?.url)})`
+        : `url(${getStrapiMediaUrl(section?.mobileBackground?.url)})` }}></div>
+      {/* Gradient overlay z-10 */}
+      <div className="absolute inset-0 bg-gradient-to-tr lg:bg-gradient-to-r from-primary via-primary/90 to-transparent pointer-events-none z-10"></div>
 
-      <div className="content-section relative z-10">
+      <div className="content-section relative z-20">
         <div className="grid lg:grid-cols-1 gap-12 lg:gap-20 items-center min-h-[650px] lg:min-h-[650px]">
           {/* Columna de contenido */}
           <div className="space-y-8 text-white text-center lg:text-left max-w-4xl mx-auto lg:mx-0">
