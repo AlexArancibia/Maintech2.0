@@ -1,5 +1,6 @@
 "use client"
 
+import React, { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react"
@@ -11,7 +12,6 @@ import {
   FaDesktop, 
   FaDollarSign 
 } from "react-icons/fa"
-import { useState } from "react"
 import { useCardSection } from "@/hooks/CardSectionsContext"
 import { getStrapiMediaUrl } from "@/lib/getStrapiMediaUrl"
 
@@ -29,11 +29,14 @@ export function WhyChooseUsSection() {
 
   // Achievements/cards
   const achievements = Array.isArray(cardSection?.card)
-    ? cardSection.card.map((card: any) => ({
-        title: card.title,
-        description: card.subtitle,
-        imageUrl: card.image?.url ? getStrapiMediaUrl(card.image.url) : null
-      }))
+    ? cardSection.card.map((card: any, index: number) => {
+        const IconComponent = icons[index % icons.length];
+        return {
+          title: card.title,
+          description: card.subtitle,
+          Icon: IconComponent
+        };
+      })
     : []
 
   const nextSlide = () => {
@@ -67,23 +70,24 @@ export function WhyChooseUsSection() {
 
           {/* Desktop Grid - Hidden on mobile */}
           <div className="hidden md:grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {achievements.map((achievement: {title: string, description: string, imageUrl: string | null}, index: number) => (
-              <Card key={index} className="border-none shadow-lg z-10">
-                <CardContent className="flex flex-col items-center p-6 text-center">
-                  <div className="mb-6 rounded-full p-3">
-                    {achievement.imageUrl && (
-                      <img src={achievement.imageUrl} alt={achievement.title} className="w-16 h-16 object-contain" />
-                    )}
-                  </div>
-                  <h3 className="mb-4 text-xl font-semibold text-gray-800">
-                    {achievement.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    {achievement.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+            {achievements.map((achievement: {title: string, description: string, Icon: React.ComponentType<{className?: string}>}, index: number) => {
+              const IconComponent = achievement.Icon;
+              return (
+                <Card key={index} className="border-none shadow-lg z-10">
+                  <CardContent className="flex flex-col items-center p-6 text-center">
+                    <div className="mb-6 rounded-full p-3 bg-primary/10">
+                      <IconComponent className="w-12 h-12 text-primary" />
+                    </div>
+                    <h3 className="mb-4 text-xl font-semibold text-gray-800">
+                      {achievement.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm">
+                      {achievement.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           {/* Mobile Carousel - Visible only on mobile */}
@@ -93,25 +97,26 @@ export function WhyChooseUsSection() {
                 className="flex transition-transform duration-300 ease-in-out"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
-                {achievements.map((achievement: {title: string, description: string, imageUrl: string | null}, index: number) => (
-                  <div key={index} className="w-full flex-shrink-0 px-4">
-                    <Card className="border-none shadow-lg z-10">
-                      <CardContent className="flex flex-col items-center p-6 text-center">
-                        <div className="mb-6 rounded-full p-3">
-                          {achievement.imageUrl && (
-                            <img src={achievement.imageUrl} alt={achievement.title} className="w-16 h-16 object-contain" />
-                          )}
-                        </div>
-                        <h3 className="mb-4 text-xl font-semibold text-gray-800">
-                          {achievement.title}
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                          {achievement.description}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                ))}
+                {achievements.map((achievement: {title: string, description: string, Icon: React.ComponentType<{className?: string}>}, index: number) => {
+                  const IconComponent = achievement.Icon;
+                  return (
+                    <div key={index} className="w-full flex-shrink-0 px-4">
+                      <Card className="border-none shadow-lg z-10">
+                        <CardContent className="flex flex-col items-center p-6 text-center">
+                          <div className="mb-6 rounded-full p-3 bg-primary/10">
+                            <IconComponent className="w-16 h-16 text-primary" />
+                          </div>
+                          <h3 className="mb-4 text-xl font-semibold text-gray-800">
+                            {achievement.title}
+                          </h3>
+                          <p className="text-gray-600 text-sm">
+                            {achievement.description}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 

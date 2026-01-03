@@ -1,6 +1,5 @@
 import axios from 'axios';
 import api from '../lib/axios'
-import { getImageUrl } from '../lib/getImageUrl';
 // Interfaces
 import { Category } from '@/types/CategoryType';
 

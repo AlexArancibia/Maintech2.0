@@ -7,7 +7,6 @@ import type { DetailedCourse } from "@/types/CoursesType"
 import type { User } from "@/types/StudentType"
 import { useState, useEffect } from "react"
 import jsPDF from "jspdf"
-import { getImageUrl } from "@/lib/getImageUrl"
 import { createCertificate, getCertificateByUserAndCourse, generateUniqueCertificateCode } from "@/hooks/certificateAPI"
 import CertificateInfo from "./CertificateInfo"
 
@@ -143,11 +142,8 @@ export default function CourseProgress({ progress, user, course }: CourseProgres
     img.crossOrigin = "anonymous"
 
     // Use category's custom certificate image if available, otherwise use default
-    const certificateImageUrl = course.category?.certificate_img?.url
-      ? (course.category.certificate_img.url.startsWith('http') 
-          ? course.category.certificate_img.url 
-          : getImageUrl(course.category.certificate_img.url))
-      : "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/certificado.jpg-JOmZX0BKrM5FO78ZzGMAei7wngkaAp.jpeg"
+    const certificateImageUrl = course.category?.certificate_img?.url || 
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/certificado.jpg-JOmZX0BKrM5FO78ZzGMAei7wngkaAp.jpeg"
 
     console.log("Course category:", course.category)
     console.log("Certificate image from category:", course.category?.certificate_img)

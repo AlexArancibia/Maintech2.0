@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { CalendarDays, Clock, Users, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { DetailedCourse } from '@/types/CoursesType'
-import { getImageUrl } from '@/lib/getImageUrl'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -68,7 +67,7 @@ export default function PurchasedCourseCard({ course }: CourseCardProps) {
       <CardHeader className="p-0 relative">
         <div className="relative">
           <Image 
-            src={getImageUrl(course.image?.url) || '/placeholder.svg'} 
+            src={course.image?.url || '/placeholder.svg'} 
             alt={course.title || 'Curso'} 
             width={400} 
             height={225} 

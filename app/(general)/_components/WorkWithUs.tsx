@@ -14,7 +14,7 @@ function useRoles() {
     return cards.map((card: any) => ({
       title: card.title || '',
       message: `¡Hola! Me interesa el puesto de ${card.title || ''} en MAINTECH`,
-      image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : '/placeholder.svg',
+      image: card.image?.url || '/placeholder.svg',
     }))
   }, [sections]);
   

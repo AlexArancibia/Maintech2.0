@@ -1,6 +1,5 @@
 import axios from 'axios';
 import api from '../lib/axios';
-import { getImageUrl } from '../lib/getImageUrl';
 import { BasicCourse, DetailedCourse, Chapter, Attachment } from '@/types/CoursesType';
 
 interface ApiResponse<T> {
@@ -144,7 +143,6 @@ export async function getPurchasedCourses(studentId: string | undefined): Promis
 export default {
   getBasicCourses,
   getDetailedCourses,
-  getImageUrl,
   getChapterContent,
   getChapterAttachments,
 };

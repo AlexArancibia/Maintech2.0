@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { useApiData } from "@/hooks/ApiContext"
 import type { BasicCourse } from "@/types/CoursesType"
-import { getImageUrl } from "@/lib/getImageUrl"
 import Link from "next/link"
 import { convertToPeruTime, calculateDuration, isOlderThanOneDay, formatCourseDateSafe } from "@/lib/dateUtils"
 import { useCurrency } from "@/hooks/CurrencyContext"
@@ -214,7 +213,7 @@ export default function UpcomingCourses() {
                           {/* Imagen del curso */}
                           <div className="aspect-video w-full overflow-hidden">
                             <img 
-                              src={getImageUrl(course.image.url) || "/placeholder.svg"} 
+                              src={course.image.url || "/placeholder.svg"} 
                               alt={course.title}
                               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                             />

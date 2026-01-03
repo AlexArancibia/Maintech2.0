@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Linkedin, Mail, MapPin } from 'lucide-react';
 import { Teacher } from "@/types/TeacherType";
-import { getImageUrl } from "@/lib/getImageUrl";
 
 interface TeacherCardProps {
   teacher: Teacher;
@@ -15,7 +14,7 @@ export default function TeacherCard({ teacher }: TeacherCardProps) {
     <Card className="w-full max-w-[430px]    overflow-hidden bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-lg">
       <div className="relative h-[350px] w-full overflow-hidden">
         <Image
-          src={getImageUrl(teacher.photo.url)}
+          src={teacher.photo.url}
           alt={teacher.name}
           layout="fill"
           objectFit="cover"

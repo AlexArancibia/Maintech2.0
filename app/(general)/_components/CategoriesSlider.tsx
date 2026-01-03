@@ -14,7 +14,6 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { getCategories } from "@/hooks/categoriesAPI"
 import { Category } from "@/types/CategoryType"
-import { getImageUrl } from "@/lib/getImageUrl"
 
 export default function CoursesSlider() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -94,13 +93,7 @@ export default function CoursesSlider() {
                   <CardContent className="p-0">
                     <div className="relative">
                       <Image
-                        src={category.category_img ? 
-                          (category.category_img.url.startsWith('http') ? 
-                            category.category_img.url : 
-                            getImageUrl(category.category_img.url)
-                          ) : 
-                          "/curso.png"
-                        }
+                        src={category.category_img?.url || "/curso.png"}
                         alt={category.name}
                         width={800}
                         height={600}

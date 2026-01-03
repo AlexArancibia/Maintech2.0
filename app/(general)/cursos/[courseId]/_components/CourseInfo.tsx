@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Linkedin } from 'lucide-react';
-import { getImageUrl } from "@/lib/getImageUrl";
 
 interface CourseInfoProps {
   info: InfoNode[] | null;
@@ -36,7 +35,7 @@ const TeacherDialog = ({ teacher }: { teacher: Teacher | null }) => {
           <div className="flex flex-col items-center text-center">
             <Avatar className="w-24 h-24 mb-4">
               {teacher.photo && teacher.photo.url ? (
-                <AvatarImage src={getImageUrl(teacher.photo.url)} alt={teacher.name || "Profesor"} />
+                <AvatarImage src={teacher.photo.url} alt={teacher.name || "Profesor"} />
               ) : null}
               <AvatarFallback>{teacher.name ? teacher.name.charAt(0).toUpperCase() : "P"}</AvatarFallback>
             </Avatar>
@@ -96,7 +95,7 @@ const TeacherInfoSubtle = ({ teacher }: { teacher: Teacher | null }) => {
       <div className="flex items-center space-x-3">
         <Avatar className="w-12 h-12">
           {teacher.photo && teacher.photo.url ? (
-            <AvatarImage src={getImageUrl(teacher.photo.url)} alt={teacher.name || "Profesor"} />
+            <AvatarImage src={teacher.photo.url} alt={teacher.name || "Profesor"} />
           ) : null}
           <AvatarFallback>{teacher.name ? teacher.name.charAt(0).toUpperCase() : "P"}</AvatarFallback>
         </Avatar>

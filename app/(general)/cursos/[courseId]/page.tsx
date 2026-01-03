@@ -2,7 +2,6 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getImageUrl } from "@/lib/getImageUrl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -226,7 +225,7 @@ export default function CourseDetailsPage() {
                 {safeCourse.image && safeCourse.image.url ? (
                   <div className="w-full rounded-lg overflow-hidden bg-slate-800">
                     <img
-                      src={getImageUrl(safeCourse.image.url) || "/placeholder.svg"}
+                      src={safeCourse.image.url || "/placeholder.svg"}
                       alt={safeCourse.title}
                       className="w-full object-contain"
                     />
@@ -447,7 +446,7 @@ export default function CourseDetailsPage() {
                                   <div className="w-16 h-16 rounded-full overflow-hidden">
                                     {course.teacher.photo && course.teacher.photo.url ? (
                                       <img
-                                        src={getImageUrl(course.teacher.photo.url)}
+                                        src={course.teacher.photo.url}
                                         alt={course.teacher.name || "Profesor"}
                                         className="w-full h-full object-cover"
                                       />
@@ -703,7 +702,7 @@ export default function CourseDetailsPage() {
                                   <div className="w-16 h-16 rounded-full overflow-hidden">
                                     {course.teacher.photo && course.teacher.photo.url ? (
                                       <img
-                                        src={getImageUrl(course.teacher.photo.url)}
+                                        src={course.teacher.photo.url}
                                         alt={course.teacher.name || "Profesor"}
                                         className="w-full h-full object-cover"
                                       />

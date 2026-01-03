@@ -33,7 +33,7 @@ export default function Testimonials() {
       }
       return {
         id: card.id,
-        image: card.image?.url ? `${process.env.NEXT_PUBLIC_STRAPI_ENDPOINT}${card.image.url}` : "",
+        image: card.image?.url || "",
         name: card.title,
         role: card.subtitle,
         testimonial

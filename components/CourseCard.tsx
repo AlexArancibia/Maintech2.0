@@ -5,7 +5,6 @@ import { Badge } from './ui/badge'
 import { CalendarDays, Clock, Users, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { BasicCourse } from '@/types/CoursesType'
-import { getImageUrl } from '@/lib/getImageUrl'
 import { convertToPeruTime, calculateDuration, formatCourseStartDate } from '@/lib/dateUtils'
 import { useCurrency } from '@/hooks/CurrencyContext'
 
@@ -23,7 +22,7 @@ export default function CourseCard({ course }: CourseCardProps) {
       <CardHeader className="p-0 relative">
         <div className="relative">
           <Image 
-            src={getImageUrl(course.image.url)} 
+            src={course.image.url} 
             alt={course.title} 
             width={400} 
             height={225} 

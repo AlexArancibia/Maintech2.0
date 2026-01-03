@@ -2,7 +2,6 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { getImageUrl } from "@/lib/getImageUrl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -948,7 +947,7 @@ export default function CheckoutPage() {
                 <div className="flex items-start space-x-4">
                   <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                     <img
-                      src={getImageUrl(course.image.url) || "/placeholder.svg"}
+                      src={course.image.url || "/placeholder.svg"}
                       alt={course.title}
                       className="w-full h-full object-cover"
                     />
