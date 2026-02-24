@@ -128,6 +128,22 @@ export const isFutureDate = (date: Date | string | null): boolean => {
 };
 
 /**
+ * Verifica si un curso ya finalizó (la fecha de fin ha pasado)
+ * @param finishDate - Fecha de fin del curso
+ * @returns true si el curso ya finalizó
+ */
+export const isCourseFinished = (finishDate: string | null): boolean => {
+  if (!finishDate) return false;
+  const peruDate = convertToPeruTime(finishDate);
+  if (!peruDate) return false;
+  const currentPeruDate = getCurrentPeruTime();
+  // Comparar solo la fecha (sin hora)
+  const finishDay = new Date(peruDate.getFullYear(), peruDate.getMonth(), peruDate.getDate());
+  const today = new Date(currentPeruDate.getFullYear(), currentPeruDate.getMonth(), currentPeruDate.getDate());
+  return finishDay < today;
+};
+
+/**
  * Calcula la duración entre dos fechas
  * @param startDate - Fecha de inicio
  * @param endDate - Fecha de fin

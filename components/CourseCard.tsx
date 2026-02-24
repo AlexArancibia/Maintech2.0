@@ -5,7 +5,7 @@ import { Badge } from './ui/badge'
 import { CalendarDays, Clock, Users, ArrowRight } from 'lucide-react'
 import Image from 'next/image'
 import { BasicCourse } from '@/types/CoursesType'
-import { convertToPeruTime, calculateDuration, formatCourseStartDate } from '@/lib/dateUtils'
+import { convertToPeruTime, calculateDuration, formatCourseStartDate, isCourseFinished } from '@/lib/dateUtils'
 import { useCurrency } from '@/hooks/CurrencyContext'
 
 interface CourseCardProps {
@@ -15,6 +15,7 @@ interface CourseCardProps {
 export default function CourseCard({ course }: CourseCardProps) {
   const startDate = convertToPeruTime(course.start_date);
   const { formatPrice } = useCurrency();
+  const isFinished = isCourseFinished(course.finish_date);
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 relative">
@@ -30,7 +31,11 @@ export default function CourseCard({ course }: CourseCardProps) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
         
-          {course.price === 0 ? (
+          {isFinished ? (
+            <div className="absolute bottom-2 right-2 px-3 py-1.5 rounded-full text-white font-bold text-xs bg-gray-600/90">
+              Finalizado
+            </div>
+          ) : course.price === 0 ? (
             <div className="absolute bottom-2 right-2 px-3 py-1.5 rounded-full text-white font-bold text-xs"
                  style={{ background: 'linear-gradient(90deg, #1e293b 0%, #ef4444 100%)', boxShadow: '0 2px 8px 0 rgba(30,41,59,0.15)' }}>
               🎉 GRATUITO

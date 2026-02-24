@@ -18,7 +18,7 @@ export async function getBasicCourses(): Promise<BasicCourse[]> {
   try {
     console.log("Fetching basic courses...");
     const response = await api.get<ApiResponse<BasicCourse>>(
-      '/api/courses?populate[image][fields][0]=url&populate[image][fields][1]=name&populate[category][fields][0]=name&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email'
+      '/api/courses?populate[image][fields][0]=url&populate[image][fields][1]=name&populate[category][fields][0]=name&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email&sort[0]=start_date:desc'
     );
     console.log("Response received:", response);
     console.log("Extracted data:", response.data.data);
@@ -33,7 +33,7 @@ export async function getDetailedCourses(): Promise<DetailedCourse[]> {
   try {
     console.log("Fetching detailed courses...");
     const response = await api.get<ApiResponse<DetailedCourse>>(
-      '/api/courses?populate[chapters][populate][0]=user_progress&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[0]=category&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email'
+      '/api/courses?populate[chapters][populate][0]=user_progress&populate[image][fields][0]=url&populate[image][fields][1]=name&populate[chapters][populate][attachment]=*&populate[0]=category&populate[category][populate][certificate_img][fields][0]=url&populate[category][populate][certificate_img][fields][1]=name&populate[teacher][populate][photo][fields][1]=url&populate[users_permissions_users][fields][0]=email&sort[0]=start_date:desc'
     );
     console.log("Response received:", response);
     console.log("Extracted data:", response.data.data);

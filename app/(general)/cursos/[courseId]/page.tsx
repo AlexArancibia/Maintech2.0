@@ -21,6 +21,7 @@ import { CourseInfo } from "./_components/CourseInfo"
 import { ChapterInfo } from "./_components/ChapterInfo"
 import Features from "./_components/CourseFeatures"
 import { socialLinks } from "@/lib/social"
+import { isCourseFinished } from "@/lib/dateUtils"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import TeacherCard from "@/components/TeacherCard"
 
@@ -210,6 +211,7 @@ export default function CourseDetailsPage() {
   };
 
   const isFreeCourse = safeCourse.price === 0 || safeCourse.price === null || safeCourse.price === undefined
+  const courseFinished = isCourseFinished(safeCourse.finish_date)
 
   return (
     <>
@@ -220,6 +222,9 @@ export default function CourseDetailsPage() {
               <div className="space-y-6">
                 <div>
                   <h1 className="text-3xl md:text-4xl font-bold text-white mt-2">{safeCourse.title}</h1>
+                  {courseFinished && (
+                    <p className="text-white/60 text-sm mt-2 font-normal">Este curso ya finalizó</p>
+                  )}
                 </div>
 
                 {safeCourse.image && safeCourse.image.url ? (
@@ -267,7 +272,20 @@ export default function CourseDetailsPage() {
                               </div>
                               
                               <div className="pt-4">
-                                {!isCoursePurchased ? (
+                                {isCoursePurchased ? (
+                                  <Link href={`/dashboard/cursos/${params.courseId}`}>
+                                    <Button variant="outline" className="bg-primary text-white border-none shadow-md w-full transition-colors">
+                                      Ver Curso
+                                    </Button>
+                                  </Link>
+                                ) : courseFinished ? (
+                                  <div className="space-y-2">
+                                    <Button disabled className="w-full h-12 bg-gray-600/50 text-gray-400 cursor-not-allowed text-sm font-semibold">
+                                      Curso finalizado
+                                    </Button>
+                                    <p className="text-center text-white/50 text-xs">La inscripción ya no está disponible</p>
+                                  </div>
+                                ) : (
                                   <div className="grid grid-cols-2 gap-3">
                                     <Link href={`/checkout/${params.courseId}`}>
                                       <Button className="w-full h-12 bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-500 hover:to-blue-700 text-white backdrop-blur-sm border border-blue-400/30 shadow-lg text-sm font-semibold">
@@ -281,12 +299,6 @@ export default function CourseDetailsPage() {
                                       </Button>
                                     </Link>
                                   </div>
-                                ) : (
-                                  <Link href={`/dashboard/cursos/${params.courseId}`}>
-                                    <Button variant="outline" className="bg-primary text-white border-none shadow-md w-full transition-colors">
-                                      Ver Curso
-                                    </Button>
-                                  </Link>
                                 )}
                               </div>
                             </div>
@@ -523,7 +535,20 @@ export default function CourseDetailsPage() {
                               </div>
                               
                               <div className="pt-4">
-                                {!isCoursePurchased ? (
+                                {isCoursePurchased ? (
+                                  <Link href={`/dashboard/cursos/${params.courseId}`}>
+                                    <Button variant="outline" className="bg-primary text-white border-none shadow-md w-full transition-colors">
+                                      Ver Curso
+                                    </Button>
+                                  </Link>
+                                ) : courseFinished ? (
+                                  <div className="space-y-2">
+                                    <Button disabled className="w-full h-12 bg-gray-600/50 text-gray-400 cursor-not-allowed text-sm font-semibold">
+                                      Curso finalizado
+                                    </Button>
+                                    <p className="text-center text-white/50 text-xs">La inscripción ya no está disponible</p>
+                                  </div>
+                                ) : (
                                   <div className="grid grid-cols-2 gap-3">
                                     <Link href={`/checkout/${params.courseId}`}>
                                       <Button className="w-full h-12 bg-gradient-to-r from-blue-500/80 to-blue-700/80 hover:from-blue-500 hover:to-blue-700 text-white backdrop-blur-sm border border-blue-400/30 shadow-lg text-sm font-semibold">
@@ -537,12 +562,6 @@ export default function CourseDetailsPage() {
                                       </Button>
                                     </Link>
                                   </div>
-                                ) : (
-                                  <Link href={`/dashboard/cursos/${params.courseId}`}>
-                                    <Button variant="outline" className="bg-primary text-white border-none shadow-md w-full transition-colors">
-                                      Ver Curso
-                                    </Button>
-                                  </Link>
                                 )}
                               </div>
                             </div>

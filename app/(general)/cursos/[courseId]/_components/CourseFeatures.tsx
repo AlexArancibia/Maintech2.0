@@ -7,8 +7,8 @@ export default function Features() {
       <Card className="transition-all shadow-none  hover:shadow-sm w-full">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-sky-500">
-              <Video className="w-6 h-6 text-white" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-slate-100 to-sky-50">
+              <Video className="w-6 h-6 text-slate-500" />
             </div>
             <CardTitle className="text-base lg:text-lg">Clase en vivo</CardTitle>
           </div>
@@ -23,8 +23,8 @@ export default function Features() {
       <Card className="transition-all shadow-none hover:shadow-sm w-full">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-sky-500">
-              <Users className="w-6 h-6 text-white" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-slate-100 to-sky-50">
+              <Users className="w-6 h-6 text-slate-500" />
             </div>
             <CardTitle className="text-base lg:text-lg">Seguimiento personalizado</CardTitle>
           </div>
@@ -37,8 +37,8 @@ export default function Features() {
       <Card className="transition-all shadow-none hover:shadow-sm w-full">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-sky-500">
-              <Globe className="w-6 h-6 text-white" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-slate-100 to-sky-50">
+              <Globe className="w-6 h-6 text-slate-500" />
             </div>
             <CardTitle className="text-base lg:text-lg">Plataforma virtual</CardTitle>
           </div>
@@ -51,8 +51,8 @@ export default function Features() {
       <Card className="transition-all  shadow-none hover:shadow-sm w-full">
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-sky-500">
-              <Award className="w-6 h-6 text-white" />
+            <div className="p-2 rounded-lg bg-gradient-to-br from-slate-100 to-sky-50">
+              <Award className="w-6 h-6 text-slate-500" />
             </div>
             <CardTitle className="text-base lg:text-lg">Certificado Digital</CardTitle>
           </div>
